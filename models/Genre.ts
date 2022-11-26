@@ -1,4 +1,4 @@
-import {Schema, model} from 'mongoose';
+import {Schema, model, models} from 'mongoose';
 import { MongooseGenreTypes } from '../types';
 
 const Genre = new Schema<MongooseGenreTypes>({
@@ -12,4 +12,4 @@ const Genre = new Schema<MongooseGenreTypes>({
  timestamps: true
 });
 
-export default model<MongooseGenreTypes>('genre', Genre)
+export default models.genre || model<MongooseGenreTypes>('genre', Genre)

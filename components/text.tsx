@@ -9,7 +9,6 @@ const Text : React.FC<HomeProps> = ({ socket }) => {
   const loadedMetaDataHandler = () => {
   const audio : HTMLMediaElement | HTMLElement | any = document.getElementById('audio');
   audio.currentTime = 10;
-  // console.log("LoadedMetadataHandler", socket.id)
   socket.emit("create-room", {
     trackURL: audio.src,
     currentTime: audio.currentTime, 

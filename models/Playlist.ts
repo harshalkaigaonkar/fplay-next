@@ -1,4 +1,4 @@
-import {Schema, model} from 'mongoose';
+import {Schema, model, models} from 'mongoose';
 import { MongoosePlaylistTypes } from '../types';
 
 const Playlist = new Schema<MongoosePlaylistTypes>({
@@ -21,4 +21,4 @@ const Playlist = new Schema<MongoosePlaylistTypes>({
  timestamps: true
 });
 
-export default model<MongoosePlaylistTypes>('playlist', Playlist)
+export default models.playlist || model<MongoosePlaylistTypes>('playlist', Playlist)

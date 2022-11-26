@@ -11,6 +11,7 @@ import dynamic from 'next/dynamic';
 import Text from '../components/text'
 import Link from 'next/link';
 import { axiosGet } from '../helpers';
+import { signOut, useSession } from 'next-auth/react';
 
 const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL}`)
 
@@ -20,11 +21,9 @@ export type HomeProps = {
 
 const Home: NextPage = () => {
 
-  const onClick = async () => {
-    const room = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_API_URL}/api/auth/all_users`, {withCredentials: true});
-    console.log(room.data)
-  }
-
+  const {data: session}: any = useSession();
+  console.log(session)
+  
   return (
     <div className={styles.container}>
       <Head>
@@ -35,14 +34,6 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <Text socket={socket} />
-        <Link href={`${process.env.NEXT_PUBLIC_SERVER_API_URL}/api/auth/oauth2/google/logout`}>
-        <a>
-         Signout
-        </a>
-       </Link>
-        <p onClick={onClick}>
-         new Room
-        </p>
       </main>
     </div>
   )

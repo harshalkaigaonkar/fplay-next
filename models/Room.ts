@@ -1,4 +1,4 @@
-import mongoose, { Types, Schema, model } from 'mongoose';
+import mongoose, { Types, Schema, model, models } from 'mongoose';
 import { MongooseRoomTypes } from '../types';
 
 const Room = new Schema<MongooseRoomTypes>({
@@ -61,4 +61,4 @@ const Room = new Schema<MongooseRoomTypes>({
  timestamps: true
 });
 
-export default model<MongooseRoomTypes>('room', Room)
+export default models.room || model<MongooseRoomTypes>('room', Room)
