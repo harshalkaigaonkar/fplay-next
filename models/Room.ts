@@ -23,12 +23,17 @@ const Room = new Schema<MongooseRoomTypes>({
   required: true,
   unique: true
  }],
- private: {
+ is_private: {
   type: Boolean,
   required: true,
   unique: true,
   default: false
  },
+ room_access_users: [{
+  type: Schema.Types.ObjectId,
+  ref: 'user',
+  unique: true
+ }],
  owned_by: {
   type: Schema.Types.ObjectId,
   ref: "user"
@@ -55,8 +60,9 @@ const Room = new Schema<MongooseRoomTypes>({
  }],
  upvotes: [{
   type: Schema.Types.ObjectId,
-  ref: "user"
- }]
+  ref: "user",
+  unique: true
+ }],
 },{
  timestamps: true
 });

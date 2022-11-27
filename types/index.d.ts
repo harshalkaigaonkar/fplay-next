@@ -69,7 +69,8 @@ interface MongooseRoomTypes extends Document {
  desc?: string,
  active: boolean,
  genres: Types.ObjectId[],
- private: boolean,
+ is_private: boolean,
+ room_access_users: Types.ObjectId[],
  socket_ids: string[],
  owned_by: Types.ObjectId,
  session_history: {

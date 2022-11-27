@@ -1,9 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { unstable_getServerSession } from 'next-auth';
-import { getToken } from 'next-auth/jwt';
-import { getSession } from 'next-auth/react';
-import "utils/connect-db"
+import  "utils/connect-db"
 import User from '../../../models/User';
 import { authOptions } from '../auth/[...nextauth]';
 
@@ -14,30 +12,18 @@ export default async (
 
  const {
   method,
-  query,
-  body
+  body,
+  cookies
  } = _req;
 
  const session = await unstable_getServerSession(_req, _res, authOptions);
+ console.log("Cookies: ", cookies)
 
  switch(method) {
-  case "GET": {
-   if(!session) return _res.status(401).redirect("/login")
-   try {
-    const user = await User.findOne({email: session.user?.email});
-    if(user) {
-     return _res.status(200).json({
-      type: "Success",
-      data: user
-     })
-    }
-   } catch (error) {
-    return _res.status(500).json({
-     type:"Failure",
-     error,
-    })
-   }
-  }
+  // @route     POST api/user
+  // @desc      Create a New User for Success OAuth Callback
+  // @access    Public (Have to make it Private)
+  // @status    Works Properly
   case "POST": {
    const {profile} = body;
    try {
@@ -69,12 +55,14 @@ export default async (
    }
   }
   default: {
-   _res.setHeader("Allow", ["GET", "POST"]);
+   _res.setHeader("Allow", ["POST"]);
 			return _res
 				.status(405)
 				.json({ 
      type: "Failure",
-     error: `Method ${method} is Not Allowed for this API.`
+     error: {
+      message: `Method ${method} is Not Allowed for this API.`
+     }
      })
   }
  }

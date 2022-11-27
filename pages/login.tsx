@@ -7,15 +7,6 @@ import styles from '../styles/Home.module.css'
 
 const Login: NextPage = () => {
 
-  const {data:session} = useSession();
-  const onClick = async () => {
-    signOut()
-  }
-  const handler = async () => {
-    const {data} = await axios.post('/api/user', {profile:session?.user})
-    console.log(data)
-  }
-
   return (
     <div className={styles.container}>
       <Head>
@@ -25,21 +16,7 @@ const Login: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        {!session ? (
-          <button onClick={() => signIn()}>
-          Signin wth Google
-         </button>
-        ): (
-          <>
-          <p>{session.user?.name}</p>
-            <button onClick={onClick}>
-              SignOut
-            </button>
-            <button onClick={handler}>
-              Add User
-            </button>
-          </>
-        )}
+        fvyufguyfg
       </main>
     </div>
   )
