@@ -2,13 +2,22 @@
 import { SortOrder } from 'mongoose';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { unstable_getServerSession } from 'next-auth';
-import  "utils/connect-db"
+import  "utils/connect-db";
 import Room from '../../../../models/Room';
 import { authOptions } from '../../auth/[...nextauth]';
+import { 
+  MongooseRoomTypes, 
+  ResponseDataType 
+} from '../../../../types';
 
 export default async (
   _req: NextApiRequest,
-  _res: NextApiResponse<any>
+  _res: NextApiResponse<
+    ResponseDataType<
+      MongooseRoomTypes, 
+      unknown
+      >
+    >
 ) => {
 
  const {
@@ -19,7 +28,8 @@ export default async (
  } = _req;
 
  const session = await unstable_getServerSession(_req, _res, authOptions);
-//  console.log("Cookies: ", cookies)
+  //  console.log("Cookies: ", cookies)
+  if(!session) return _res.status(401).redirect("/login")
 
  switch(method) {
   // @route     GET api/room/get_room/:room_id
@@ -28,30 +38,30 @@ export default async (
   // @status    Works Properly
   case "GET": {
 
-   if(!session) return _res.status(401).redirect("/login")
-   const {room_id} = query;
+   
+   const {
+    room_id
+   } = query;
    
    try {
     
-    const room = 
+    const data = 
      await Room
      .findById(room_id)
      .populate("owned_by");
     
-    if(!room)
-    throw new Error("No Room Found!!")
+    if(!data)
+     throw new Error("No Room Found!!")
 
     return _res.status(200).json({
      type: "Success",
-     data: {
-      room
-     }
-    })
+     data
+    });
    } catch(error) {
     return _res.status(500).json({
      type:"Failure",
      error,
-    })
+    });
    }
   }
   default: {
@@ -59,11 +69,11 @@ export default async (
 			return _res
 				.status(405)
 				.json({ 
-     type: "Failure",
-     error: {
-      message: `Method ${method} is Not Allowed for this API.`
-     }
-     })
+          type: "Failure",
+          error: {
+            message: `Method ${method} is Not Allowed for this API.`
+          }
+        })
   }
  }
 }

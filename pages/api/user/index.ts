@@ -1,22 +1,26 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { unstable_getServerSession } from 'next-auth';
-import  "utils/connect-db"
+import { HydratedDocument } from 'mongoose';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { Session, unstable_getServerSession } from 'next-auth';
+import Error from 'next/error';
+import  "utils/connect-db";
 import User from '../../../models/User';
+import { MongooseUserTypes } from '../../../types';
 import { authOptions } from '../auth/[...nextauth]';
+import { ResponseDataType } from '../../../types';
 
 export default async (
   _req: NextApiRequest,
-  _res: NextApiResponse<any>
+  _res: NextApiResponse<ResponseDataType<MongooseUserTypes, unknown>>
 ) => {
 
  const {
   method,
   body,
-  cookies
+  cookies,
  } = _req;
 
- const session = await unstable_getServerSession(_req, _res, authOptions);
+ const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
 //  console.log("Cookies: ", cookies)
 
  switch(method) {
@@ -25,33 +29,49 @@ export default async (
   // @access    Public (Have to make it Private)
   // @status    Works Properly
   case "POST": {
-   const {profile} = body;
+
+   const { 
+    profile
+    } = body;
+
+  const {
+    name,
+    picture,
+    given_name,
+    family_name,
+    email,
+  } = profile;
+
    try {
-    const user = await User.findOne({email: profile.email});
-    if(user) {
+
+    const user = await User.findOne({
+      email: profile.email
+    });
+
+    if(user)
      return _res.status(200).json({
       type: "Success",
       data: user
-     })
-    }
-    const newUser = new User({
-     name: profile.name,
-     username: (profile.given_name + "_" + profile.family_name).toLowerCase(),
-     email: profile.email,
-     profile_pic: profile.picture,
+     });
+
+    const newUser: HydratedDocument<MongooseUserTypes> = new User({
+     name: name,
+     username: (given_name + "_" + family_name).toLowerCase(),
+     email: email,
+     profile_pic: picture,
      playlists: [],
      rooms_on: [],
-    })
+    });
     await newUser.save();
     return _res.status(201).json({
      type: "Success",
      data: newUser
-    })
-   } catch(error) {
+    });
+   } catch(error: unknown) {
     return _res.status(500).json({
      type:"Failure",
      error,
-    })
+    });
    }
   }
   default: {
@@ -59,11 +79,11 @@ export default async (
 			return _res
 				.status(405)
 				.json({ 
-     type: "Failure",
-     error: {
-      message: `Method ${method} is Not Allowed for this API.`
-     }
-     })
+          type: "Failure",
+          error: {
+            message: `Method ${method} is Not Allowed for this API.`
+          }
+        });
   }
  }
 }

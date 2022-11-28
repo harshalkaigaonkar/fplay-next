@@ -1,14 +1,25 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { SortOrder } from 'mongoose';
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { unstable_getServerSession } from 'next-auth';
-import  "utils/connect-db"
+import type { NextApiRequest, NextApiResponse } from 'next';
+import  "utils/connect-db";
 import Room from '../../../models/Room';
-import { authOptions } from '../auth/[...nextauth]';
+import { 
+  FindRoomsCondition, 
+  GetRoomsBody, 
+  MongooseRoomTypes, 
+  ResponseDataType, 
+  SortRoomsConditionType, 
+  SuccessRoomsReponse 
+} from '../../../types';
 
-export default async (
+
+ export default async (
   _req: NextApiRequest,
-  _res: NextApiResponse<any>
+  _res: NextApiResponse<
+    ResponseDataType<
+      SuccessRoomsReponse, 
+      unknown
+      >
+    >
 ) => {
 
  const {
@@ -24,41 +35,47 @@ export default async (
   // @left      search Query
   case "GET": {
 
-   const {active, sort_by, search_query, page = 1, limit = 10}: any = body;
+   const {
+    active, 
+    sort_by, 
+    search_query, 
+    page = 1, 
+    limit = 10
+  }: GetRoomsBody = body;
    
    try {
 
-   const find_condition: {
-    is_private: boolean,
-    active?: boolean
-   } = {
+   const find_condition: FindRoomsCondition = {
     is_private: false,
    }
 
-   const total_results: number = await Room.find(find_condition).count();
+   const total_entries: number = await Room.find(find_condition).count();
    
    let skip_entries: number = 0;
 
-   if(page > 1 && total_results && Math.ceil(total_results/limit) > page) {
+   if (
+    page > 1 && 
+    total_entries && 
+    Math.ceil(total_entries/limit) > page
+  ) {
     skip_entries = limit * (page-1);
    }
 
    if(typeof active === 'boolean')
    find_condition.active = active;
    
-   const sort_condition: {
-    createdAt?: SortOrder,
-    upvotes?: SortOrder
-   } = {};
+   const sort_condition: SortRoomsConditionType = {};
    
-   // filters
+   /**
+    * Sorting Filters
+    */
 
    switch(sort_by) {
     case "date:asc": {
      sort_condition.createdAt = 'asc';
      break;
     }
-    case "date:dsc": {
+    case "date:desc": {
      sort_condition.createdAt = 'desc';
      break;
     }
@@ -66,7 +83,7 @@ export default async (
      sort_condition.upvotes = 'asc';
      break;
     }
-    case "upvotes:dsc": {
+    case "upvotes:desc": {
      sort_condition.upvotes = 'desc';
      break;
     }
@@ -74,22 +91,24 @@ export default async (
     }
    }
     
-    const rooms = 
+    const rooms: MongooseRoomTypes[] = 
      await Room
      .find(find_condition)
      .sort(sort_condition)
      .skip(skip_entries)
      .limit(limit);
 
+     const data: SuccessRoomsReponse = {
+      rooms,
+      limit,
+      total_entries,
+      page
+     };
+
     return _res.status(200).json({
      type: "Success",
-     data: {
-      rooms,
-      entries: limit,
-      total_results,
-      page
-     }
-    })
+     data
+    });
    } catch(error) {
     return _res.status(500).json({
      type:"Failure",
@@ -102,11 +121,11 @@ export default async (
 			return _res
 				.status(405)
 				.json({ 
-     type: "Failure",
-     error: {
-      message: `Method ${method} is Not Allowed for this API.`
-     }
-     })
+          type: "Failure",
+          error: {
+            message: `Method ${method} is Not Allowed for this API.`
+          }
+        })
   }
  }
 }

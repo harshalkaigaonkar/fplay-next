@@ -22,9 +22,9 @@ import mongoose, {Date, DateExpression, Document, Types} from "mongoose";
 //  age: number;
 // }
 
-export type Data = {
- name: string
-}
+/**
+ * SOCKET TYPES 
+ */
 
 export type ServerSocketData = Data | string 
 
@@ -53,6 +53,7 @@ export interface SocketData {
  age: number;
 }
 
+
 // Mongoose DB Types
 interface MongooseUserTypes extends Document {
  // _id: Types.ObjectId,
@@ -72,7 +73,7 @@ interface MongooseRoomTypes extends Document {
  is_private: boolean,
  room_access_users: Types.ObjectId[],
  socket_ids: string[],
- owned_by: Types.ObjectId,
+ owned_by: Types.ObjectId|MongooseUserTypes,
  session_history: {
   on_date: DateExpression,
   songs: Types.ObjectId[],
@@ -106,3 +107,45 @@ interface MongooseGenreTypes extends Document {
  // _id?: Types.ObjectId,
  type: string
 }
+
+/**
+ * NEXT API ROUTES TYPES  
+ * */
+
+ interface Data {
+  name: string
+ }
+interface ResponseDataType<X, Y> {
+ type: string,
+ data?: X,
+ error?: Y
+}
+
+/**
+ * ROOM APIs INterfaces and Types
+ */
+
+ interface GetRoomsBody {
+  active?: boolean, 
+  sort_by?: "date:asc"|"date:desc"|"upvotes:asc"|"upvotes:desc", 
+  search_query?: string, 
+  page: number, 
+  limit: number
+}
+
+interface SuccessRoomsReponse {
+  rooms: MongooseRoomTypes[],
+  limit: number,
+  total_entries: number,
+  page: number
+}[]
+
+interface FindRoomsCondition {
+  is_private: boolean,
+  active?: boolean
+}
+
+type SortRoomsConditionType = {
+  createdAt?: SortOrder,
+  upvotes?: SortOrder
+ }

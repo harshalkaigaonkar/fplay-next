@@ -1,13 +1,14 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { Session, unstable_getServerSession } from 'next-auth';
-import  "utils/connect-db"
+import  "utils/connect-db";
 import User from '../../../models/User';
+import { MongooseUserTypes, ResponseDataType } from '../../../types';
 import { authOptions } from '../auth/[...nextauth]';
 
 export default async (
   _req: NextApiRequest,
-  _res: NextApiResponse<any>
+  _res: NextApiResponse<ResponseDataType<MongooseUserTypes, unknown>>
 ) => {
 
  const {
@@ -16,6 +17,7 @@ export default async (
   cookies,
   body
  } = _req;
+
  const {
   id,
 } = query;
@@ -24,22 +26,28 @@ export default async (
 
 //  console.log("Cookies: ", cookies)
 
+if(!session) return _res.status(401).redirect("/login")
+
  switch(method) {
   // @route     GET api/user/:id
   // @desc      Get User's Info from Database
   // @access    Private
   // @status    Works Properly
   case "GET": {
-   if(!session) return _res.status(401).redirect("/login")
+   
    try {
-    const user = await User.findById(id) || await User.findOne({email: session.user?.email});
-    if(user) {
+    const user = 
+      await User.findById(id) || 
+      await User.findOne({email: session.user?.email});
+    
+    if(user)
      return _res.status(200).json({
       type: "Success",
       data: user
-     })
-    }
-    throw new Error("No User Found !!")
+     });
+
+    throw new Error("No User Found !!");
+
    } catch (error) {
     return _res.status(500).json({
      type:"Failure",
@@ -52,14 +60,19 @@ export default async (
   // @access    Private
   // @status    Works Properly
   case "PUT": {
-    const {update_profile} = body;
-    // selected to Options for Updation 
-    // only these body props are allowed
+    const {
+      update_profile
+    } = body;
+    
+    /**
+     * selected to Options for Updation 
+     * only these body props are allowed
+     */
+
     const {
       name, 
       username, 
-      email, 
-      ...rest
+      email,
     } = update_profile;
 
     const update_profile_obj: {
@@ -68,15 +81,21 @@ export default async (
       email?: string
     } = {};
 
-    if(name) update_profile_obj.name = name;
-    if(email) update_profile_obj.email = email;
-    if(username) update_profile_obj.username = username;
+    if(name) 
+      update_profile_obj.name = name;
+    if(email) 
+      update_profile_obj.email = email;
+    if(username)
+      update_profile_obj.username = username;
     
     try {
 
-    const user = await User.findById(id);
+    const user = 
+      await User.findById(id) || 
+      await User.findOne({email: session.user?.email});
+
     if(!user)
-    throw new Error("No User Found to Update Details!!")
+      throw new Error("No User Found to Update Details!!")
 
     const updated_user = await User.findByIdAndUpdate(id, update_profile_obj);
     return _res.status(204).json({
@@ -95,11 +114,11 @@ export default async (
 			return _res
 				.status(405)
 				.json({ 
-     type: "Failure",
-     error: {
-      message: `Method ${method} is Not Allowed for this API.`
-     }
-     })
+          type: "Failure",
+          error: {
+            message: `Method ${method} is Not Allowed for this API.`
+          }
+        })
   }
  }
 }
