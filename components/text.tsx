@@ -24,10 +24,21 @@ const playingHandler = () => {
   const audio : HTMLMediaElement | HTMLElement | any = document.getElementById('audio');
   console.log(audio.currentTime, "playingHandler")
 }
+const timeUpdateHandler = () => {
+  const audio : HTMLMediaElement | HTMLElement | any = document.getElementById('audio');
+  console.log(audio.currentTime, "timeUpdateHandler")
+}
 
   return (
     <div>
-     <video id="audio" controls onLoadedMetadata={loadedMetaDataHandler} onSeeked={seekedHandler} onPlaying={playingHandler}>
+     <video 
+      id="audio" 
+      controls 
+      onLoadedMetadata={loadedMetaDataHandler} 
+      // onSeeked={seekedHandler} 
+      onPlaying={playingHandler}
+      onTimeUpdate={timeUpdateHandler}
+      >
       <source src="https://aac.saavncdn.com/557/6785f6db3501b3ce5e3b247ec9b2cbdc_320.mp4" type="audio/mp4" />
       </video>
     </div>

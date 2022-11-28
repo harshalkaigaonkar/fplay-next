@@ -1,10 +1,11 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { SortOrder } from 'mongoose';
+import { HydratedDocument, SortOrder } from 'mongoose';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { unstable_getServerSession } from 'next-auth';
 import  "utils/connect-db"
 import Room from '../../../models/Room';
 import User from '../../../models/User';
+import { MongooseRoomTypes } from '../../../types';
 import { authOptions } from '../auth/[...nextauth]';
 
 export default async (
@@ -16,10 +17,10 @@ export default async (
   method,
   body,
   cookies,
-  query
+  query,
  } = _req;
 
- const {user_id} = query;
+ const {user_id, room_id} = query;
 
  const session = await unstable_getServerSession(_req, _res, authOptions);
  console.log("Cookies: ", cookies)
@@ -130,16 +131,20 @@ export default async (
     upvotes, // would be empty array initially
    } = room;
    try {
+    if(!name) 
+    throw new Error("Name For Room is Required !!");
+
     const user = await User.findById(user_id);
-    if(!user) {
+    
+    if(!user) 
      throw new Error("User Not Found!!");
-    }
+    
     const {_id} = user;
     const room = await Room.findOne({name})
     if(room) {
       throw new Error("Room Already Exists!!");
     }
-    const newRoom = new Room({
+    const newRoom: HydratedDocument<MongooseRoomTypes> = new Room({
      name,
      desc: desc || "",
      active: active || false,

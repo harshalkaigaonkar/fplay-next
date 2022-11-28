@@ -27,6 +27,7 @@ const Home: NextPage = () => {
     signOut()
   }
   const handler = async () => {
+    
     const {data} = await axios.post('/api/user', {profile:session?.user})
     console.log(data)
   }
