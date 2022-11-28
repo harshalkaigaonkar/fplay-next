@@ -23,7 +23,7 @@ export default async (
  const {user_id, room_id} = query;
 
  const session = await unstable_getServerSession(_req, _res, authOptions);
- console.log("Cookies: ", cookies)
+//  console.log("Cookies: ", cookies)
 
  switch(method) {
   // @route     GET api/room/:user_id
@@ -32,7 +32,9 @@ export default async (
   // @status    Works Properly with filter and pagination
   // @left      search Query
   case "GET": {
+    
     if(!session) return _res.status(401).redirect("/login")
+
     const {active, sort_by, search_query, page = 1, limit = 10}: any = body;
     
     try {
@@ -123,12 +125,13 @@ export default async (
     genres,
     is_private,
     room_access_users,
-    owned_by, // would be from session's User ID.
+    // owned_by, // would be from session's User ID.
     // later use of owned_by is for Groups
-    session_history, // would be empty initially
+    // session_history, // would be empty initially
     pinned_playlists,
     pinned_songs,
-    upvotes, // would be empty array initially
+    // upvotes, // would be empty array initially
+    ...rest
    } = room;
    try {
     if(!name) 

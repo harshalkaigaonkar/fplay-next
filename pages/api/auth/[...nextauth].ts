@@ -1,8 +1,8 @@
 import axios from "axios"
-import NextAuth from "next-auth"
+import NextAuth, { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
   providers: [
     GoogleProvider({
@@ -10,7 +10,7 @@ export const authOptions = {
       clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`,
     }),
   ],
-  secret: process.env.SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
    maxAge: 30 * 24 * 60 * 60 * 100,
   },

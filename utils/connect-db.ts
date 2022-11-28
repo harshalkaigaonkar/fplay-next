@@ -1,11 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, { ConnectionStates } from "mongoose";
+
+const connection: {
+	isConnected?: ConnectionStates
+} = {};
 
 (async function dbConnect() {
+	if(connection.isConnected) return;
 	try {
-		const db = await mongoose.connect("mongodb+srv://Harshal_k:b4wx4HEPz5dk63MO@fplay.nvhvf4g.mongodb.net/fplay?retryWrites=true&w=majority");
+		const db: typeof mongoose = await mongoose.connect(`${process.env.MONGO_URI}`);
+		connection.isConnected = db.connections[0].readyState;
 		console.log("MongoDB Connected");
 	} catch (error) {
-		console.log("Mongo Error: ", error);
+		console.log("MongoDB Error: ", error);
 		process.exit(1);
 	}
 })();

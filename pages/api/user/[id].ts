@@ -16,11 +16,13 @@ export default async (
   cookies,
   body
  } = _req;
- const {id} = query;
+ const {
+  id,
+} = query;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
 
- console.log("Cookies: ", cookies)
+//  console.log("Cookies: ", cookies)
 
  switch(method) {
   // @route     GET api/user/:id

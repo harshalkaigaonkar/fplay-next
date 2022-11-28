@@ -20,7 +20,7 @@ export default async (
  const {room_id} = query;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
- console.log("Cookies: ", cookies)
+//  console.log("Cookies: ", cookies)
 
  switch(method) {
   // @route     PUT api/room/update_room/:room_id
@@ -36,7 +36,6 @@ export default async (
     desc,
     active,
     is_private,
-    owned_by,
     ...rest
    } = update_room;
 
@@ -45,14 +44,12 @@ export default async (
     desc?: string,
     active?: boolean,
     is_private?: boolean,
-    owned_by?: Types.ObjectId,
    } = {};
 
    if(name) update_room_obj.name = name;
    if(desc) update_room_obj.desc = desc;
    if(active) update_room_obj.active = active;
    if(is_private) update_room_obj.is_private = is_private;
-   if(owned_by) update_room_obj.owned_by = owned_by;
    
    try {
     

@@ -19,7 +19,7 @@ export default async (
  } = _req;
 
  const session = await unstable_getServerSession(_req, _res, authOptions);
- console.log("Cookies: ", cookies)
+//  console.log("Cookies: ", cookies)
 
  switch(method) {
   // @route     GET api/room/get_room/:room_id
