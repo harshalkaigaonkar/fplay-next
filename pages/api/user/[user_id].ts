@@ -19,7 +19,7 @@ export default async (
  } = _req;
 
  const {
-  id,
+  user_id,
 } = query;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
@@ -29,7 +29,7 @@ export default async (
 if(!session) return _res.status(401).redirect("/login")
 
  switch(method) {
-  // @route     GET api/user/:id
+  // @route     GET api/user/:user_id
   // @desc      Get User's Info from Database
   // @access    Private
   // @status    Works Properly
@@ -37,7 +37,7 @@ if(!session) return _res.status(401).redirect("/login")
    
    try {
     const user = 
-      await User.findById(id) || 
+      await User.findById(user_id) || 
       await User.findOne({email: session.user?.email});
     
     if(user)
@@ -91,13 +91,13 @@ if(!session) return _res.status(401).redirect("/login")
     try {
 
     const user = 
-      await User.findById(id) || 
+      await User.findById(user_id) || 
       await User.findOne({email: session.user?.email});
 
     if(!user)
       throw new Error("No User Found to Update Details!!")
 
-    const updated_user = await User.findByIdAndUpdate(id, update_profile_obj);
+    const updated_user = await User.findByIdAndUpdate(user_id, update_profile_obj);
     return _res.status(204).json({
       type: "Success",
       data: updated_user
