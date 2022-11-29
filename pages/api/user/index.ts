@@ -2,12 +2,11 @@
 import { HydratedDocument } from 'mongoose';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Session, unstable_getServerSession } from 'next-auth';
-import Error from 'next/error';
 import  "utils/connect-db";
-import User from '../../../models/User';
-import { MongooseUserTypes } from '../../../types';
-import { authOptions } from '../auth/[...nextauth]';
-import { ResponseDataType } from '../../../types';
+import User from 'models/User';
+import { MongooseUserTypes } from 'types';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
+import { ResponseDataType } from 'types';
 
 export default async (
   _req: NextApiRequest,

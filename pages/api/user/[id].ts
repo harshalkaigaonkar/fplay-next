@@ -2,9 +2,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Session, unstable_getServerSession } from 'next-auth';
 import  "utils/connect-db";
-import User from '../../../models/User';
-import { MongooseUserTypes, ResponseDataType } from '../../../types';
-import { authOptions } from '../auth/[...nextauth]';
+import User from 'models/User';
+import { MongooseUserTypes, ResponseDataType } from 'types';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 export default async (
   _req: NextApiRequest,

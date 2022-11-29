@@ -1,5 +1,5 @@
-import mongoose, { Types, Schema, model, models } from 'mongoose';
-import { MongooseRoomTypes } from '../types';
+import mongoose, { Schema, model, models } from 'mongoose';
+import { MongooseRoomTypes } from 'types';
 
 const Room = new Schema<MongooseRoomTypes>({
  name: {

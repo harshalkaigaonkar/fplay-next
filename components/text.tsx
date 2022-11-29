@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { io } from 'socket.io-client';
-import { HomeProps } from '../pages';
+import { HomeProps } from 'pages';
 
 const Text : React.FC<HomeProps> = ({ socket }) => {
 

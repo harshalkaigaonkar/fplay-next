@@ -1,6 +1,6 @@
 import { Server } from "socket.io"
-import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from "../types"
-import { client } from '../cache'
+import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from "types"
+import { client } from 'cache'
 
 const _io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(
    parseInt(`${process.env.WS_PORT}`, 10),

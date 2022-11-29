@@ -3,7 +3,7 @@ import type { NextPage } from 'next'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import Head from 'next/head'
 import Link from 'next/link'
-import styles from '../styles/Home.module.css'
+import styles from 'styles/Home.module.css'
 
 const Login: NextPage = () => {
 

@@ -2,12 +2,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Session, unstable_getServerSession } from 'next-auth';
 import  "utils/connect-db";
-import Room from '../../../../models/Room';
-import { authOptions } from '../../auth/[...nextauth]';
+import Room from 'models/Room';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { 
   MongooseRoomTypes,
   ResponseDataType 
-} from '../../../../types';
+} from 'types';
 
 /**
  * Type Interfaces fot the File

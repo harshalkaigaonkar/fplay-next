@@ -1,5 +1,5 @@
 import {Schema, model, models} from 'mongoose';
-import { MongoosePlaylistTypes } from '../types';
+import { MongoosePlaylistTypes } from 'types';
 
 const Playlist = new Schema<MongoosePlaylistTypes>({
  name: {

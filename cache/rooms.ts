@@ -1,2 +1,2 @@
-import {client} from './index';
+import {client} from 'cache';
 

@@ -1,5 +1,5 @@
 import {Schema, model, models} from 'mongoose';
-import { MongooseSongTypes } from '../types';
+import { MongooseSongTypes } from 'types';
 
 const Song = new Schema<MongooseSongTypes>({
  saavn_id: {

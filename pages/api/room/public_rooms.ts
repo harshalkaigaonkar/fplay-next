@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import  "utils/connect-db";
-import Room from '../../../models/Room';
+import Room from 'models/Room';
 import { 
   FindRoomsCondition, 
   GetRoomsBody, 
@@ -9,7 +9,7 @@ import {
   ResponseDataType, 
   SortRoomsConditionType, 
   SuccessRoomsReponse 
-} from '../../../types';
+} from 'types';
 
 
  export default async (
@@ -49,7 +49,7 @@ import {
     is_private: false,
    }
 
-   const total_entries: number = await Room.find(find_condition).count();
+   const total_entries: number = await Room.find<FindRoomsCondition|any>(find_condition).count();
    
    let skip_entries: number = 0;
 

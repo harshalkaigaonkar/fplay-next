@@ -1,5 +1,5 @@
 import {Schema, model, models} from 'mongoose';
-import { MongooseGenreTypes } from '../types';
+import { MongooseGenreTypes } from 'types';
 
 const Genre = new Schema<MongooseGenreTypes>({
  type : {
