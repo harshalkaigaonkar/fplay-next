@@ -3,11 +3,11 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { Session, unstable_getServerSession } from 'next-auth';
 import  "utils/connect-db"
 import Room from 'models/Room';
-import User from 'models/User';
+import Genre from 'models/Genre';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import {
-  MongooseRoomTypes, 
-  MongooseUserTypes, 
+ MongooseGenreTypes,
+  MongooseRoomTypes,
   ResponseDataType,
 } from 'types';
 
@@ -30,7 +30,9 @@ export default async (
 
  const {
   type
- } : Partial<{ type: "add"|"remove" }> = query;
+ } : Partial<{ 
+  type: "add"|"remove",
+ }> = query;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
 
@@ -39,13 +41,14 @@ export default async (
  if(!session) return _res.status(401).redirect("/login")
 
  switch(method) {
-  // @route     POST api/room/user?type="add"/"remove"
-  // @desc      Manipulate User to Add/Remove w.r.t Room 
+  // @route     POST api/room/genre?type="add"/"remove"
+  // @desc      Manipulate Genres to Add/Remove w.r.t Room 
   // @access    Private
   // @status    Works Properly
   case "PUT": {
    const {
-    room_id
+    room_id,
+    genre_id
     } = body;
 
    try {
@@ -56,27 +59,30 @@ export default async (
      throw new Error("Room Not Found!!");
     
     const {
-      room_access_users
+      genres
     } = room;
 
-    const user: MongooseUserTypes|null = await User.findOne({email: session.user?.email});
+    const genre: MongooseGenreTypes|null = await Genre.findById(genre_id);
+
+    if(!genre)
+    throw new Error("Genre Not Found!!")
 
     let updated_room: MongooseRoomTypes|null = null;
 
     if(type === "add") {
 
-     if(room_access_users.includes(room_id))
-      throw new Error('User Already in the Room!!');
+     if(genres.includes(genre_id))
+      throw new Error('Genre Already Attached to the Room!!');
 
-     room_access_users.push(room_id);
+     genres.push(genre_id);
 
     }
     else if (type === 'remove') {
 
-     if(!room_access_users.includes(room_id))
-      throw new Error('User is Not in the Room!!');
+     if(!genres.includes(genre_id))
+      throw new Error('Genre is Not Attached to the Room!!');
 
-     room.room_access_users = room_access_users.splice(room_access_users.indexOf(room_id), 1);
+     room.genres = genres.splice(genres.indexOf(genre_id), 1);
 
     }
     else {
@@ -84,14 +90,11 @@ export default async (
     }
 
     updated_room = await Room.findByIdAndUpdate(room_id, {
-      room_access_users
-     });
-
-     if(!updated_room)
-      throw new Error("User Cannot Be Added in the Room!!")
+     genres,
+    });
 
     if(!updated_room)
-     throw new Error('User Cannot be Added or Removed!!');
+      throw new Error("Genre Cannot Be Atached to the Room!!")
 
     return _res.status(201).json({
      type: "Success",

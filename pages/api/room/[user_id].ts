@@ -1,10 +1,11 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { HydratedDocument, SortOrder } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Session, unstable_getServerSession } from 'next-auth';
 import  "utils/connect-db"
 import Room from 'models/Room';
 import User from 'models/User';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { 
   FindRoomsCondition, 
   GetRoomsBody, 
@@ -13,7 +14,6 @@ import {
   SortRoomsConditionType, 
   SuccessRoomsReponse 
 } from 'types';
-import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 export default async (
   _req: NextApiRequest,

@@ -1,15 +1,17 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { HydratedDocument, SortOrder } from 'mongoose';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Session, unstable_getServerSession } from 'next-auth';
 import  "utils/connect-db"
 import Room from 'models/Room';
 import User from 'models/User';
-import { authOptions } from 'pages/api/auth/[...nextauth]';
 import {
   MongooseRoomTypes, 
   MongooseUserTypes, 
   ResponseDataType,
 } from 'types';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
+import axios from 'axios';
 
 export default async (
   _req: NextApiRequest,
@@ -29,8 +31,8 @@ export default async (
  } = _req;
 
  const {
-  type
- } : Partial<{ type: "add"|"remove" }> = query;
+  user_id
+ } = query;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
 
@@ -39,9 +41,9 @@ export default async (
  if(!session) return _res.status(401).redirect("/login")
 
  switch(method) {
-  // @route     POST api/room/user?type="add"/"remove"
-  // @desc      Manipulate User to Add/Remove w.r.t Room 
-  // @access    Private
+  // @route     POST api/room/user/transfer_ownership
+  // @desc      Transfer Ownership of Room to Different User
+  // @access    Private (User who Owns Rooms Can only Transfer)
   // @status    Works Properly
   case "PUT": {
    const {
@@ -50,48 +52,34 @@ export default async (
 
    try {
 
-    const room: MongooseRoomTypes|null = await Room.findById(room_id);
+    const room = 
+    await Room
+     .findById(room_id)
+     .populate('owned_by');
     
     if(!room) 
      throw new Error("Room Not Found!!");
+
+    const user: MongooseUserTypes|null = 
+    await User
+     .findById(user_id);
+
+    if(!user)
+     throw new Error('No User Found For Tranfering OwnerShip!!');
     
     const {
-      room_access_users
+      owned_by
     } = room;
 
-    const user: MongooseUserTypes|null = await User.findOne({email: session.user?.email});
+    if(owned_by.email !== session.user?.email)
+     throw new Error('Room is Not Owned by the Session User!!');
 
-    let updated_room: MongooseRoomTypes|null = null;
-
-    if(type === "add") {
-
-     if(room_access_users.includes(room_id))
-      throw new Error('User Already in the Room!!');
-
-     room_access_users.push(room_id);
-
-    }
-    else if (type === 'remove') {
-
-     if(!room_access_users.includes(room_id))
-      throw new Error('User is Not in the Room!!');
-
-     room.room_access_users = room_access_users.splice(room_access_users.indexOf(room_id), 1);
-
-    }
-    else {
-     throw new Error("Other Types are Not Allowed!!");
-    }
-
-    updated_room = await Room.findByIdAndUpdate(room_id, {
-      room_access_users
-     });
-
-     if(!updated_room)
-      throw new Error("User Cannot Be Added in the Room!!")
+    const updated_room = await Room.findByIdAndUpdate(room_id, {
+     owned_by: room_id
+    });
 
     if(!updated_room)
-     throw new Error('User Cannot be Added or Removed!!');
+     throw new Error('Ownership Not Transferred!!');
 
     return _res.status(201).json({
      type: "Success",

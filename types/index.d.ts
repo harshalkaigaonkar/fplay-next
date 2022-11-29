@@ -61,32 +61,31 @@ interface MongooseUserTypes extends Document {
  username: string,
  email: string,
  profile_pic: string|null,
- playlists: Types.ObjectId[],
- rooms_on: Types.ObjectId[],
+ playlists: Types.ObjectId[]|string[],
+ rooms_on: Types.ObjectId[]|string[],
 }
 interface MongooseRoomTypes extends Document {
  // _id?: Types.ObjectId,
  name: string,
  desc?: string,
  active: boolean,
- genres: Types.ObjectId[],
+ genres: Types.ObjectId[]|string[],
  is_private: boolean,
- room_access_users: Types.ObjectId[],
- socket_ids: string[],
- owned_by: Types.ObjectId|MongooseUserTypes,
+ room_access_users: Types.ObjectId[]|string[],
+ owned_by: Types.ObjectId|MongooseUserTypes|string,
  session_history: {
   on_date: DateExpression,
-  songs: Types.ObjectId[],
+  songs: Types.ObjectId[]|string[],
  },
- pinned_songs: Types.ObjectId[],
- pinned_playlists: Types.ObjectId[],
- upvotes: Types.ObjectId[]
+ pinned_songs: Types.ObjectId[]|string[],
+ pinned_playlists: Types.ObjectId[]|string[],
+ upvotes: Types.ObjectId[]|string[]
 }
 interface MongoosePlaylistTypes extends Document {
  // _id?: Types.ObjectId,
  name: string,
- owned_by: Types.ObjectId,
- songs: Types.ObjectId[],
+ owned_by: Types.ObjectId|string,
+ songs: Types.ObjectId[]|string[],
 }
 interface MongooseSongTypes extends Document {
  // _id?: Types.ObjectId,

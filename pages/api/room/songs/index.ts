@@ -1,13 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Session, unstable_getServerSession } from 'next-auth';
-import  "utils/connect-db"
+import  "utils/connect-db";
 import Room from 'models/Room';
-import User from 'models/User';
+import Song from 'models/Song';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import {
   MongooseRoomTypes, 
-  MongooseUserTypes, 
+  MongooseSongTypes, 
   ResponseDataType,
 } from 'types';
 
@@ -30,7 +30,9 @@ export default async (
 
  const {
   type
- } : Partial<{ type: "add"|"remove" }> = query;
+ } : Partial<{ 
+  type: "pin"|"unpin",
+ }> = query;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
 
@@ -39,13 +41,14 @@ export default async (
  if(!session) return _res.status(401).redirect("/login")
 
  switch(method) {
-  // @route     POST api/room/user?type="add"/"remove"
-  // @desc      Manipulate User to Add/Remove w.r.t Room 
+  // @route     POST api/room/songs?type="pin"/"unpin"
+  // @desc      Pin/Unpin Songs to the Room
   // @access    Private
   // @status    Works Properly
   case "PUT": {
    const {
-    room_id
+    room_id,
+    song_id
     } = body;
 
    try {
@@ -56,27 +59,30 @@ export default async (
      throw new Error("Room Not Found!!");
     
     const {
-      room_access_users
+      pinned_songs
     } = room;
 
-    const user: MongooseUserTypes|null = await User.findOne({email: session.user?.email});
+    const song: MongooseSongTypes|null = await Song.findById(song_id);
+
+    if(!song)
+     throw new Error("Songs Not Found!!")
 
     let updated_room: MongooseRoomTypes|null = null;
 
-    if(type === "add") {
+    if(type === "pin") {
 
-     if(room_access_users.includes(room_id))
-      throw new Error('User Already in the Room!!');
+     if(pinned_songs.includes(song_id))
+      throw new Error('Song Already Pinned to the Room!!');
 
-     room_access_users.push(room_id);
+     pinned_songs.push(song_id);
 
     }
-    else if (type === 'remove') {
+    else if (type === 'unpin') {
 
-     if(!room_access_users.includes(room_id))
-      throw new Error('User is Not in the Room!!');
+     if(!pinned_songs.includes(song_id))
+      throw new Error('Song is Not Pinned to the Room!!');
 
-     room.room_access_users = room_access_users.splice(room_access_users.indexOf(room_id), 1);
+     room.pinned_songs = pinned_songs.splice(pinned_songs.indexOf(song_id), 1);
 
     }
     else {
@@ -84,14 +90,11 @@ export default async (
     }
 
     updated_room = await Room.findByIdAndUpdate(room_id, {
-      room_access_users
-     });
-
-     if(!updated_room)
-      throw new Error("User Cannot Be Added in the Room!!")
+     pinned_songs,
+    });
 
     if(!updated_room)
-     throw new Error('User Cannot be Added or Removed!!');
+      throw new Error("Song Cannot Be Pinned to the Room!!")
 
     return _res.status(201).json({
      type: "Success",
