@@ -12,9 +12,9 @@ const Playlist = new Schema<MongoosePlaylistTypes>({
   ref: 'user'
  },
  songs: [{
-  type: Schema.Types.ObjectId,
-  ref: 'song',
-  unique: true,
+  type: String,
+  required: true,
+  unique: true
  }]
 },
 {

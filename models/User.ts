@@ -20,11 +20,20 @@ const User = new Schema<MongooseUserTypes>({
   type: String,
   unique: true,
  },
- playlists: [{
-  type: Schema.Types.ObjectId,
-  ref: 'playlist',
-  unique: true,
-  required: true,
+ library: [{
+  type: {
+   type: String,
+   enum: ["Song", "Playlist"]
+  },
+  playlist_id: {
+   type: Schema.Types.ObjectId,
+   ref: 'playlist',
+   unique: true
+  },
+  song_id: {
+   type: String,
+   unique: true,
+  }
  }],
  rooms_on: [{
   type: Schema.Types.ObjectId,

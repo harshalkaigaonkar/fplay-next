@@ -65,7 +65,7 @@ if(!session) return _res.status(401).redirect("/login")
     const newPlaylist: HydratedDocument<MongoosePlaylistTypes> = new Playlist({
      name,
      owned_by: _id,
-     songs
+     songs: songs || []
     });
     await newPlaylist.save();
     return _res.status(201).json({

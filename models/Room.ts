@@ -38,26 +38,33 @@ const Room = new Schema<MongooseRoomTypes>({
   type: Schema.Types.ObjectId,
   ref: "user"
  },
- session_history: [{
-  on_date: {
-   type: Date,
-   default: Date.now()
-  },
-  songs: [{
-   type: Schema.Types.ObjectId,
-   ref: 'song'
-  }]
- }],
- pinned_playlists: [{
-  type: Schema.Types.ObjectId,
-  ref: 'playlist',
-  unique: true,
- }],
- pinned_songs: [{
-  type: Schema.Types.ObjectId,
-  ref: 'song',
-  unique: true,
- }],
+ // session_history: [{
+ //  on_date: {
+ //   type: Date,
+ //   default: Date.now()
+ //  },
+ //  songs: [{
+ //   saavn_id: {
+ //    type: String,
+ //    required: true,
+ //   },
+ //   title: String,
+ //   image_url: {
+ //    type: String,
+ //    link: String
+ //   }
+ //  }]
+ // }],
+ // pinned_playlists: [{
+ //  type: Schema.Types.ObjectId,
+ //  ref: 'playlist',
+ //  unique: true,
+ // }],
+ // pinned_songs: [{
+ //  type: Schema.Types.ObjectId,
+ //  ref: 'song',
+ //  unique: true,
+ // }],
  upvotes: [{
   type: Schema.Types.ObjectId,
   ref: "user",

@@ -58,8 +58,6 @@ export default async (
      username: (given_name + "_" + family_name).toLowerCase(),
      email: email,
      profile_pic: picture,
-     playlists: [],
-     rooms_on: [],
     });
     await newUser.save();
     return _res.status(201).json({

@@ -61,8 +61,12 @@ interface MongooseUserTypes extends Document {
  username: string,
  email: string,
  profile_pic: string|null,
- playlists: Types.ObjectId[]|string[],
- rooms_on: Types.ObjectId[]|string[],
+ library: {
+  type: "Song"|"Playlist",
+  playlist_id?: Types.ObjectId,
+  song_id?: string
+ }[]|[],
+ rooms_on: Types.ObjectId[]|string[]|[],
 }
 interface MongooseRoomTypes extends Document {
  // _id?: Types.ObjectId,
@@ -71,37 +75,68 @@ interface MongooseRoomTypes extends Document {
  active: boolean,
  genres: Types.ObjectId[]|string[],
  is_private: boolean,
- room_access_users: Types.ObjectId[]|string[],
+ room_access_users?: Types.ObjectId[]|string[],
  owned_by: Types.ObjectId|MongooseUserTypes|string,
- session_history: {
-  on_date: DateExpression,
-  songs: Types.ObjectId[]|string[],
- },
- pinned_songs: Types.ObjectId[]|string[],
- pinned_playlists: Types.ObjectId[]|string[],
- upvotes: Types.ObjectId[]|string[]
+//  session_history: {
+//   on_date: DateExpression,
+//   songs: Types.ObjectId[]|string[],
+//  },
+//  pinned_songs: Types.ObjectId[]|string[],
+//  pinned_playlists: Types.ObjectId[]|string[],
+ upvotes: Types.ObjectId[]|string[]|[]
 }
 interface MongoosePlaylistTypes extends Document {
  // _id?: Types.ObjectId,
  name: string,
  owned_by: Types.ObjectId|string,
- songs: Types.ObjectId[]|string[],
+ songs: string[],
 }
-interface MongooseSongTypes extends Document {
- // _id?: Types.ObjectId,
- saavn_id: string,
- name: string,
- image: {
-  quality: string,
-  link: string
- }[],
- song_urls: {
-  quality: string,
-  link: string
- }[],
- primary_artists: String,
- duration: String,
-}
+// interface MongooseSongTypes extends Document {
+//  // _id?: Types.ObjectId,
+//  saavn_id: string,
+//  name: string,
+//  image: {
+//   quality: string,
+//   link: string
+//  }[],
+//  song_urls: {
+//   quality: string,
+//   link: string
+//  }[],
+//  primary_artists: String,
+//  duration: String,
+// }
+
+interface SaavnSongObjectTypes {
+  id: string,
+  name: string,
+  album?: {
+    id: string,
+    name: string,
+    url: string
+  },
+  year?: string,
+  releaseDate?: string,
+  duration?: string,
+  label?: string,
+  primaryArtists?: string,
+  primaryArtistsId?: string,
+  explicitContent?: number,
+  playCount?: number,
+  language?: string,
+  hasLyrics?: string,
+  artist?: string,
+  image: { 
+    quality: string, 
+    link: string 
+  }[],
+  url?: string,
+  copyright?: string,
+  downloadUrl: { 
+    quality: string, 
+    link: string
+  }[]
+ }
 interface MongooseGenreTypes extends Document {
  // _id?: Types.ObjectId,
  type: string
@@ -111,8 +146,9 @@ interface MongooseGenreTypes extends Document {
  * NEXT API ROUTES TYPES  
  * */
 
- interface Data {
-  name: string
+ interface IndexAPIResponseData {
+  type: "API Server for fPlay",
+  status: "Success",
  }
 interface ResponseDataType<X, Y> {
  type: string,
