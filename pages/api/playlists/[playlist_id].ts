@@ -3,9 +3,10 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { Session, unstable_getServerSession } from 'next-auth';
 import  "utils/connect-db";
 import User from 'models/User';
-import { MongoosePlaylistTypes, MongooseUserTypes, ResponseDataType } from 'types';
+import { MongoosePlaylistTypes, MongooseUserTypes, ResponseDataType, SaavnSongObjectTypes } from 'types';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import Playlist from 'models/Playlist';
+import axios from 'axios';
 
 export default async (
   _req: NextApiRequest,
@@ -38,8 +39,24 @@ if(!session) return _res.status(401).redirect("/login")
    
    try {
     const playlist = await Playlist
-      .findById(playlist_id)
-      .populate('songs');
+      .findById(playlist_id);
+
+    const song_ids: string = playlist.songs.join(",");
+
+    const res = await axios
+    .get<{
+      type: string, 
+      results: SaavnSongObjectTypes[]
+    }>(`${process.env.NEXT_PUBLIC_MUSIC_BASEURL}/songs?id=${song_ids}`);
+
+    if(!res.data)
+     throw new Error("Error While fetching Songs Info!!")
+
+    const {
+      results: songs
+    } = res.data;
+
+    playlist.songs = songs;
     
     if(playlist)
      return _res.status(200).json({

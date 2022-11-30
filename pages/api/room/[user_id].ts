@@ -183,7 +183,7 @@ export default async (
      active: active || false,
      genres: genres || [],
      is_private: is_private || false,
-     room_access_users: room_access_users || [] ,
+     room_access_users: room_access_users || [_id] ,
      owned_by: _id,
      session_history: [],
      pinned_playlists: pinned_playlists || [],

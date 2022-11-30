@@ -25,12 +25,12 @@ const User = new Schema<MongooseUserTypes>({
    type: String,
    enum: ["Song", "Playlist"]
   },
-  playlist_id: {
+  playlist: {
    type: Schema.Types.ObjectId,
    ref: 'playlist',
    unique: true
   },
-  song_id: {
+  song: {
    type: String,
    unique: true,
   }

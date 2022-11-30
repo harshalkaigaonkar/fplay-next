@@ -37,7 +37,7 @@ if(!session) return _res.status(401).redirect("/login")
     songs
     }: {
      name?: string,
-     songs?: string[] // Ids,
+     songs?: string[] // Saavn Ids,
     } = body;
 
    try {

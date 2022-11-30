@@ -10,6 +10,7 @@ import {
   MongooseUserTypes, 
   ResponseDataType,
 } from 'types';
+import { Types } from 'mongoose';
 
 export default async (
   _req: NextApiRequest,
@@ -30,7 +31,9 @@ export default async (
 
  const {
   type
- } : Partial<{ type: "add"|"remove" }> = query;
+ } : Partial<{ 
+  type: "add"|"remove" 
+ }> = query;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
 
@@ -45,43 +48,61 @@ export default async (
   // @status    Works Properly
   case "PUT": {
    const {
-    room_id
+    room_id,
+    user_id
+    }: {
+      room_id: string|Types.ObjectId,
+      user_id: string|Types.ObjectId,
     } = body;
 
    try {
 
-    const room: MongooseRoomTypes|null = await Room.findById(room_id);
+    const room: (MongooseRoomTypes & {
+      _id: Types.ObjectId
+    })|null = await Room.findById(room_id);
     
     if(!room) 
      throw new Error("Room Not Found!!");
-    
-    const {
-      room_access_users
-    } = room;
 
-    const user: MongooseUserTypes|null = await User.findOne({email: session.user?.email});
+    const session_user = await User.findOne({email: session.user?.email});
+
+    if(!session_user)
+      throw new Error("Session User Not Found!!")
+
+    if(session_user._id !== room.owned_by)
+      throw new Error("Session User Not Allowed to Add/Remove Anyone!!")
+
+
+    const user = await User.findById(user_id);
+
+    if(!user)
+      throw new Error("User to Add/Remove Not Found!!")
 
     let updated_room: MongooseRoomTypes|null = null;
 
     if(type === "add") {
 
-     if(room_access_users.includes(room_id))
+     if(room.room_access_users.includes(user_id))
       throw new Error('User Already in the Room!!');
 
-     room_access_users.push(room_id);
-
-    }
-    else if (type === 'remove') {
-
-     if(!room_access_users.includes(room_id))
-      throw new Error('User is Not in the Room!!');
-
-     room.room_access_users = room_access_users.splice(room_access_users.indexOf(room_id), 1);
+     room.room_access_users = [
+      ...room.room_access_users,
+      user._id
+     ];
 
     }
     else {
-     throw new Error("Other Types are Not Allowed!!");
+
+     if(!room.room_access_users.includes(user._id))
+      throw new Error('User is Not in the Room!!');
+
+     room.room_access_users = room.room_access_users.splice(room.room_access_users.indexOf(user._id), 1);
+
     }
+
+    const {
+      room_access_users
+    } = user;
 
     updated_room = await Room.findByIdAndUpdate(room_id, {
       room_access_users

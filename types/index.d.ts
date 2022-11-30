@@ -55,17 +55,19 @@ export interface SocketData {
 
 
 // Mongoose DB Types
+
+interface UserLibraryType {
+  type: "Song"|"Playlist",
+  playlist?: Types.ObjectId|MongoosePlaylistTypes,
+  song?: string|SaavnSongObjectTypes
+ }
 interface MongooseUserTypes extends Document {
- // _id: Types.ObjectId,
+//  _id: Types.ObjectId,
  name: string,
  username: string,
  email: string,
  profile_pic: string|null,
- library: {
-  type: "Song"|"Playlist",
-  playlist_id?: Types.ObjectId,
-  song_id?: string
- }[]|[],
+ library: UserLibraryType[]|[],
  rooms_on: Types.ObjectId[]|string[]|[],
 }
 interface MongooseRoomTypes extends Document {
@@ -73,9 +75,9 @@ interface MongooseRoomTypes extends Document {
  name: string,
  desc?: string,
  active: boolean,
- genres: Types.ObjectId[]|string[],
+ genres: Types.ObjectId[]|string[]|[],
  is_private: boolean,
- room_access_users?: Types.ObjectId[]|string[],
+ room_access_users: Types.ObjectId[]|string[]|[],
  owned_by: Types.ObjectId|MongooseUserTypes|string,
 //  session_history: {
 //   on_date: DateExpression,
@@ -89,7 +91,7 @@ interface MongoosePlaylistTypes extends Document {
  // _id?: Types.ObjectId,
  name: string,
  owned_by: Types.ObjectId|string,
- songs: string[],
+ songs: string[]|[],
 }
 // interface MongooseSongTypes extends Document {
 //  // _id?: Types.ObjectId,
@@ -169,7 +171,7 @@ interface ResponseDataType<X, Y> {
 }
 
 interface SuccessRoomsReponse {
-  rooms: MongooseRoomTypes[],
+  rooms: MongooseRoomTypes[]|[],
   limit: number,
   total_entries: number,
   page: number
