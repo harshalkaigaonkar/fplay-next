@@ -109,10 +109,10 @@ import {
      type: "Success",
      data
     });
-   } catch(error) {
+  } catch(error:any) {
     return _res.status(500).json({
      type:"Failure",
-     error,
+     error:error.message.error || error.message,
     })
    }
   }

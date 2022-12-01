@@ -5,7 +5,6 @@ const Playlist = new Schema<MongoosePlaylistTypes>({
  name: {
   type: String,
   required: true,
-  unique: true,
  },
  is_private: {
   type: Boolean,
@@ -19,7 +18,6 @@ const Playlist = new Schema<MongoosePlaylistTypes>({
  songs: [{
   type: String,
   required: true,
-  unique: true
  }]
 },
 {

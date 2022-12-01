@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { Session, unstable_getServerSession } from 'next-auth';
 import  "utils/connect-db";
 import User from 'models/User';
-import { MongoosePlaylistTypes, MongooseUserTypes } from 'types';
+import { MongoosePlaylistTypes } from 'types';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { ResponseDataType } from 'types';
 import Playlist from 'models/Playlist';
@@ -38,16 +38,27 @@ if(!session) return _res.status(401).redirect("/login")
     is_private
     }: {
      name?: string,
-     songs?: string[] // Saavn Ids,
+     songs?: string[]|[] // Saavn Ids,
      is_private?: boolean
     } = body;
 
-   try {
+    try {
+      if(!name)
+        throw new Error('Parameter name in Body is required!!')
+     
+      const user = await User.findOne({email: session.user?.email})
+ 
+     if(!user) 
+      throw new Error('User Not Found!!')
+ 
+      const {
+       _id
+      } = user;
 
     const playlist = await Playlist.findOne({
-      name
+      name,
+      owned_by: _id
     });
-
     
     if(playlist)
     return _res.status(200).json({
@@ -55,14 +66,6 @@ if(!session) return _res.status(401).redirect("/login")
      data: playlist
     });
     
-    const user = await User.findOne({email: session.user?.email})
-
-    if(!user) 
-     throw new Error('User Not Found!!')
-
-     const {
-      _id
-     } = user;
 
     const newPlaylist: HydratedDocument<MongoosePlaylistTypes> = new Playlist({
      name,
@@ -75,11 +78,11 @@ if(!session) return _res.status(401).redirect("/login")
      type: "Success",
      data: newPlaylist
     });
-   } catch(error: unknown) {
+   } catch(error:any) {
     return _res.status(500).json({
      type:"Failure",
-     error,
-    });
+     error:error.message.error || error.message,
+    })
    }
   }
   default: {

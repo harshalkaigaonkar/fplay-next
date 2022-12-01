@@ -50,10 +50,10 @@ if(!session) return _res.status(401).redirect("/login")
 
     throw new Error("No User Found !!");
 
-   } catch (error) {
+  } catch(error:any) {
     return _res.status(500).json({
      type:"Failure",
-     error,
+     error:error.message.error || error.message,
     })
    }
   }

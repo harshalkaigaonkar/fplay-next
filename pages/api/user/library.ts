@@ -13,6 +13,7 @@ import {
 } from 'types';
 import User from 'models/User';
 import axios from 'axios';
+import { Types } from 'mongoose';
 
 export default async (
   _req: NextApiRequest,
@@ -43,15 +44,19 @@ export default async (
   // @access    Private
   // @status    Works Properly
   case "GET": {
-   try {
+    try {
 
     const user = await User
       .findOne({
         email: session.user?.email
       })
-      .populate("library.playlist");
 
-      console.log("User: \n Check Once due to parsing of null p_ids", user)
+    if(user.library.length > 0 && user.library.find((lib: UserLibraryType) => lib.type === "Playlist"))
+      {
+        await user.populate("library.playlist");
+      }
+
+    console.log("User: \n Check Once due to parsing of null p_ids", user)
     
     if(!user) 
      throw new Error("User Not Found!!");
@@ -63,18 +68,32 @@ export default async (
         return media.song;
      }).join(",");
 
-    const res = await axios
+    if(song_ids === "")
+    return _res.status(200).json({
+      type: "Success",
+      data: user.library,
+     });
+
+    const {data} = await axios
     .get<{
-      type: string, 
-      results: SaavnSongObjectTypes[]
+      status: string, 
+      results?: SaavnSongObjectTypes[],
+      message?: string
     }>(`${process.env.NEXT_PUBLIC_MUSIC_BASEURL}/songs?id=${song_ids}`);
 
-    if(!res.data)
+    if(!data)
      throw new Error("Error While fetching Songs Info!!")
+
+    if(data.status === "FAILED")
+      throw new Error(`${data.message}`);      
+
 
     const {
       results: songs
-    } = res.data;
+    } = data;
+
+    if(!songs)
+      throw new Error("No Songs Found!!")
 
 
     user.library = user.library.map((media: UserLibraryType) => {
@@ -89,17 +108,17 @@ export default async (
      type: "Success",
      data: user.library,
     });
-   } catch(error) {
+  } catch(error:any) {
     return _res.status(500).json({
      type:"Failure",
-     error,
+     error:error.message.error || error.message,
     })
    }
   }
   // @route     POST api/room/library?type="add"|"remove"
   // @desc      Add to/Remove From User's Library
   // @access    Private
-  // @status    Works Properly
+  // @Left    Check for Song Id to be in Saavn's DB 
   case "POST": {
 
     const {
@@ -110,10 +129,27 @@ export default async (
 
     // For Addition/Deletion, both type and song|playlist is required 
     const  {
-      library
-    }: {
-      library: UserLibraryType
-    } = body;
+      type: media_type,
+      song, // jiosaavn song Id
+      playlist
+    }: UserLibraryType = body;
+
+    if(!type && !media_type && !song && !playlist)
+      throw new Error("Parameter and Body Not Proper!!")
+
+    const library = media_type === "Song" ? {
+      type: media_type,
+      song
+    } : {
+      type: media_type,
+      playlist
+    }
+
+    // if(media_type === "Song") {
+    //   console.log(`${process.env.NEXT_PUBLIC_MUSIC_BASEURL}/songs?id=${song}`)
+    //   const {status, data} = await axios.get(`${process.env.NEXT_PUBLIC_MUSIC_BASEURL}/songs?id=${song}`);
+    //   console.log(status, data)
+    // }
 
     try {
  
@@ -126,7 +162,9 @@ export default async (
       throw new Error("User Not Found!!");
  
      if(type === 'add') {
-      if(user.library.includes(library))
+      if(user.library.find((lib: (UserLibraryType & {
+        _id: Types.ObjectId
+      })) => media_type === "Song" ? lib.song === song : lib.playlist === playlist))
         throw new Error("Song/Playlist Already Added!!")
 
       user
@@ -135,11 +173,13 @@ export default async (
         ...user.library
        ]
      } else {
-      if(!user.library.includes(library))
+      if(!user.library.find((lib: (UserLibraryType & {
+        _id: Types.ObjectId
+      })) => media_type === "Song" ? lib.song === song : lib.playlist === playlist))
         throw new Error("Song/Playlist Not Found to Remove!!")
 
       user
-      .library
+      .library 
       .splice(
         user.library
         .findIndex(
@@ -150,21 +190,23 @@ export default async (
         ), 1);
      }
 
-     const updated_user = await User.findByIdAndUpdate(user._id, user);
+     const updated_user = await User.findByIdAndUpdate(user._id, { $set: {
+      library: user.library
+     } }, {new: true, select: "library"});
      
      if(!updated_user)
       throw new Error("User's Library was not Updated!!")
 
      return _res.status(200).json({
       type: "Success",
-      data: updated_user,
+      data: updated_user.library,
      });
-    } catch(error) {
-     return _res.status(500).json({
-      type:"Failure",
-      error,
-     })
-    }
+    } catch(error:any) {
+      return _res.status(500).json({
+       type:"Failure",
+       error:error.message.error || error.message,
+      })
+     }
    }
   default: {
    _res.setHeader("Allow", ["GET", "POST"]);

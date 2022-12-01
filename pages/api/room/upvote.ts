@@ -167,12 +167,12 @@ export default async (
       type: "Success",
       data: updated_room,
      });
-    } catch(error) {
-     return _res.status(500).json({
-      type:"Failure",
-      error,
-     })
-    }
+    } catch(error:any) {
+      return _res.status(500).json({
+       type:"Failure",
+       error:error.message.error || error.message,
+      })
+     }
    }
   default: {
    _res.setHeader("Allow", ["POST"]);

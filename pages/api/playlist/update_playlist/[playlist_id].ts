@@ -111,11 +111,11 @@ if(!session) return _res.status(401).redirect("/login")
      type: "Success",
      data: updated_playlist
     });
-   } catch(error: unknown) {
-    return _res.status(500).json({
-     type:"Failure",
-     error,
-    });
+    } catch(error:any) {
+      return _res.status(500).json({
+      type:"Failure",
+      error:error.message.error || error.message,
+      })
    }
   }
   default: {
