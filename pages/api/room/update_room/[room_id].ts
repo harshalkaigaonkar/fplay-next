@@ -15,6 +15,7 @@ import {
 interface UpdateRoomObject {
   name?: string,
   desc?: string,
+  icon?: string,
   active?: boolean,
   is_private?: boolean,
  }
@@ -38,7 +39,9 @@ export default async (
 
  const {
   room_id
- } = query;
+ } : Partial<{
+  room_id: string
+ }>= query;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
 
@@ -55,11 +58,14 @@ export default async (
    
    const {
     update_room
+   }: {
+    update_room: MongooseRoomTypes
    } = body;
 
    const {
     name,
     desc,
+    icon,
     active,
     is_private,
    } = update_room;
@@ -70,6 +76,8 @@ export default async (
     update_room_obj.name = name;
    if(desc) 
     update_room_obj.desc = desc;
+   if(icon) 
+    update_room_obj.icon = icon;
    if(active) 
     update_room_obj.active = active;
    if(is_private) 
@@ -79,7 +87,7 @@ export default async (
     // Check on types here
     const room = await Room
      .findById(room_id)
-     .populate("owned_by");
+     .populate("owned_by genres upvotes");
     
     if(!room)
       throw new Error("No Room Found!!")

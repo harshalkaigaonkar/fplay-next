@@ -40,7 +40,7 @@ export default async (
  if(!session) return _res.status(401).redirect("/login")
 
  switch(method) {
-  // @route     POST api/genre?type
+  // @route     POST api/genre?type=string
   // @desc      Adds/returns Genres 
   // @access    Private
   // @status    Works Properly

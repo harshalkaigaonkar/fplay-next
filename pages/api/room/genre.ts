@@ -10,6 +10,7 @@ import {
   MongooseRoomTypes,
   ResponseDataType,
 } from 'types';
+import axios from 'axios';
 
 export default async (
   _req: NextApiRequest,
@@ -29,9 +30,11 @@ export default async (
  } = _req;
 
  const {
-  type
+  type,
+  name
  } : Partial<{ 
   type: "add"|"remove",
+  name: string
  }> = query;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
@@ -41,14 +44,15 @@ export default async (
  if(!session) return _res.status(401).redirect("/login")
 
  switch(method) {
-  // @route     POST api/room/genre?type="add"/"remove"
+  // @route     POST api/room/genre?name="string"&type="add"/"remove"
   // @desc      Manipulate Genres to Add/Remove w.r.t Room 
   // @access    Private
   // @status    Works Properly
   case "PUT": {
    const {
-    room_id,
-    genre_id
+    room_id
+    }: {
+     room_id: string,
     } = body;
 
    try {
@@ -57,32 +61,42 @@ export default async (
     
     if(!room) 
      throw new Error("Room Not Found!!");
-    
-    const {
-      genres
-    } = room;
 
-    const genre: MongooseGenreTypes|null = await Genre.findById(genre_id);
+    let genre: MongooseGenreTypes|null = await Genre.findOne({
+     type: name
+    });
 
-    if(!genre)
-    throw new Error("Genre Not Found!!")
+    if(!genre) {
+     const {data} = await axios
+      .post<MongooseGenreTypes>(
+       `${process.env.NEXTAUTH_URL}/api/genre?type=${name}`
+       );
+     
+     if(!data)
+     throw new Error("Genre Cannot be Added!!")
+     
+     genre = data;
+    }
 
     let updated_room: MongooseRoomTypes|null = null;
 
     if(type === "add") {
 
-     if(genres.includes(genre_id))
+     if(room.genres.includes(genre._id))
       throw new Error('Genre Already Attached to the Room!!');
 
-     genres.push(genre_id);
+     room.genres = [
+      ...room.genres,
+      genre._id,
+     ];
 
     }
     else if (type === 'remove') {
 
-     if(!genres.includes(genre_id))
+     if(!room.genres.includes(genre._id))
       throw new Error('Genre is Not Attached to the Room!!');
 
-     room.genres = genres.splice(genres.indexOf(genre_id), 1);
+     room.genres = room.genres.splice(room.genres.indexOf(genre._id), 1);
 
     }
     else {
@@ -90,7 +104,7 @@ export default async (
     }
 
     updated_room = await Room.findByIdAndUpdate(room_id, {
-     genres,
+     genres: room.genres,
     });
 
     if(!updated_room)

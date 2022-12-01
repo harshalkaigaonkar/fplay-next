@@ -1,3 +1,4 @@
+import { ramdomEmojiText } from 'helpers';
 import mongoose, { Schema, model, models } from 'mongoose';
 import { MongooseRoomTypes } from 'types';
 
@@ -11,10 +12,13 @@ const Room = new Schema<MongooseRoomTypes>({
   type: String,
   default: "Join this Music Group!!"
  },
+ icon: {
+  type: String,
+  default: ramdomEmojiText()
+ },
  active: {
   type: Boolean,
   required: true,
-  unique: true,
   default: true
  },
  genres: [{
@@ -29,11 +33,12 @@ const Room = new Schema<MongooseRoomTypes>({
   unique: true,
   default: false
  },
- room_access_users: [{
-  type: Schema.Types.ObjectId,
-  ref: 'user',
-  unique: true
- }],
+ // Later will take care of this
+ // room_access_users: [{
+ //  type: Schema.Types.ObjectId,
+ //  ref: 'user',
+ //  unique: true
+ // }],
  owned_by: {
   type: Schema.Types.ObjectId,
   ref: "user"

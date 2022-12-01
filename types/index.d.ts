@@ -58,26 +58,27 @@ export interface SocketData {
 
 interface UserLibraryType {
   type: "Song"|"Playlist",
-  playlist?: Types.ObjectId|MongoosePlaylistTypes,
+  playlist?: Types.ObjectId|string|MongoosePlaylistTypes,
   song?: string|SaavnSongObjectTypes
  }
 interface MongooseUserTypes extends Document {
-//  _id: Types.ObjectId,
+ _id: never,
  name: string,
  username: string,
  email: string,
  profile_pic: string|null,
  library: UserLibraryType[]|[],
- rooms_on: Types.ObjectId[]|string[]|[],
+//  rooms_on: Types.ObjectId[]|string[]|[],
 }
 interface MongooseRoomTypes extends Document {
- // _id?: Types.ObjectId,
+ _id: never,
  name: string,
  desc?: string,
+ icon?: string,
  active: boolean,
- genres: Types.ObjectId[]|string[]|[],
+ genres: Types.ObjectId[]|string[]|MongooseGenreTypes[]|[],
  is_private: boolean,
- room_access_users: Types.ObjectId[]|string[]|[],
+//  room_access_users: Types.ObjectId[]|string[]|[],
  owned_by: Types.ObjectId|MongooseUserTypes|string,
 //  session_history: {
 //   on_date: DateExpression,
@@ -85,16 +86,17 @@ interface MongooseRoomTypes extends Document {
 //  },
 //  pinned_songs: Types.ObjectId[]|string[],
 //  pinned_playlists: Types.ObjectId[]|string[],
- upvotes: Types.ObjectId[]|string[]|[]
+ upvotes: Types.ObjectId[]|[]
 }
 interface MongoosePlaylistTypes extends Document {
- // _id?: Types.ObjectId,
+ _id: never,
  name: string,
- owned_by: Types.ObjectId|string,
- songs: string[]|[],
+ is_private: boolean,
+ owned_by: Types.ObjectId|string|MongooseUserTypes,
+ songs: string[]|SaavnSongObjectTypes[]|[],
 }
 // interface MongooseSongTypes extends Document {
-//  // _id?: Types.ObjectId,
+//  // _id: never
 //  saavn_id: string,
 //  name: string,
 //  image: {
@@ -140,7 +142,7 @@ interface SaavnSongObjectTypes {
   }[]
  }
 interface MongooseGenreTypes extends Document {
- // _id?: Types.ObjectId,
+ _id: never,
  type: string
 }
 
@@ -162,16 +164,18 @@ interface ResponseDataType<X, Y> {
  * ROOM APIs INterfaces and Types
  */
 
- interface GetRoomsBody {
+ interface GetBodyMoreThanOne {
   active?: boolean, 
   sort_by?: "date:asc"|"date:desc"|"upvotes:asc"|"upvotes:desc", 
+  owned_by?: string,
   search_query?: string, 
   page: number, 
   limit: number
 }
 
-interface SuccessRoomsReponse {
-  rooms: MongooseRoomTypes[]|[],
+interface SuccessRoomsReponse<T> {
+  rooms?: T[]|[],
+  playlists?: T[]|[],
   limit: number,
   total_entries: number,
   page: number
@@ -179,6 +183,7 @@ interface SuccessRoomsReponse {
 
 interface FindRoomsCondition {
   is_private: boolean,
+  owned_by?: string,
   active?: boolean
 }
 

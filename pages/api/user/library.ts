@@ -2,8 +2,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Session, unstable_getServerSession } from 'next-auth';
 import  "utils/connect-db"
-import Room from 'models/Room';
-import Playlist from 'models/Playlist';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import {
   MongoosePlaylistTypes,
@@ -14,7 +12,6 @@ import {
   UserLibraryType,
 } from 'types';
 import User from 'models/User';
-import { Types } from 'mongoose';
 import axios from 'axios';
 
 export default async (
@@ -41,7 +38,7 @@ export default async (
  if(!session) return _res.status(401).redirect("/login")
 
  switch(method) {
-  // @route     GET api/room/library
+  // @route     GET api/user/library
   // @desc      Get User's Library
   // @access    Private
   // @status    Works Properly

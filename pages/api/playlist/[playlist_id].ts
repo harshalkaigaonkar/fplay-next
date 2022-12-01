@@ -22,7 +22,9 @@ export default async (
 
  const {
   playlist_id,
-} = query;
+}: Partial<{
+  playlist_id: string
+}> = query;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
 
@@ -64,7 +66,7 @@ if(!session) return _res.status(401).redirect("/login")
       data: playlist
      });
 
-    throw new Error("No User Found !!");
+    throw new Error("No Playlist Found !!");
 
    } catch (error) {
     return _res.status(500).json({
@@ -73,57 +75,57 @@ if(!session) return _res.status(401).redirect("/login")
     })
    }
   }
-  // @route     PUT api/playlists/:playlist_id
-  // @desc      Update Playlists's Info (Name, owned_by)
-  // @access    Private
-  // @status    Works Properly
-  case "PUT": {
-    const {
-      name,
-      to_own
-    }: {
-     name?: string,
-     to_own?: string,
-    } = body;
+  // // @route     PUT api/playlists/:playlist_id
+  // // @desc      Update Playlists's Info (Name, owned_by)
+  // // @access    Private
+  // // @status    Works Properly
+  // case "PUT": {
+  //   const {
+  //     name,
+  //     to_own,
+  //   }: {
+  //    name?: string,
+  //    to_own?: string,
+  //   } = body;
     
-    /**
-     * selected to Options for Updation 
-     * only these body props are allowed
-     */
+  //   /**
+  //    * selected to Options for Updation 
+  //    * only these body props are allowed
+  //    */
 
-    const update_playlist_obj: {
-     owned_by?: string;
-     name?: string,
-    } = {};
+  //   const update_playlist_obj: {
+  //    owned_by?: string;
+  //    name?: string,
+  //   } = {};
 
-    if(name) 
-      update_playlist_obj.name = name;
-    if(to_own) 
-      update_playlist_obj.owned_by = to_own;
+  //   if(name) 
+  //     update_playlist_obj.name = name;
+  //   if(to_own) 
+  //     update_playlist_obj.owned_by = to_own;
     
-    try {
+  //   try {
     
-      const user= 
-      await User.findById(to_own);
+  //     const user= 
+  //     await User.findById(to_own);
 
-    if(!user)
-      throw new Error("No User Found to Transfer Playlist!!")
+  //   if(!user)
+  //     throw new Error("No User Found to Transfer Playlist!!")
 
 
-    const updated_playlist = await Playlist.findByIdAndUpdate(playlist_id, update_playlist_obj);
-    return _res.status(204).json({
-      type: "Success",
-      data: updated_playlist
-    })
-  } catch(error) {
-    return _res.status(500).json({
-     type:"Failure",
-     error,
-    })
-   }
-  }
+  //   const updated_playlist = await Playlist.findByIdAndUpdate(playlist_id, update_playlist_obj);
+  //   return _res.status(204).json({
+  //     type: "Success",
+  //     data: updated_playlist
+  //   })
+  // } catch(error) {
+  //   return _res.status(500).json({
+  //    type:"Failure",
+  //    error,
+  //   })
+  //  }
+  // }
   default: {
-   _res.setHeader("Allow", ["GET", "PUT"]);
+   _res.setHeader("Allow", ["GET"]);
 			return _res
 				.status(405)
 				.json({ 

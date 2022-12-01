@@ -54,12 +54,11 @@ export default async (
      });
 
     const newUser: HydratedDocument<MongooseUserTypes> = new User({
-     name: name,
-     username: (given_name + "_" + family_name).toLowerCase(),
-     email: email,
+     name,
+     username: "@" + (given_name + family_name + Math.floor(Math.random() * 50)).toLowerCase(),
+     email,
      profile_pic: picture,
      library: [],
-     rooms_on: []
     });
     await newUser.save();
     return _res.status(201).json({

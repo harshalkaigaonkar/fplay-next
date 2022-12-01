@@ -8,19 +8,18 @@ import User from 'models/User';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { 
   FindRoomsCondition, 
-  GetRoomsBody, 
+  GetBodyMoreThanOne, 
   MongooseRoomTypes, 
   ResponseDataType, 
-  SortRoomsConditionType, 
-  SuccessRoomsReponse 
+  SortRoomsConditionType,
+  SuccessRoomsReponse,
 } from 'types';
 
 export default async (
   _req: NextApiRequest,
   _res: NextApiResponse<
     ResponseDataType<
-      SuccessRoomsReponse|
-      MongooseRoomTypes, 
+      SuccessRoomsReponse<MongooseRoomTypes>, 
       unknown
     >
   >
@@ -36,7 +35,10 @@ export default async (
  const {
   user_id, 
   room_id
-} = query;
+}: Partial<{
+  user_id: string,
+  room_id: string,
+}> = query;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
 
@@ -58,15 +60,13 @@ export default async (
       search_query, 
       page = 1, 
       limit = 10
-    }: GetRoomsBody = body;
+    }: GetBodyMoreThanOne = body;
     
     try {
  
-    const find_condition: (FindRoomsCondition & {
-      room_access_users: string[],
-     }) = {
+    const find_condition: FindRoomsCondition = {
      is_private: true,
-     room_access_users: [`${user_id}`]
+    //  room_access_users: [`${user_id}`]
     }
  
     const total_entries: number = await Room.find(find_condition).count();
@@ -116,7 +116,7 @@ export default async (
       .skip(skip_entries)
       .limit(limit);
 
-      const data: SuccessRoomsReponse = {
+      const data: SuccessRoomsReponse<MongooseRoomTypes> = {
         rooms,
         limit,
         total_entries,
@@ -134,77 +134,79 @@ export default async (
      })
     }
    }
-  // @route     POST api/room/:user_id
-  // @desc      Create a New Room for Session User
-  // @access    Private
-  // @status    Works Properly
-  case "POST": {
-   const {
-    room
-    } = body;
-   // room database object with options
-   const {
-    name,
-    desc,
-    active,
-    genres,
-    is_private,
-    room_access_users,
-    // owned_by, // would be from session's User ID.
-    // later use of owned_by is for Groups
-    // session_history, // would be empty initially
-    pinned_playlists,
-    pinned_songs,
-    // upvotes, // would be empty array initially
-   } = room;
+  // // @route     POST api/room/:user_id
+  // // @desc      Create a New Room for Session User
+  // // @access    Private
+  // // @status    Works Properly
+  // case "POST": {
+  //  const {
+  //   room
+  //   } = body;
+  //  // room database object with options
+  //  const {
+  //   name,
+  //   desc,
+  //   active,
+  //   genres,
+  //   is_private,
+  //   // Taken care from room's POV
+  //   // room_access_users,
+  //   // owned_by, // would be from session's User ID.
+  //   // later use of owned_by is for Groups
+  //   // session_history, // would be empty initially
+  //   // Changed to Library
+  //   // pinned_playlists,
+  //   // pinned_songs,
+  //   // upvotes, // would be empty array initially
+  //  } = room;
 
-   try {
+  //  try {
 
-    if(!name) 
-      throw new Error("Name For Room is Required !!");
+  //   if(!name) 
+  //     throw new Error("Name For Room is Required !!");
 
-    const user = await User.findById(user_id);
+  //   const user = await User.findById(user_id);
     
-    if(!user) 
-     throw new Error("User Not Found!!");
+  //   if(!user) 
+  //    throw new Error("User Not Found!!");
     
-    const {
-      _id
-    } = user;
+  //   const {
+  //     _id
+  //   } = user;
 
-    const room: MongooseRoomTypes|null = await Room.findOne({name});
+  //   const room: MongooseRoomTypes|null = await Room.findOne({name});
     
-    if(room) 
-      throw new Error("Room Already Exists!!");
+  //   if(room) 
+  //     throw new Error("Room Already Exists!!");
 
-    const newRoom: HydratedDocument<MongooseRoomTypes> = new Room({
-     name,
-     desc: desc || "",
-     active: active || false,
-     genres: genres || [],
-     is_private: is_private || false,
-     room_access_users: room_access_users || [_id] ,
-     owned_by: _id,
-     session_history: [],
-     pinned_playlists: pinned_playlists || [],
-     pinned_songs: pinned_songs || [],
-     upvotes: []
-    });
-    await newRoom.save();
+  //   const newRoom: HydratedDocument<MongooseRoomTypes> = new Room({
+  //    name,
+  //    desc: desc || "Join this Music Group!!",
+  //    active: active || false,
+  //    genres: genres || [],
+  //    is_private: is_private || false,
+  //   //  room_access_users: room_access_users || [_id] ,
+  //    owned_by: _id,
+  //    session_history: [],
+  //   //  pinned_playlists: pinned_playlists || [],
+  //   //  pinned_songs: pinned_songs || [],
+  //    upvotes: []
+  //   });
+  //   await newRoom.save();
 
-    return _res.status(201).json({
-     type: "Success",
-     data: newRoom
-    });
-   } catch(error) {
-    return _res.status(500).json({
-     type:"Failure",
-     error,
-    })
-   }
-  }
+  //   return _res.status(201).json({
+  //    type: "Success",
+  //    data: newRoom
+  //   });
+  //  } catch(error) {
+  //   return _res.status(500).json({
+  //    type:"Failure",
+  //    error,
+  //   })
+  //  }
+  // }
   default: {
-   _res.setHeader("Allow", ["GET", "POST"]);
+   _res.setHeader("Allow", ["GET"]);
 			return _res
 				.status(405)
 				.json({ 

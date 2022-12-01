@@ -28,16 +28,18 @@ if(!session) return _res.status(401).redirect("/login")
  switch(method) {
   // @route     POST api/playlists
   // @desc      Create a New Playlist
-  // @access    Private (But Publically Accessible)
+  // @access    Private
   // @status    Works Properly
   case "POST": {
 
    const { 
     name,
-    songs
+    songs,
+    is_private
     }: {
      name?: string,
      songs?: string[] // Saavn Ids,
+     is_private?: boolean
     } = body;
 
    try {
@@ -65,6 +67,7 @@ if(!session) return _res.status(401).redirect("/login")
     const newPlaylist: HydratedDocument<MongoosePlaylistTypes> = new Playlist({
      name,
      owned_by: _id,
+     is_private: is_private || false,
      songs: songs || []
     });
     await newPlaylist.save();

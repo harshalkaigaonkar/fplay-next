@@ -35,12 +35,13 @@ const User = new Schema<MongooseUserTypes>({
    unique: true,
   }
  }],
- rooms_on: [{
-  type: Schema.Types.ObjectId,
-  ref: 'room',
-  unique: true,
-  required: true,
- }]
+ // Keeping a Check on Rooms rather than on Users
+ // rooms_on: [{
+ //  type: Schema.Types.ObjectId,
+ //  ref: 'room',
+ //  unique: true,
+ //  required: true,
+ // }]
 },
 {
  timestamps: true

@@ -3,20 +3,22 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import  "utils/connect-db";
 import Room from 'models/Room';
 import { 
-  FindRoomsCondition, 
+  FindRoomsCondition as FindPlaylistCondition, 
   GetBodyMoreThanOne, 
+  MongoosePlaylistTypes, 
   MongooseRoomTypes, 
   ResponseDataType, 
   SortRoomsConditionType, 
   SuccessRoomsReponse 
 } from 'types';
+import Playlist from 'models/Playlist';
 
 
  export default async (
   _req: NextApiRequest,
   _res: NextApiResponse<
     ResponseDataType<
-      SuccessRoomsReponse<MongooseRoomTypes>, 
+      SuccessRoomsReponse<MongoosePlaylistTypes>, 
       unknown
       >
     >
@@ -28,16 +30,16 @@ import {
  } = _req;
 
  switch(method) {
-  // @route     GET api/room/public_rooms
-  // @desc      Get All Public Rooms According to various Filters
+  // @route     GET api/playlist/public_playlists
+  // @desc      Get All Public PLaylists According to various Filters
   // @access    Public
   // @status    Works Properly with filter and pagination
   // @left      search Query
   case "GET": {
 
    const {
-    active, 
     sort_by, 
+    owned_by,
     search_query, 
     page = 1, 
     limit = 10
@@ -45,11 +47,11 @@ import {
    
    try {
 
-   const find_condition: FindRoomsCondition = {
+   const find_condition: FindPlaylistCondition = {
     is_private: false,
    }
 
-   const total_entries: number = await Room.find<FindRoomsCondition|any>(find_condition).count();
+   const total_entries: number = await Playlist.find<FindPlaylistCondition>(find_condition).count();
    
    let skip_entries: number = 0;
 
@@ -60,9 +62,6 @@ import {
   ) {
     skip_entries = limit * (page-1);
    }
-
-   if(typeof active === 'boolean')
-   find_condition.active = active;
    
    const sort_condition: SortRoomsConditionType = {};
    
@@ -79,27 +78,30 @@ import {
      sort_condition.createdAt = 'desc';
      break;
     }
-    case "upvotes:asc": {
-     sort_condition.upvotes = 'asc';
-     break;
-    }
-    case "upvotes:desc": {
-     sort_condition.upvotes = 'desc';
-     break;
-    }
+    // case "upvotes:asc": {
+    //  sort_condition.upvotes = 'asc';
+    //  break;
+    // }
+    // case "upvotes:desc": {
+    //  sort_condition.upvotes = 'desc';
+    //  break;
+    // }
     default : {
     }
    }
+
+   if(owned_by)
+    find_condition.owned_by = owned_by;
     
-    const rooms: MongooseRoomTypes[] = 
-     await Room
+    const playlists: MongoosePlaylistTypes[] = 
+     await Playlist
      .find(find_condition)
      .sort(sort_condition)
      .skip(skip_entries)
      .limit(limit);
 
-     const data: SuccessRoomsReponse<MongooseRoomTypes> = {
-      rooms,
+     const data: SuccessRoomsReponse<MongoosePlaylistTypes> = {
+      playlists,
       limit,
       total_entries,
       page

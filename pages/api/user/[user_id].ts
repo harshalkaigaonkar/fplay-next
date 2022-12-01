@@ -20,7 +20,9 @@ export default async (
 
  const {
   user_id,
-} = query;
+}: Partial<{
+  user_id: string
+}> = query;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
 
@@ -60,20 +62,17 @@ if(!session) return _res.status(401).redirect("/login")
   // @access    Private
   // @status    Works Properly
   case "PUT": {
+    
     const {
-      update_profile
+      name, 
+      username, 
+      email,
     } = body;
     
     /**
      * selected to Options for Updation 
      * only these body props are allowed
      */
-
-    const {
-      name, 
-      username, 
-      email,
-    } = update_profile;
 
     const update_profile_obj: {
       name?: string,
@@ -86,7 +85,7 @@ if(!session) return _res.status(401).redirect("/login")
     if(email) 
       update_profile_obj.email = email;
     if(username)
-      update_profile_obj.username = username;
+      update_profile_obj.username = "@" + username;
     
     try {
 
@@ -98,7 +97,11 @@ if(!session) return _res.status(401).redirect("/login")
       throw new Error("No User Found to Update Details!!")
 
     const updated_user = await User.findByIdAndUpdate(user_id, update_profile_obj);
-    return _res.status(204).json({
+
+    if(!updated_user)
+      throw new Error("User Not Updated!!");
+
+    return _res.status(201).json({
       type: "Success",
       data: updated_user
     })

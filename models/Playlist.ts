@@ -7,6 +7,11 @@ const Playlist = new Schema<MongoosePlaylistTypes>({
   required: true,
   unique: true,
  },
+ is_private: {
+  type: Boolean,
+  required: true,
+  default: false
+ },
  owned_by: {
   type: Schema.Types.ObjectId,
   ref: 'user'

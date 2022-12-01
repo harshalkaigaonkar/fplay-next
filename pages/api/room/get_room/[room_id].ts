@@ -36,18 +36,19 @@ export default async (
   // @access    Private
   // @status    Works Properly
   case "GET": {
-
    
    const {
     room_id
-   } = query;
+   }: Partial<{
+    room_id: string
+   }> = query;
    
    try {
     
     const data = 
      await Room
      .findById(room_id)
-     .populate("owned_by");
+     .populate("owned_by genres upvotes"); // check this
     
     if(!data)
      throw new Error("No Room Found!!")
