@@ -4,7 +4,7 @@ import  "utils/connect-db";
 import Room from 'models/Room';
 import { 
   FindRoomsCondition, 
-  GetBodyMoreThanOne, 
+  GetParamsMoreThanOne, 
   MongooseRoomTypes, 
   ResponseDataType, 
   SortRoomsConditionType, 
@@ -25,6 +25,7 @@ import {
  const {
   method,
   body,
+  query
  } = _req;
 
  switch(method) {
@@ -41,7 +42,7 @@ import {
     search_query, 
     page = 1, 
     limit = 10
-  }: GetBodyMoreThanOne = body;
+  }: Partial<GetParamsMoreThanOne> = body;
    
    try {
 

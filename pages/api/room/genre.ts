@@ -11,6 +11,7 @@ import {
   ResponseDataType,
 } from 'types';
 import axios from 'axios';
+import { HydratedDocument, Types } from 'mongoose';
 
 export default async (
   _req: NextApiRequest,
@@ -31,10 +32,10 @@ export default async (
 
  const {
   type,
-  name
+  genre
  } : Partial<{ 
   type: "add"|"remove",
-  name: string
+  genre: string
  }> = query;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
@@ -44,11 +45,11 @@ export default async (
  if(!session) return _res.status(401).redirect("/login")
 
  switch(method) {
-  // @route     POST api/room/genre?name="string"&type="add"/"remove"
+  // @route     POST api/room/genre?genre="string"&type="add"/"remove"
   // @desc      Manipulate Genres to Add/Remove w.r.t Room 
   // @access    Private
   // @status    Works Properly
-  case "PUT": {
+  case "POST": {
    const {
     room_id
     }: {
@@ -57,54 +58,72 @@ export default async (
 
    try {
 
-    const room: MongooseRoomTypes|null = await Room.findById(room_id);
+    if(Object.keys(body).length === 0)
+      throw new Error('Body is required for this Call!!')
+
+    const room = await Room.findById(room_id);
     
     if(!room) 
      throw new Error("Room Not Found!!");
 
-    let genre: MongooseGenreTypes|null = await Genre.findOne({
-     type: name
+    let genre_obj = await Genre.findOne({
+     type: genre
     });
 
-    if(!genre) {
-     const {data} = await axios
-      .post<MongooseGenreTypes>(
-       `${process.env.NEXTAUTH_URL}/api/genre?type=${name}`
-       );
-     
+    if(!genre_obj) {
+     const data: HydratedDocument<MongooseGenreTypes> = new Genre({
+      type: genre
+     })
+
+     await data.save()
+
      if(!data)
      throw new Error("Genre Cannot be Added!!")
      
-     genre = data;
+     genre_obj = data;
     }
 
-    let updated_room: MongooseRoomTypes|null = null;
+    const update_room_obj: {
+      genres?: Types.ObjectId[]|string[]
+    } = {};
+
+    const {
+      _id
+    } = genre_obj;
 
     if(type === "add") {
 
-     if(room.genres.includes(genre._id))
+     if(room.genres.includes(_id.toString()))
       throw new Error('Genre Already Attached to the Room!!');
 
-     room.genres = [
+      update_room_obj.genres = [
       ...room.genres,
-      genre._id,
+      _id.toString(),
      ];
 
     }
     else if (type === 'remove') {
 
-     if(!room.genres.includes(genre._id))
+     if(!room.genres.includes(_id.toString()))
       throw new Error('Genre is Not Attached to the Room!!');
 
-     room.genres = room.genres.splice(room.genres.indexOf(genre._id), 1);
-
+      update_room_obj.genres = room.genres
+      ?.filter(
+        (genre: Types.ObjectId) => 
+          genre.toString() !== _id.toString()
+        );
     }
     else {
      throw new Error("Other Types are Not Allowed!!");
     }
 
-    updated_room = await Room.findByIdAndUpdate(room_id, {
-     genres: room.genres,
+    const updated_room = await Room.findByIdAndUpdate(room_id, {
+      $set: {
+        genres: update_room_obj.genres,
+       }
+    },{
+      new: true,
+      select: "genres"
     });
 
     if(!updated_room)
@@ -112,7 +131,7 @@ export default async (
 
     return _res.status(201).json({
      type: "Success",
-     data: updated_room
+     data: updated_room.genres
     });
   } catch(error:any) {
     return _res.status(500).json({
@@ -122,7 +141,7 @@ export default async (
    }
   }
   default: {
-   _res.setHeader("Allow", ["PUT"]);
+   _res.setHeader("Allow", ["POST"]);
 			return _res
 				.status(405)
 				.json({ 

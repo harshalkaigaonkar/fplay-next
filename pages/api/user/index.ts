@@ -58,8 +58,8 @@ export default async (
      username: "@" + (given_name + family_name + Math.floor(Math.random() * 50)).toLowerCase(),
      email,
      profile_pic: picture,
-     library: [],
     });
+    console.log(newUser)
     await newUser.save();
     return _res.status(201).json({
      type: "Success",

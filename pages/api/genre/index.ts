@@ -48,7 +48,7 @@ export default async (
 
    try {
 
-    const genre: MongooseGenreTypes|null = await Genre.findOne({type});
+    const genre = await Genre.findOne({type});
     
     if(genre)
     return _res

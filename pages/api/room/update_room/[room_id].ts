@@ -55,12 +55,6 @@ export default async (
   // @access    Private
   // @status    Works Properly, Need Some Types to be defined (line:80)
   case "PUT": {
-   
-   const {
-    update_room
-   }: {
-    update_room: MongooseRoomTypes
-   } = body;
 
    const {
     name,
@@ -68,7 +62,13 @@ export default async (
     icon,
     active,
     is_private,
-   } = update_room;
+   }: UpdateRoomObject = body;
+
+   if(Object.keys(body).length === 0)
+    return _res.status(400).json({
+      type: "Failure",
+      error: "Body is required for this Call!!"
+    })
 
    const update_room_obj : UpdateRoomObject = {};
 
@@ -87,15 +87,25 @@ export default async (
     // Check on types here
     const room = await Room
      .findById(room_id)
-     .populate("owned_by genres upvotes");
-    
+     
     if(!room)
       throw new Error("No Room Found!!")
 
+    const populate_array: string[] = [];
+    
+    if(room.owned_by)
+      populate_array.push("owned_by");
+   
+    await room.populate(populate_array.join(" "));
+    
     if(room.owned_by.email !== session.user?.email)
       throw new Error("You Cannot Update the Details");
 
-    const data: MongooseRoomTypes|null = await Room.findByIdAndUpdate(room_id, update_room_obj);
+    const data = await Room.findByIdAndUpdate(room_id, {
+      $set: update_room_obj
+    }, {
+      new:true
+    });
 
     if(data)
       return _res.status(200).json({
@@ -104,11 +114,11 @@ export default async (
       })
 
     throw new Error("Room Details Cannot be Updated!!");
-   } catch(error) {
-    return _res.status(500).json({
-     type:"Failure",
-     error,
-    })
+    } catch(error:any) {
+      return _res.status(500).json({
+      type:"Failure",
+      error:error.message.error || error.message,
+      })
    }
   }
   default: {

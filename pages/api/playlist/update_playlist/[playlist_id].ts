@@ -42,74 +42,89 @@ if(!session) return _res.status(401).redirect("/login")
   case "POST": {
 
    const { 
-    name,
+    title,
     songs,
     is_private
     }: {
-     name?: string,
-     songs?: string[] // Saavn Ids,
+     title?: string,
+     songs?: string[]|[string] // Saavn Ids, only one is there while removing,
      is_private?: boolean
     } = body;
 
    try {
 
+    if(songs && songs.length === 0)
+      throw new Error("Song Ids Required for Adding/Removing")
+
     const playlist = await Playlist.findById(playlist_id);
 
     
-    if(playlist)
-    return _res.status(200).json({
-     type: "Success",
-     data: playlist
-    });
+    if(!playlist)
+      throw new Error("Playlist Not Found!!");
     
     const user = await User.findOne({email: session.user?.email});
 
     if(!user) 
      throw new Error('User Not Found!!')
 
-     const {
-      _id
-     } = user;
+    const {
+    _id
+    } = user;
 
-     if(playlist.owned_by !== _id)
+     if(playlist.owned_by.toString() !== _id.toString())
       throw new Error('Not Permitted to Update!!');
 
      let update_playlist_obj: {
-      name?: string,
+      title?: string,
       is_private?: boolean,
       songs?: string[],
      } = {};
 
-     if(name)
-      update_playlist_obj.name = name;
+     if(title)
+      update_playlist_obj.title = title;
      if(is_private)
       update_playlist_obj.is_private = is_private;
 
-     if(songs) {
+      let remove_song_check : boolean = false;
+
+     if(songs && songs.length > 0) {
       playlist.songs.forEach((song: string) => {
        if(songs.includes(song) && type === "add") {
         throw new Error(`${song} Already Present!!`)
        }
-       else if (!songs.includes(song) && type === "remove") {
-        throw new Error(`${song} Not Present!!`)
+       
+       if (songs.includes(song) && type === "remove") {
+        remove_song_check = true
        }
       })
+
+      if((!remove_song_check || playlist.songs.length === 0) && type === "remove")
+        throw new Error(`Song ${songs[0]} Not Found to be Removed!!`)
+      
       if(type === "add")
        update_playlist_obj.songs = [
         ...songs,
         ...playlist.songs
        ]
        else if (type === "remove")
+
        update_playlist_obj.songs = playlist.songs
-       .filter((song: string) => songs.includes(song));
+       .filter((song: string) => songs[0] !== song);
      }
 
-     const updated_playlist = await Playlist.findByIdAndUpdate(playlist_id, update_playlist_obj);
+
+     const updated_playlist = await Playlist
+      .findByIdAndUpdate(playlist_id, { 
+        $set: update_playlist_obj
+      }, {
+        new: true,
+        select: "songs"
+      });
 
 
     return _res.status(201).json({
      type: "Success",
-     data: updated_playlist
+     data: updated_playlist.songs
     });
     } catch(error:any) {
       return _res.status(500).json({

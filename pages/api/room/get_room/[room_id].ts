@@ -48,10 +48,21 @@ export default async (
     const data = 
      await Room
      .findById(room_id)
-     .populate("owned_by genres upvotes"); // check this
+
+     if(!data)
+      throw new Error("No Room Found!!")
+      
+     const populate_array: string[] = [];
+     
+     if(data.owned_by)
+     populate_array.push("owned_by");
+     if(data.upvotes && data.upvotes.length > 0)
+     populate_array.push("upvotes");
+     if(data.genres && data.genres.length > 0)
+     populate_array.push("genres");
+
+    await data.populate(populate_array.join(" ")); // check this
     
-    if(!data)
-     throw new Error("No Room Found!!")
 
     return _res.status(200).json({
      type: "Success",

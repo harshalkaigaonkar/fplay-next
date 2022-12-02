@@ -1,17 +1,16 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import  "utils/connect-db";
-import Room from 'models/Room';
+import Playlist from 'models/Playlist';
 import { 
   FindRoomsCondition as FindPlaylistCondition, 
-  GetBodyMoreThanOne, 
+  GetParamsMoreThanOne, 
   MongoosePlaylistTypes, 
   MongooseRoomTypes, 
   ResponseDataType, 
   SortRoomsConditionType, 
   SuccessRoomsReponse 
 } from 'types';
-import Playlist from 'models/Playlist';
 
 
  export default async (
@@ -27,14 +26,15 @@ import Playlist from 'models/Playlist';
  const {
   method,
   body,
+  query
  } = _req;
 
  switch(method) {
-  // @route     GET api/playlist/public_playlists
+  // @route     GET api/playlist/public_playlists?
   // @desc      Get All Public PLaylists According to various Filters
   // @access    Public
-  // @status    Works Properly with filter and pagination
-  // @left      search Query
+  // @status    Works Properly with limit
+  // @left      search Query, pagination, filters
   case "GET": {
 
    const {
@@ -43,7 +43,7 @@ import Playlist from 'models/Playlist';
     search_query, 
     page = 1, 
     limit = 10
-  }: GetBodyMoreThanOne = body;
+  }: Partial<GetParamsMoreThanOne> = query;
    
    try {
 

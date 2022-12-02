@@ -8,7 +8,7 @@ import User from 'models/User';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { 
   FindRoomsCondition, 
-  GetBodyMoreThanOne, 
+  GetParamsMoreThanOne as GetBodyMoreThanOne, 
   MongooseRoomTypes, 
   ResponseDataType, 
   SortRoomsConditionType,

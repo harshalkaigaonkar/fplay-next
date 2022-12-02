@@ -118,8 +118,11 @@ export default async (
     } = body;
 
     try {
+
+      if(Object.keys(body).length === 0)
+        throw new Error("Body is Required for this Call!!")
  
-     const user: MongooseUserTypes|null = await User
+     const user = await User
        .findOne({
          email: session.user?.email
        })
@@ -131,7 +134,7 @@ export default async (
        _id 
       } = user;
 
-      const room: MongooseRoomTypes|null = await Room.findById(room_id);
+      const room = await Room.findById(room_id);
 
       if(!room)
        throw new Error('Room Not Found!!');
@@ -141,31 +144,37 @@ export default async (
       } = {};
  
      if(type === 'add') {
-      if(room.upvotes.includes(_id))
+      if(room.upvotes.includes(_id.toString()))
         throw new Error("User Already Upvoted!!")
 
-        update_room_obj.upvotes = [
-        _id,
+      update_room_obj.upvotes = [
+        _id.toString(),
         ...room.upvotes
-       ]
-     } else {
-      if(!room.upvotes.includes(_id))
-        throw new Error("Song/Playlist Not Found to Remove!!")
+      ]
 
-        update_room_obj.upvotes
-        ?.splice(
-          room.upvotes
-          .indexOf(_id), 1);
+     } else {
+      if(!room.upvotes.includes(_id.toString()))
+        throw new Error("Not Upvoted Before to Remove!!")
+
+        update_room_obj.upvotes = room.upvotes
+          ?.filter((upvote_user_id: Types.ObjectId) => 
+          upvote_user_id.toString() !== _id.toString())
+        ;
      }
 
-     const updated_room = await Room.findByIdAndUpdate(room_id, room);
+     const updated_room = await Room.findByIdAndUpdate(room_id, {
+      $set: update_room_obj
+     },{
+      new: true,
+      select: "upvotes"
+     });
      
      if(!updated_room)
       throw new Error("Upvote was not Updated!!")
 
      return _res.status(200).json({
       type: "Success",
-      data: updated_room,
+      data: updated_room.upvotes,
      });
     } catch(error:any) {
       return _res.status(500).json({

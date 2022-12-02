@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Session, unstable_getServerSession } from 'next-auth';
 import  "utils/connect-db";
@@ -33,18 +33,18 @@ if(!session) return _res.status(401).redirect("/login")
   case "POST": {
 
    const { 
-    name,
+    title,
     songs,
     is_private
     }: {
-     name?: string,
+     title?: string,
      songs?: string[]|[] // Saavn Ids,
      is_private?: boolean
     } = body;
 
     try {
-      if(!name)
-        throw new Error('Parameter name in Body is required!!')
+      if(!title)
+        throw new Error('Parameter title in Body is required!!')
      
       const user = await User.findOne({email: session.user?.email})
  
@@ -56,24 +56,27 @@ if(!session) return _res.status(401).redirect("/login")
       } = user;
 
     const playlist = await Playlist.findOne({
-      name,
-      owned_by: _id
+      title,
+      owned_by: new Types.ObjectId(`${_id}`)
     });
     
     if(playlist)
     return _res.status(200).json({
-     type: "Success",
-     data: playlist
+      type: "Success",
+      data: playlist
     });
     
-
     const newPlaylist: HydratedDocument<MongoosePlaylistTypes> = new Playlist({
-     name,
-     owned_by: _id,
-     is_private: is_private || false,
-     songs: songs || []
+     title,
+     owned_by: new Types.ObjectId(`${_id}`),
+     is_private,
+     songs,
     });
+
+    console.log(newPlaylist)
+    
     await newPlaylist.save();
+    
     return _res.status(201).json({
      type: "Success",
      data: newPlaylist

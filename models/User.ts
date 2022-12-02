@@ -1,5 +1,24 @@
 import {model, models, Schema}  from 'mongoose';
-import { MongooseUserTypes } from 'types';
+import { MongooseUserTypes, UserLibraryType } from 'types';
+
+const LibrarySchema = new Schema<UserLibraryType>({
+ type: {
+  type: String,
+  enum: ["Song", "Playlist"],
+  required: true
+ },
+ playlist: {
+  type: Schema.Types.ObjectId,
+  ref: 'playlist',
+  default: null,
+ },
+ song: {
+  type: String,
+  default: null
+ }
+}, {
+ _id:false
+})
 
 const User = new Schema<MongooseUserTypes>({
  name: {
@@ -18,23 +37,14 @@ const User = new Schema<MongooseUserTypes>({
  },
  profile_pic: {
   type: String,
-  unique: true,
+  unique:true
  },
- library: [{
-  type: {
-   type: String,
-   enum: ["Song", "Playlist"]
-  },
-  playlist: {
-   type: Schema.Types.ObjectId,
-   ref: 'playlist',
-   unique: true
-  },
-  song: {
-   type: String,
-   unique: true,
-  }
- }],
+ library: {
+  type: [LibrarySchema],
+  default: [],
+  unique: false,
+  required: false,
+ },
  // Keeping a Check on Rooms rather than on Users
  // rooms_on: [{
  //  type: Schema.Types.ObjectId,

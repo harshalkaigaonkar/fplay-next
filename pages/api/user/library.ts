@@ -51,16 +51,14 @@ export default async (
         email: session.user?.email
       })
 
-    if(user.library.length > 0 && user.library.find((lib: UserLibraryType) => lib.type === "Playlist"))
-      {
-        await user.populate("library.playlist");
-      }
+    if(!user) 
+      throw new Error("User Not Found!!");
 
+    if(user.library.length > 0 && user.library.find((lib: UserLibraryType) => lib.type === "Playlist"))
+      await user.populate("library.playlist");
+      
     console.log("User: \n Check Once due to parsing of null p_ids", user)
     
-    if(!user) 
-     throw new Error("User Not Found!!");
-
      const song_ids: string = user
      .library
      .map((media: UserLibraryType) => {
@@ -164,7 +162,7 @@ export default async (
      if(type === 'add') {
       if(user.library.find((lib: (UserLibraryType & {
         _id: Types.ObjectId
-      })) => media_type === "Song" ? lib.song === song : lib.playlist === playlist))
+      })) => media_type === "Song" ? lib.song === song : lib.playlist?.toString() === playlist?.toString()))
         throw new Error("Song/Playlist Already Added!!")
 
       user
@@ -175,7 +173,7 @@ export default async (
      } else {
       if(!user.library.find((lib: (UserLibraryType & {
         _id: Types.ObjectId
-      })) => media_type === "Song" ? lib.song === song : lib.playlist === playlist))
+      })) => media_type === "Song" ? lib.song === song : lib.playlist?.toString() === playlist?.toString()))
         throw new Error("Song/Playlist Not Found to Remove!!")
 
       user

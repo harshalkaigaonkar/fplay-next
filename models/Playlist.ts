@@ -2,7 +2,7 @@ import {Schema, model, models} from 'mongoose';
 import { MongoosePlaylistTypes } from 'types';
 
 const Playlist = new Schema<MongoosePlaylistTypes>({
- name: {
+ title: {
   type: String,
   required: true,
  },
@@ -17,7 +17,6 @@ const Playlist = new Schema<MongoosePlaylistTypes>({
  },
  songs: [{
   type: String,
-  required: true,
  }]
 },
 {

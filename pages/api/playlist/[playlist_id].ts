@@ -41,7 +41,10 @@ if(!session) return _res.status(401).redirect("/login")
    
    try {
     const playlist = await Playlist
-      .findById(playlist_id);
+    .findById(playlist_id);
+    
+    if(!playlist)
+    throw new Error("No Playlist Found!!");
 
     const song_ids: string = playlist.songs.join(",");
 
@@ -51,22 +54,20 @@ if(!session) return _res.status(401).redirect("/login")
       results: SaavnSongObjectTypes[]
     }>(`${process.env.NEXT_PUBLIC_MUSIC_BASEURL}/songs?id=${song_ids}`);
 
-    if(!res.data)
+    if(!res.data || !res.data.results)
      throw new Error("Error While fetching Songs Info!!")
 
     const {
       results: songs
     } = res.data;
-
-    playlist.songs = songs;
     
-    if(playlist)
-     return _res.status(200).json({
-      type: "Success",
-      data: playlist
-     });
-
-    throw new Error("No Playlist Found !!");
+    playlist._doc.songs = songs;
+    
+    
+    return _res.status(200).json({
+     type: "Success",
+     data: playlist
+    });
 
    } catch (error) {
     return _res.status(500).json({

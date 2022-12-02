@@ -1,5 +1,5 @@
 import { ramdomEmojiText } from 'helpers';
-import mongoose, { Schema, model, models } from 'mongoose';
+import mongoose, { Schema, model, models, Types } from 'mongoose';
 import { MongooseRoomTypes } from 'types';
 
 const Room = new Schema<MongooseRoomTypes>({
@@ -23,14 +23,11 @@ const Room = new Schema<MongooseRoomTypes>({
  },
  genres: [{
   type: Schema.Types.ObjectId,
-  ref: 'genre',
-  required: true,
-  unique: true
+  ref: 'genre'
  }],
  is_private: {
   type: Boolean,
   required: true,
-  unique: true,
   default: false
  },
  // Later will take care of this
@@ -72,8 +69,7 @@ const Room = new Schema<MongooseRoomTypes>({
  // }],
  upvotes: [{
   type: Schema.Types.ObjectId,
-  ref: "user",
-  unique: true
+  ref: 'user'
  }],
 },{
  timestamps: true

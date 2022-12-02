@@ -62,23 +62,21 @@ interface UserLibraryType {
   song?: string|SaavnSongObjectTypes
  }
 interface MongooseUserTypes extends Document {
- _id: never,
  name: string,
  username: string,
  email: string,
  profile_pic: string|null,
- library: UserLibraryType[]|[],
-//  rooms_on: Types.ObjectId[]|string[]|[],
+ library: UserLibraryType[],
+//  rooms_on: Types.ObjectId[]|string[],
 }
 interface MongooseRoomTypes extends Document {
- _id: never,
  name: string,
  desc?: string,
  icon?: string,
  active: boolean,
- genres: Types.ObjectId[]|string[]|MongooseGenreTypes[]|[],
+ genres: Types.ObjectId[]|string[]|MongooseGenreTypes[],
  is_private: boolean,
-//  room_access_users: Types.ObjectId[]|string[]|[],
+//  room_access_users: Types.ObjectId[]|string[],
  owned_by: Types.ObjectId|MongooseUserTypes|string,
 //  session_history: {
 //   on_date: DateExpression,
@@ -86,14 +84,13 @@ interface MongooseRoomTypes extends Document {
 //  },
 //  pinned_songs: Types.ObjectId[]|string[],
 //  pinned_playlists: Types.ObjectId[]|string[],
- upvotes: Types.ObjectId[]|[]
+ upvotes: Types.ObjectId[]|string[]|MongooseUserTypes[]
 }
 interface MongoosePlaylistTypes extends Document {
- _id: never,
- name: string,
+ title: string,
  is_private: boolean,
  owned_by: Types.ObjectId|string|MongooseUserTypes,
- songs: string[]|SaavnSongObjectTypes[]|[],
+ songs: string[]|SaavnSongObjectTypes[],
 }
 // interface MongooseSongTypes extends Document {
 //  // _id: never
@@ -142,7 +139,6 @@ interface SaavnSongObjectTypes {
   }[]
  }
 interface MongooseGenreTypes extends Document {
- _id: never,
  type: string
 }
 
@@ -164,7 +160,7 @@ interface ResponseDataType<X, Y> {
  * ROOM APIs INterfaces and Types
  */
 
- interface GetBodyMoreThanOne {
+ interface GetParamsMoreThanOne {
   active?: boolean, 
   sort_by?: "date:asc"|"date:desc"|"upvotes:asc"|"upvotes:desc", 
   owned_by?: string,
@@ -174,8 +170,8 @@ interface ResponseDataType<X, Y> {
 }
 
 interface SuccessRoomsReponse<T> {
-  rooms?: T[]|[],
-  playlists?: T[]|[],
+  rooms?: T[],
+  playlists?: T[],
   limit: number,
   total_entries: number,
   page: number

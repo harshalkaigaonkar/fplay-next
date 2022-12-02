@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Session, unstable_getServerSession } from 'next-auth';
 import  "utils/connect-db"
@@ -42,9 +42,6 @@ export default async (
   // @access    Private
   // @status    Works Properly
   case "POST": {
-   const {
-    room
-    } = body;
    // room database object with options
    const {
     name,
@@ -61,7 +58,7 @@ export default async (
     // pinned_playlists,
     // pinned_songs,
     // upvotes, // would be empty array initially
-   } = room;
+   } = body;
 
    try {
 
@@ -79,7 +76,7 @@ export default async (
       _id
     } = user;
 
-    const room: MongooseRoomTypes|null = await Room.findOne({name});
+    const room = await Room.findOne({name});
     
     if(room) 
       throw new Error("Room Already Exists!!");
@@ -92,7 +89,7 @@ export default async (
      is_private: is_private || false,
     //  room_access_users: room_access_users || [_id] ,
      owned_by: _id,
-     session_history: [],
+    //  session_history: [],
     //  pinned_playlists: pinned_playlists || [],
     //  pinned_songs: pinned_songs || [],
      upvotes: []
@@ -103,10 +100,10 @@ export default async (
      type: "Success",
      data: newRoom
     });
-   } catch(error) {
+  } catch(error:any) {
     return _res.status(500).json({
      type:"Failure",
-     error,
+     error:error.message.error || error.message,
     })
    }
   }
