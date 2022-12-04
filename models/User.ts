@@ -11,6 +11,7 @@ const LibrarySchema = new Schema<UserLibraryType>({
   type: Schema.Types.ObjectId,
   ref: 'playlist',
   default: null,
+  required: false
  },
  song: {
   type: String,

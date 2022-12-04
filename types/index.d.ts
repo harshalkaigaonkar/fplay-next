@@ -57,9 +57,10 @@ export interface SocketData {
 // Mongoose DB Types
 
 interface UserLibraryType {
+  _doc: UserLibraryType;
   type: "Song"|"Playlist",
   playlist?: Types.ObjectId|string|MongoosePlaylistTypes,
-  song?: string|SaavnSongObjectTypes
+  song?: string|SaavnSongObjectTypes,
  }
 interface MongooseUserTypes extends Document {
  name: string,
@@ -136,7 +137,8 @@ interface SaavnSongObjectTypes {
   downloadUrl: { 
     quality: string, 
     link: string
-  }[]
+  }[],
+  length?: number
  }
 interface MongooseGenreTypes extends Document {
  type: string

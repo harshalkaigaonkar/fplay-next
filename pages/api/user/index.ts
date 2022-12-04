@@ -59,7 +59,6 @@ export default async (
      email,
      profile_pic: picture,
     });
-    console.log(newUser)
     await newUser.save();
     return _res.status(201).json({
      type: "Success",

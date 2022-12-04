@@ -44,40 +44,43 @@ export default async (
   // @access    Private
   // @status    Works Properly
   case "GET": {
+    
     try {
-
     const user = await User
-      .findOne({
-        email: session.user?.email
-      })
-
-    if(!user) 
+    .findOne({
+      email: session.user?.email
+    })
+    .select("library");
+    
+      if(!user) 
       throw new Error("User Not Found!!");
-
-    if(user.library.length > 0 && user.library.find((lib: UserLibraryType) => lib.type === "Playlist"))
+      
+      if(user.library.length > 0 && user.library.find((lib: UserLibraryType) => lib.type === "Playlist"))
       await user.populate("library.playlist");
       
-    console.log("User: \n Check Once due to parsing of null p_ids", user)
+      // await user.select("library");
     
-     const song_ids: string = user
-     .library
-     .map((media: UserLibraryType) => {
-      if(media.type === "Song")
+      let song_ids: string[] = user
+      .library
+      .map((media: UserLibraryType) => {
+        if(media.type === "Song")
         return media.song;
-     }).join(",");
+      });
+      
+    song_ids = song_ids.filter((song_id: string|undefined) => song_id)
 
-    if(song_ids === "")
+    if(song_ids.length === 0)
     return _res.status(200).json({
       type: "Success",
-      data: user.library,
+      data: user,
      });
 
     const {data} = await axios
     .get<{
       status: string, 
-      results?: SaavnSongObjectTypes[],
+      results?: any,
       message?: string
-    }>(`${process.env.NEXT_PUBLIC_MUSIC_BASEURL}/songs?id=${song_ids}`);
+    }>(`${process.env.NEXT_PUBLIC_MUSIC_BASEURL}/songs?id=${song_ids.join(",")}`);
 
     if(!data)
      throw new Error("Error While fetching Songs Info!!")
@@ -88,23 +91,38 @@ export default async (
 
     const {
       results: songs
+    }: { 
+      status: string; 
+      results?: any 
+      message?: string | undefined; 
     } = data;
 
     if(!songs)
       throw new Error("No Songs Found!!")
 
-
-    user.library = user.library.map((media: UserLibraryType) => {
-      if(media.type === "Song") {
-        media.song = songs[0];
-        songs.splice(0, 1);
-        return media;
+    let song_index: number = 0;
+    let updated_user = {...user};
+    if(song_ids.length || typeof songs === 'object')
+    updated_user.library = user.library.map((media: UserLibraryType) => {
+      const newMedia: UserLibraryType = {
+        ...media
+      };
+      if(media._doc.type === "Song") {
+        if(!songs.length)
+        newMedia._doc.song = songs
+        else {
+          newMedia._doc.song = songs[song_index];
+          song_index++;
+        }
       }
+      return {
+        ...newMedia._doc
+      };
     })
     
     return _res.status(200).json({
      type: "Success",
-     data: user.library,
+     data: updated_user._doc,
     });
   } catch(error:any) {
     return _res.status(500).json({

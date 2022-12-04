@@ -72,8 +72,6 @@ if(!session) return _res.status(401).redirect("/login")
      is_private,
      songs,
     });
-
-    console.log(newPlaylist)
     
     await newPlaylist.save();
     
