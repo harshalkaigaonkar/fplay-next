@@ -90,7 +90,10 @@ if(!session) return _res.status(401).redirect("/login")
      if(songs && songs.length > 0) {
       playlist.songs.forEach((song: string) => {
        if(songs.includes(song) && type === "add") {
-        throw new Error(`${song} Already Present!!`)
+        return _res.status(200).json({
+          type: "Success",
+          data: playlist.songs
+         });
        }
        
        if (songs.includes(song) && type === "remove") {

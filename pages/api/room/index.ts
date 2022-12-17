@@ -79,7 +79,10 @@ export default async (
     const room = await Room.findOne({name});
     
     if(room) 
-      throw new Error("Room Already Exists!!");
+      return _res.status(200).json({
+        type: "Success",
+        data: room
+      });
 
     const newRoom: HydratedDocument<MongooseRoomTypes> = new Room({
      name,
