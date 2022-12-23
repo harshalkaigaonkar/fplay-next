@@ -17,12 +17,47 @@ export default async (
   method,
   body,
   cookies,
+  query
  } = _req;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
 //  console.log("Cookies: ", cookies)
 
  switch(method) {
+  // @route     GET api/user
+  // @desc      Get User By Email.
+  // @access    Public (Have to make it Private)
+  // @status    Works Properly
+  case "GET": {
+
+   const { 
+    email
+    } = query;
+
+   try {
+
+    if(!email) 
+    throw new Error("Email is Required!!")
+
+    const user = await User.findOne({
+      email
+    });
+
+    if(user)
+     return _res.status(200).json({
+      type: "Success",
+      data: user
+     });
+
+     throw new Error("No User Found!!")
+    
+  } catch(error:any) {
+    return _res.status(500).json({
+     type:"Failure",
+     error:error.message.error || error.message,
+    })
+   }
+  }
   // @route     POST api/user
   // @desc      Create a New User for Success OAuth Callback
   // @access    Public (Have to make it Private)
@@ -42,6 +77,9 @@ export default async (
   } = profile;
 
    try {
+
+    if(!profile)
+      throw new Error("Not an Success OAuth Callback!!")
 
     const user = await User.findOne({
       email: profile.email
@@ -72,7 +110,7 @@ export default async (
    }
   }
   default: {
-   _res.setHeader("Allow", ["POST"]);
+   _res.setHeader("Allow", ["GET", "POST"]);
 			return _res
 				.status(405)
 				.json({ 

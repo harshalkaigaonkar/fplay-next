@@ -189,3 +189,25 @@ type SortRoomsConditionType = {
   createdAt?: SortOrder,
   upvotes?: SortOrder
  }
+
+
+
+interface AuthUserType {
+  user: {
+    name: string
+    email: string
+    image: string
+  },
+  expires: Date
+}
+
+interface APIResponse<T, U = string|{message:string}> {
+  type: string,
+  data?: T,
+  error?: U
+}
+
+interface UseSession {
+  data: Session|null, 
+  status: string
+}

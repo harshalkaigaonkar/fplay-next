@@ -37,7 +37,7 @@ export const authOptions: NextAuthOptions = {
   // }
   },
   pages: {
-   // newUser: "/",
+    signIn: '/login',
   }
 }
 
