@@ -9,32 +9,31 @@ import { AuthUserType, ClientToServerEvents, ServerToClientEvents, SocketClientT
 import Text from 'components/text';
 import { getSession, signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
-import Layout from 'components/layout';
-import Hero from 'components/hero';
+import RoomLayout from 'components/layout/roomLayout';
 
 const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL}`)
 
 export type HomeProps = {
   socket?: SocketClientType,
-  session?: AuthUserType|any
+  session?: AuthUserType|any,
+  room_id: string
 };
 
 
-const Home: NextPage<HomeProps> = () => {
+const Home: NextPage<HomeProps> = ({room_id}) => {
 
   const {data : session, status}: UseSession = useSession();
   
   return (
     <div className={styles.container}>
       <Head>
-        <title>Fplay🎵</title>
+        <title>Fplay🎵 | Room - {room_id}</title>
         <meta name="description" content="Connect and Jam with friends on the go, one song at a time." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Layout session={session}>
-        <Hero />
-      </Layout>
+      <RoomLayout session={session}>
+      </RoomLayout>
     </div>
   )
 }
@@ -44,9 +43,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     = await getSession(
         context
     );
+    const { room_id } = context.query;
   return {
     props: {
-      session
+      session,
+      room_id
     }
   }
 }

@@ -208,6 +208,7 @@ interface APIResponse<T, U = string|{message:string}> {
 }
 
 interface UseSession {
-  data: Session|null, 
+  user?: any;
+  data?: Session|null, 
   status: string
 }
