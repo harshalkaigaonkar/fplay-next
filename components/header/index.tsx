@@ -7,10 +7,7 @@ import { UseSession } from 'types'
 import { ChevronDownIcon, UserCircleIcon } from '@heroicons/react/20/solid';
 import { Popover } from '@headlessui/react'
 import PopoverButton from './button/popover'
-interface HeaderProps {
- session: UseSession,
- room_id?: string,
-}
+import { HeaderProps } from 'types/header'
 
 const Header: FC<HeaderProps> = ({session, room_id}) => {
  

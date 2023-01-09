@@ -13,7 +13,6 @@ const PopoverButton: React.FC<PopoverButtonProps> = ({session, onSignOut}) => {
   return (
    <Popover className='relative'>
    {({open}) => (
-
      <>
       <Popover.Button
            className={`

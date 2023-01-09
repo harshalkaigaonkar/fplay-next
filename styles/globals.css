@@ -4,6 +4,7 @@
 
 html,
 body {
+  background-color: #464646;
   padding: 0;
   margin: 0;
   font-family: 'Inter', poppins, sans-serif;
@@ -21,6 +22,7 @@ span {
   color: white;
   margin: 0;
   padding: 0;
+  cursor: default;
 }
 
 a {

@@ -5,11 +5,10 @@ import styles from 'styles/Home.module.css'
 import { io, Socket } from "socket.io-client";
 import axios, { Axios } from 'axios';
 import { AuthUserType, ClientToServerEvents, ServerToClientEvents, SocketClientType, UseSession } from 'types';
-// const Text = dynamic(import('components/text'), {ssr:false})
 import Text from 'components/text';
 import { getSession, signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
-import RoomLayout from 'components/layout/roomLayout';
+import RoomLayout from 'components/layout/room';
 
 const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL}`)
 

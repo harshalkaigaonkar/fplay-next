@@ -1,4 +1,5 @@
 import Header from 'components/header'
+import RoomHeader from 'components/header/room'
 import React, { FC, ReactNode } from 'react'
 import { UseSession } from 'types'
 
@@ -10,7 +11,7 @@ interface RoomLayoutProps {
 const RoomLayout: FC<RoomLayoutProps> = ({session, children}) => {
   return (
     <div className='bg-[#464646] min-h-screen'>
-     <Header session={session} />
+     <RoomHeader session={session} />
      <main>{children}</main>
     </div>
   )
