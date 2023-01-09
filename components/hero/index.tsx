@@ -55,11 +55,11 @@ const Hero = () => {
        <input 
          type="submit" 
          value="Join" 
-         className="w-24 text-inherit text-lg text-white font-bold rounded-md bg-[#333333] border-none border-[#343434] hover:bg-[#232323] hover:cursor-pointer hover:shadow-xl hover:shadow-gray-800 hover:border-none" 
+         className="w-24 text-inherit text-lg text-white font-bold rounded-md bg-[#333333] border-none border-[#343434] hover:bg-[#232323] hover:cursor-pointer hover:shadow-xl hover:shadow-gray-800 hover:border-none hover:duration-400" 
         />
        
        <button 
-        className="w-24 rounded-md shadow-xl border-none bg-[#232323] hover:shadow-gray-800 hover:bg-[#333333]"
+        className="w-24 rounded-md shadow-xl border-none bg-[#232323] hover:shadow-gray-800 hover:bg-[#333333] hover:duration-400"
         > 
 
         <p 

@@ -28,25 +28,15 @@ a {
   text-decoration: none;
 }
 
-/* div {
-  border: 1px solid black;
-} */
-
 * {
   box-sizing: border-box;
+}
+
+.border-bottom {
+  border-bottom: 2px solid gray;
 }
 
 li:hover,
 button:hover {
   cursor: pointer;
-}
-
-@media (dark-mode: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: black;
-  }
 }

@@ -27,9 +27,9 @@ const Header: FC<HeaderProps> = ({session, room_id}) => {
  // }
 
   return (
-   <div className='relative h-full py-4 flex flex-row justify-around items-center'>
+   <header className='sticky top-0 h-[72px] mx-20 px-20 py-4 flex flex-row justify-between items-center border-bottom bg-opacity-50 backdrop-blur backdrop-filter' >
       <h4 className='cursor-pointer'>FPLAY ▶️</h4>
-   {!session ? (
+      {!session ? (
         <>
             <button className='' onClick={onSignIn}>
               <span>Login</span>
@@ -40,7 +40,7 @@ const Header: FC<HeaderProps> = ({session, room_id}) => {
               <PopoverButton session={session} onSignOut={onSignOut} />
             </div>
         )}
-   </div>  
+   </header>  
   )
 }
 

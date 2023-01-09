@@ -21,7 +21,7 @@ const ProfilePopover: React.FC<ProfilePopoverProps> = ({session, onSignOut}) => 
      leaveTo="opacity-0 translate-y-1"
      >
       
-          <ul className='w-60 min-w-40 max-w- absolute z-10 top-12 list-none p-3 bg-[#343434] text-white text-lg rounded-md shadow-lg'>
+          <ul className='w-60 min-w-40 max-w- absolute z-10 top-12 -left-20 list-none p-3 bg-[#343434] text-white text-lg rounded-md shadow-lg'>
           <li className="flex flex-row gap-4 items-center p-2 rounded-md hover:bg-[#212121] ">
             <div className="border">
               <Image 

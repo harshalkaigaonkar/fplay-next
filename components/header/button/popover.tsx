@@ -3,7 +3,6 @@ import { ChevronDownIcon, UserCircleIcon } from '@heroicons/react/20/solid'
 import ProfilePopover from 'components/popover/profile'
 import React from 'react'
 import { UseSession } from 'types'
-import PopoverPanel from '../popover'
 
 interface PopoverButtonProps {
   session: UseSession;

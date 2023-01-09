@@ -25,7 +25,7 @@ const Home: NextPage<HomeProps> = () => {
   const {data : session, status}: UseSession = useSession();
   
   return (
-    <div className={styles.container}>
+    <div className='m-0 p-0'>
       <Head>
         <title>Fplay🎵</title>
         <meta name="description" content="Connect and Jam with friends on the go, one song at a time." />
