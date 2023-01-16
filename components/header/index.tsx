@@ -24,17 +24,23 @@ const Header: FC<HeaderProps> = ({session, room_id}) => {
  // }
 
   return (
-   <header className='sticky top-0 h-[72px] mx-20 px-20 py-4 flex flex-row justify-between items-center border-bottom bg-opacity-50 backdrop-blur backdrop-filter' >
+   <header className='sticky top-0 h-[72px] py-4 px-10 flex flex-row justify-between items-center border-x-0 border-t-0 border-solid border-[#7a7a7a] bg-opacity-50 backdrop-blur backdrop-filter z-50' >
       <h4 className='cursor-pointer'>FPLAY ▶️</h4>
       {!session ? (
         <>
-            <button className='' onClick={onSignIn}>
-              <span>Login</span>
+            <button 
+              className='border-none inline-block rounded bg-white/5 px-8 py-3 text-sm font-semibold text-white transition hover:scale-110 focus:outline-none focus:ring active:bg-white/30' 
+              onClick={onSignIn}
+            >
+              <p>Login</p>
             </button>
         </>
         ): (
             <div className="border-2 h-fit p-[2px] inline-flex items-center rounded-[10px]">
-              <PopoverButton session={session} onSignOut={onSignOut} />
+              <PopoverButton
+                session={session} 
+                onSignOut={onSignOut} 
+              />
             </div>
         )}
    </header>  

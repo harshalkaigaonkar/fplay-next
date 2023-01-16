@@ -1,6 +1,7 @@
+import { Transition } from '@headlessui/react';
 import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
 import { NextRouter, useRouter } from 'next/router';
-import React, { useState } from 'react'
+import React, { Fragment, useState } from 'react'
 
 const Hero = () => {
 
@@ -30,50 +31,53 @@ const Hero = () => {
  }
 
   return (
-    <div className="mt-10 flex flex-row flex-wrap justify-around items-center">
-     <div className='p-4 flex flex-col justify-center items-center'>
+    <div className='w-full my-20 p-4 flex flex-col justify-center items-center gap-8 bg-gradient-to-b from-gray-300 via-gray-900 to-black bg-clip-text animate-enter-div'>
       
-      <h2 className="m-3 font-extrabold text-5xl">Connect And Jam with Friends on the go,
-      <br /><span>One Song at a time.</span></h2>
+      <h1 className="text-center text-3xl font-extrabold text-transparent sm:text-5xl">
+          Group Sessions are now Public.
+          <strong className="font-extrabold text-transparent sm:block">
+            Enjoy your Music with others.
+          </strong>
+      </h1>
       
-      <h5 className="m-3 font-semibold text-xl">Create or Join Any Public Room According to Your Favourite Genre 
-      <br /> and Listen to Songs in Real-time.</h5>
+      <h5 className="m-3 font-semibold text-xl text-center">
+      Connect And Jam with Friends on the go,
+      <br />One Song at a time.
+      </h5>
       
       <form 
-       className="mx-3 my-6 flex flex-row gap-6 font-bold text-white"
-       onSubmit={onRoomRedirect}
-       >
+      className="w-full mx-3 my-6 flex flex-row justify-center gap-6 font-bold text-white"
+      onSubmit={onRoomRedirect}
+      >
       
-       <input 
+      <input 
         type="text"
         placeholder="Enter Room Code" 
         value={roomId}
         onChange={onChangeRoomId}
-        className="bg-inherit border-white border-1 text-white placeholder-slate-300 font-semibold rounded-md focus:border-white focus:shadow-md"
+        className="w-1/3 appearance-none min-w-[200px] p-4 bg-inherit border-white border-1 text-white text-lg placeholder-slate-300 font-semibold rounded-lg focus:outline-none"
         />
 
-       <input 
-         type="submit" 
-         value="Join" 
-         className="w-24 text-inherit text-lg text-white font-bold rounded-md bg-[#333333] border-none border-[#343434] hover:bg-[#232323] hover:cursor-pointer hover:shadow-xl hover:shadow-gray-800 hover:border-none hover:duration-400" 
+      <input 
+        type="submit" 
+        value="Join" 
+        className="w-36 appearance-none min-w-60 text-inherit text-lg text-white font-bold rounded-md transition duration-300 bg-[#434343] border-none border-[#343434] hover:cursor-pointer hover:bg-[#343434] active:shadow active:bg-[#222222]" 
         />
-       
-       <button 
-        className="w-24 rounded-md shadow-xl border-none bg-[#232323] hover:shadow-gray-800 hover:bg-[#333333] hover:duration-400"
+      
+      <button 
+        className="w-36 appearance-none px-5 rounded-md inline-flex items-center shadow-xl border-[2px] border-solid border-white cursor-pointer bg-inherit transition duration-300 hover:bg-[#343434] hover:border-opacity-20 active:bg-[#222222]"
         > 
 
         <p 
-         className="text-lg font-bold"
-         >
+        className="w-full text-lg font-bold text-center cursor-pointer"
+        >
           Create
         </p>
 
-       </button>
+      </button>
       
       </form>
 
-    </div>
-    
     </div>
   )
 }

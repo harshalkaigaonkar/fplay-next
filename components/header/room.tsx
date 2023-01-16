@@ -1,30 +1,51 @@
-import { ArrowDownCircleIcon, ArrowUturnLeftIcon, ClipboardDocumentIcon, EllipsisVerticalIcon, UserCircleIcon } from '@heroicons/react/20/solid'
-import React from 'react'
+import { ArrowLeftIcon, ArrowUturnLeftIcon, BookmarkIcon, EllipsisVerticalIcon, Square2StackIcon, UserCircleIcon } from '@heroicons/react/20/solid'
+import SongPlaying from 'components/icon/playing'
+import Image from 'next/image'
+import React, { FC, useState } from 'react'
 import { HeaderProps } from 'types/header'
 
 const emoji = require('node-emoji')
 
-const RoomHeader: React.FC<HeaderProps> = () => {
+const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
+
+    const [playing, setPlaying] = useState(true)
   return (
-    <header className='sticky top-0 h-[72px] mx-20 px-20 py-4 flex flex-row justify-between items-center bg-opacity-50 backdrop-blur backdrop-filter border-bottom' >
-        <div className='w-60 inline-flex items-center justify-around text-white'>
-            <ArrowUturnLeftIcon className='w-14 h-14 p-4 rounded-full transition duration-150 ease-in-out hover:bg-[#343434] active:bg-[#121212] hover:cursor-pointer' />
-            <ClipboardDocumentIcon className='w-14 h-14 p-4 rounded-full transition duration-150 ease-in-out hover:bg-[#343434] active:bg-[#121212] hover:cursor-pointer' />
+    <header className='sticky top-0 h-[72px] py-4 flex flex-row justify-between items-center bg-opacity-50 backdrop-blur backdrop-filter border-t-0 border-x-0 border-solid border-[#7A7A7A] z-50' >
+        <div className='md:w-60 inline-flex items-center justify-around text-white'>
+            <ArrowLeftIcon className='w-14 h-14 p-4 rounded-full transition duration-300 bg-opacity-25 hover:bg-red-600 active:bg-red-500 hover:cursor-pointer hover:-translate-x-1' />
+            <Square2StackIcon className='w-14 h-14 p-4 rounded-full transition duration-300 hover:bg-[#434343] active:bg-[#343434] hover:cursor-pointer' />
         </div>
         <div className='inline-flex flex-0 items-center justify-center gap-5'>
             <span className='inline-flex justify-center items-center w-14 h-14 text-2xl p-4'>
                 {emoji.get(":fire:")}
             </span>
-            <h2>
-                Music Room
-            </h2>
-            <h4 className='px-3 py-2 rounded-full transition duration-150 ease-in-out bg-white text-black'>
+            <span className='inline-flex flex-col items-center'>
+                <h2>
+                    Music Room
+                </h2>
+                <h6 className='font-medium'>
+                    {room_id}
+                </h6>
+            </span>
+            <h4 className='px-3 py-2 rounded-full transition duration-500 bg-white text-black'>
                 Public
             </h4>
+            <span>
+                {playing ? <SongPlaying /> : <div />}
+            </span>
         </div>
         <div className='w-60 inline-flex items-center justify-around text-white'>
-            <EllipsisVerticalIcon className='w-14 h-14 p-4 rounded-full transition duration-150 ease-in-out hover:bg-[#343434] active:bg-[#121212] hover:cursor-pointer' />
-            <UserCircleIcon className='w-14 h-14 p-4 rounded-full transition duration-150 ease-in-out hover:bg-[#343434] active:bg-[#121212] hover:cursor-pointer' />
+            <EllipsisVerticalIcon className='w-14 h-14 p-4 rounded-full transition duration-300 hover:bg-[#434343] active:bg-[#343434] hover:cursor-pointer' />
+            <BookmarkIcon className='w-14 h-14 p-4 rounded-full transition duration-300 hover:bg-[#434343] active:bg-[#343434] hover:cursor-pointer' />
+            <span className='inline-flex items-center p-4 rounded-full transition duration-300 hover:bg-[#434343] active:bg-[#343434] hover:cursor-pointer'>
+                <Image
+                    src={session && session.user.image}
+                    alt="Profile"
+                    height={25}
+                    width={25}
+                    className='rounded-full hover:cursor-pointer'
+                />
+            </span>
         </div>
    </header>  
   )

@@ -1,5 +1,5 @@
 import { Transition } from '@headlessui/react';
-import { ArrowLeftCircleIcon } from '@heroicons/react/20/solid';
+import { ArrowLeftCircleIcon, UserCircleIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import React, {Fragment} from 'react'
 import { UseSession } from 'types';
@@ -20,38 +20,42 @@ const ProfilePopover: React.FC<ProfilePopoverProps> = ({session, onSignOut}) => 
      leaveFrom="opacity-100 translate-y-0"
      leaveTo="opacity-0 translate-y-1"
      >
-      
-          <ul className='w-60 min-w-40 max-w- absolute z-10 top-12 -left-20 list-none p-3 bg-[#343434] text-white text-lg rounded-md shadow-lg'>
-          <li className="flex flex-row gap-4 items-center p-2 rounded-md hover:bg-[#212121] ">
-            <div className="border">
-              <Image 
-                src={session.user.image} 
-                alt="Profile" 
-                width="40"
-                height="40"
-                className='rounded-full'
-                />
-            </div>
-            <div className='flex flex-col justify-center'>
-              <h4 className="m-0 p-0">Profile</h4>
-              <span className="lg:text-[12px] font-normal md:text-[11px] sm:text-[10px]">{session && session?.user.name}</span>
-            </div>
-          </li>
-          <li 
-            className="flex flex-row gap-4 items-center p-2 rounded-md hover:bg-red-600"
-            onClick={onSignOut}
-            >
-            <>
-              <ArrowLeftCircleIcon
-              className="w-6 h-6 m-2"
-              />
-            </>
-            <>
-              <h4>Log Out</h4>
-            </>
-          </li>
-        </ul>
-      </Transition>
+      <ul className='absolute list-none w-60 min-w-40 max-w-60 z-10 top-11 -left-20 list-none px-0 bg-[#343434] text-white text-lg rounded-md shadow-lg'>
+        <header className='my-1 px-5 py-3 border-b-1 border-t-0 border-l-0 border-r-0 border-solid border-[#7a7a7a]'>
+          <h5 
+            className='h-fit min-w-full overflow-hidden truncate'>
+            {session && session.user.name}
+          </h5>
+          <h6 
+            className='h-fit p-0 m-0 max-w-full overflow-hidden text-ellipsis font-normal'>
+            {session && session.user.email}
+          </h6>
+        </header>
+        <li
+          className="m-2 flex flex-row gap-4 items-center p-2 rounded-md hover:bg-[#212121] ">
+          <>
+            <UserCircleIcon
+              className='w-6 h-6 m-2'
+            />
+          </>
+          <>
+            <h4>Profile</h4>
+          </>
+        </li>
+        <li 
+          className="m-2 flex flex-row gap-4 items-center p-2 rounded-md hover:bg-red-600"
+          onClick={onSignOut}>
+          <>
+            <ArrowLeftCircleIcon
+            className="w-6 h-6 m-2"
+            />
+          </>
+          <>
+            <h4>Log Out</h4>
+          </>
+        </li>
+      </ul>
+    </Transition>
   )
 }
 

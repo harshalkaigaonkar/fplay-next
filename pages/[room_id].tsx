@@ -5,10 +5,11 @@ import styles from 'styles/Home.module.css'
 import { io, Socket } from "socket.io-client";
 import axios, { Axios } from 'axios';
 import { AuthUserType, ClientToServerEvents, ServerToClientEvents, SocketClientType, UseSession } from 'types';
-import Text from 'components/text';
 import { getSession, signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
 import RoomLayout from 'components/layout/room';
+import AudioProvider from 'components/room/audio';
+import TrackQueue from 'components/room/queue';
 
 const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL}`)
 
@@ -26,12 +27,19 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
   return (
     <div className='m-0 p-0'>
       <Head>
-        <title>Fplay🎵 | Room - {room_id}</title>
+        <title>Fplay 🎵 | Room - {room_id}</title>
         <meta name="description" content="Connect and Jam with friends on the go, one song at a time." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <RoomLayout session={session}>
+      <RoomLayout session={session} room_id={room_id}>
+        <div className='min-h-[620px] w-full flex justify-center gap-10'>
+          <AudioProvider socket={socket} />
+          <TrackQueue />
+        </div>
+        <div>
+
+        </div>
       </RoomLayout>
     </div>
   )
@@ -40,9 +48,11 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session: Session|null 
     = await getSession(
-        context
-    );
-    const { room_id } = context.query;
+      context
+  );
+  
+  const { room_id } = context.query;
+  
   return {
     props: {
       session,

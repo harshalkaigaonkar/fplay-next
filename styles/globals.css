@@ -2,14 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  box-sizing: border-box;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
 html,
 body {
-  background-color: #464646;
+  background-color: #121212;
   padding: 0;
   margin: 0;
   font-family: 'Inter', poppins, sans-serif;
 }
 
+.thumb::-webkit-slider-thumb {
+  @apply appearance-none w-6 h-6 rounded-full bg-[#d9d9d9] cursor-pointer;
+}
+
+.thumb::-webkit-slider-thumb:hover {
+  @apply bg-[#7A7A7A] border border-solid border-white;
+  transition: 0.5s linear;
+}
 
 h1,
 h2,
@@ -30,15 +45,7 @@ a {
   text-decoration: none;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-.border-bottom {
-  border-bottom: 2px solid gray;
-}
-
 li:hover,
 button:hover {
-  cursor: pointer;
+  cursor: pointer
 }
