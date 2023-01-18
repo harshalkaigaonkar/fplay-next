@@ -6,7 +6,7 @@ import EmptyQueue from "./empty";
 
 resetServerContext();
 
-const DraggableList : FC = () => {
+const DraggableList : FC<{currentIndex?: number, setCurrentIndex?: any}> = ({currentIndex, setCurrentIndex}) => {
 
 	const [songs, setSongs] = useState<any>(Songs);
 
@@ -35,7 +35,7 @@ const DraggableList : FC = () => {
                 <ul
 					{...provided.droppableProps}
 					ref={provided.innerRef}
-					className={`relative z-10 -mt-16 mx-5 px-1 list-none lg:h-[35rem] max-h-auto flex flex-col justify-start rounded-b-lg overflow-y-auto`}
+					className={`relative z-10 -mt-16 mx-2 px-3 list-none lg:h-[35rem] max-h-auto flex flex-col justify-start rounded-b-lg overflow-y-auto`}
                 >
 					<li key="1" className="mt-16"></li>
 					{
@@ -48,7 +48,7 @@ const DraggableList : FC = () => {
 						(
 							songs.map(
 								(song: any, index: number): JSX.Element => (
-									<DraggableListItem song={song} index={index} />
+									<DraggableListItem song={song} index={index} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />
 								)
 							)
 						)

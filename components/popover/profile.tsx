@@ -1,5 +1,5 @@
 import { Transition } from '@headlessui/react';
-import { ArrowLeftCircleIcon, UserCircleIcon } from '@heroicons/react/20/solid';
+import { ArrowLeftCircleIcon, BookmarkIcon, MusicalNoteIcon, UserCircleIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import React, {Fragment} from 'react'
 import { UseSession } from 'types';
@@ -40,6 +40,17 @@ const ProfilePopover: React.FC<ProfilePopoverProps> = ({session, onSignOut}) => 
           </>
           <>
             <h4>Profile</h4>
+          </>
+        </li>
+        <li
+          className="m-2 flex flex-row gap-4 items-center p-2 rounded-md hover:bg-[#212121] ">
+          <>
+            <MusicalNoteIcon
+              className='w-6 h-6 m-2'
+            />
+          </>
+          <>
+            <h4>Library</h4>
           </>
         </li>
         <li 

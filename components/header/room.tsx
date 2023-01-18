@@ -19,7 +19,7 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
         return false;
     }
 
-    const [playing, setPlaying] = useState<boolean>(false) // to redux
+    const [playing, setPlaying] = useState<boolean>(true) // to redux
     const [upvotes, setUpvotes] = useState<number>(3) // to redux
 
     // may be to redux or cancelled or from redis
@@ -77,7 +77,7 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
                 Public
             </h4>
             <span>
-                {playing ? <SongPlaying /> : <div />}
+                {playing ? <SongPlaying type={5} /> : <div />}
             </span>
         </div>
         <div className='w-60 inline-flex items-center justify-around text-white'>

@@ -45,6 +45,8 @@ module.exports = {
       "height-grow-and-shrink-4": "animate_height 1.7s linear infinite alternate",
       "height-grow-and-shrink-5": "animate_height 1s linear infinite alternate",
       "enter-div": "enter 0.5s linear",
+      "enter-div-1": "enter 0.1s linear",
+      "enter-div-2": "enter 0.2s linear",
       "enter-opacity": "enter_opacity 2s ease-out"
     }
     },

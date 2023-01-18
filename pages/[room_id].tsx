@@ -10,8 +10,9 @@ import { Session } from 'next-auth';
 import RoomLayout from 'components/layout/room';
 import AudioProvider from 'components/room/audio';
 import TrackQueue from 'components/room/queue';
-import MusicPanelButton from 'components/room/music/button';
+import MusicPanelButton from 'components/room/track/button';
 import UsersConnectedRoom from 'components/room/conections';
+import { useState } from 'react';
 
 const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL}`)
 
@@ -25,6 +26,8 @@ export type HomeProps = {
 const Home: NextPage<HomeProps> = ({room_id}) => {
 
   const {data : session, status}: UseSession = useSession();
+
+  const [currentIndex, setCurrentIndex] = useState<number>(2); //to redux
   
   return (
     <div className='m-0 p-0'>
@@ -36,8 +39,8 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
 
       <RoomLayout session={session} room_id={room_id}>
         <section className='flex flex-row gap-10'>
-          <AudioProvider socket={socket} />
-          <TrackQueue />
+          <AudioProvider socket={socket} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />
+          <TrackQueue currentIndex={currentIndex} setCurrentIndex={setCurrentIndex}  />
         </section>
         <div className='w-full h-auto'>
           <UsersConnectedRoom session={session} />
