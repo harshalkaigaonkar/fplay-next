@@ -35,9 +35,9 @@ const DraggableList : FC = () => {
                 <ul
 					{...provided.droppableProps}
 					ref={provided.innerRef}
-					className={`relative z-10 -mt-16 mx-5 px-0 list-none lg:h-[35rem] max-h-auto flex flex-col justify-start rounded-b-lg overflow-y-auto`}
+					className={`relative z-10 -mt-16 mx-5 px-1 list-none lg:h-[35rem] max-h-auto flex flex-col justify-start rounded-b-lg overflow-y-auto`}
                 >
-					<li className="mt-16"></li>
+					<li key="1" className="mt-16"></li>
 					{
 						songs.length === 0 ? (
 							<>
