@@ -19,6 +19,14 @@ module.exports = {
             'height': "20px"
           }
         },
+        enter_opacity: {
+          '0%': {
+            "opacity": "0"
+          },
+          "100%": {
+            "opacity": '100'
+          }
+        },
         enter: {
           '0%': {
             'transform': 'translateY(1rem)' ,
@@ -26,7 +34,7 @@ module.exports = {
           },
           '100%': {
             'transform': 'translateY(0px)',
-            'opacity': '10'
+            'opacity': '100'
           }
         }
       },
@@ -36,7 +44,8 @@ module.exports = {
       "height-grow-and-shrink-3": "animate_height 0.5s linear infinite alternate",
       "height-grow-and-shrink-4": "animate_height 1.7s linear infinite alternate",
       "height-grow-and-shrink-5": "animate_height 1s linear infinite alternate",
-      "enter-div": "enter 1s linear"
+      "enter-div": "enter 0.5s linear",
+      "enter-opacity": "enter_opacity 2s ease-out"
     }
     },
   },

@@ -24,7 +24,7 @@ const Header: FC<HeaderProps> = ({session, room_id}) => {
  // }
 
   return (
-   <header className='sticky top-0 h-[72px] py-4 px-10 flex flex-row justify-between items-center border-x-0 border-t-0 border-solid border-[#7a7a7a] bg-opacity-50 backdrop-blur backdrop-filter z-50' >
+   <header className='sticky top-0 h-[72px] py-4 px-10 flex flex-row justify-between items-center border-x-0 border-t-0 border-solid border-[#7a7a7a] bg-opacity-50 backdrop-blur backdrop-filter z-30' >
       <h4 className='cursor-pointer'>FPLAY ▶️</h4>
       {!session ? (
         <>

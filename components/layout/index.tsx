@@ -10,7 +10,7 @@ interface LayoutProps {
 
 const Layout: FC<LayoutProps> = ({session, children}) => {
   return (
-    <div className='lg:mx-20 lg:px-20 min-h-screen md:m-0 md:p-0'>
+    <div className='lg:mx-20 lg:px-20 min-h-screen md:m-0 md:p-0 select-none animate-enter-opacity'>
      <Header session={session} />
      <main>{children}</main>
      <Footer />

@@ -21,6 +21,9 @@ const Login: NextPage<any> = ({provider}) => {
         <title>Fplay | Login</title>
         <meta name="description" content="Fplay - Connect with Your Friends and Jam, one song at a time." />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600;800&display=swap" rel="stylesheet" />
       </Head>
 
       <main className='min-h-screen flex justify-center items-center'>
