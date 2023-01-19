@@ -7,7 +7,7 @@ import { HeaderProps } from 'types/header'
 
 const emoji = require('node-emoji')
 
-const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
+const RoomHeader: FC<HeaderProps> = ({session,room_id, paused}) => {
 
     // to check for exisiting url in clipbord - pending (asks for permission for checking text in clipboard)
     function checkClipboardForCode() {
@@ -19,7 +19,6 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
         return false;
     }
 
-    const [playing, setPlaying] = useState<boolean>(true) // to redux
     const [upvotes, setUpvotes] = useState<number>(3) // to redux
 
     // may be to redux or cancelled or from redis
@@ -66,18 +65,18 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
                 {emoji.get(":fire:")}
             </span>
             <span className='inline-flex flex-col items-center'>
-                <h2>
+                <h2 className='max-w-80 truncate'>
                     Music Room
                 </h2>
-                <h6 className='font-medium'>
+                <h6 className='font-medium max-w-60 truncate'>
                     {room_id}
                 </h6>
             </span>
             <h4 className='px-3 py-2 rounded-full transition duration-500 bg-white text-black'>
                 Public
             </h4>
-            <span>
-                {playing ? <SongPlaying type={5} /> : <div />}
+            <span className='animate-enter-div-2'>
+                {!paused ? <SongPlaying type={5} /> : <div className='w-6' />}
             </span>
         </div>
         <div className='w-60 inline-flex items-center justify-around text-white'>

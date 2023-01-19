@@ -27,7 +27,9 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
 
   const {data : session, status}: UseSession = useSession();
 
-  const [currentIndex, setCurrentIndex] = useState<number>(2); //to redux
+  const [currentIndex, setCurrentIndex] = useState<number>(0); //to redux
+  const [paused, setPaused] = useState<boolean>(false) //to redux
+
   
   return (
     <div className='m-0 p-0'>
@@ -37,9 +39,9 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <RoomLayout session={session} room_id={room_id}>
+      <RoomLayout session={session} room_id={room_id} paused={paused}>
         <section className='flex flex-row gap-10'>
-          <AudioProvider socket={socket} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />
+          <AudioProvider socket={socket} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} paused={paused} setPaused={setPaused} />
           <TrackQueue currentIndex={currentIndex} setCurrentIndex={setCurrentIndex}  />
         </section>
         <div className='w-full h-auto'>

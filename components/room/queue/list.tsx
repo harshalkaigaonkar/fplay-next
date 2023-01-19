@@ -35,7 +35,7 @@ const DraggableList : FC<{currentIndex?: number, setCurrentIndex?: any}> = ({cur
                 <ul
 					{...provided.droppableProps}
 					ref={provided.innerRef}
-					className={`relative z-10 -mt-16 mx-2 px-3 list-none lg:h-[35rem] max-h-auto flex flex-col justify-start rounded-b-lg overflow-y-auto`}
+					className={`relative z-10 -mt-16 mx-2 px-3 list-none lg:h-[36.5rem] max-h-auto flex flex-col justify-start rounded-b-lg overflow-y-auto`}
                 >
 					<li key="1" className="mt-16"></li>
 					{

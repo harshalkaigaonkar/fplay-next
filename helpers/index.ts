@@ -10,3 +10,10 @@ export const ramdomEmojiText = (): string => {
  const index = Math.floor(Math.random() * emojis.length);
  return emojis[index];
 }
+
+export const secToMin = (sec: number): string => {
+    return `${Math.floor(sec/60)}:${Math.ceil(sec%60).toLocaleString('en-US', {
+        minimumIntegerDigits: 2,
+        useGrouping: false
+      })}`
+}
