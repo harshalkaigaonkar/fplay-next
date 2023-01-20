@@ -1,9 +1,10 @@
 import { useSession } from 'next-auth/react'
 import Image from 'next/image';
 import React, { FC } from 'react'
+import { UseSession } from 'types';
 import { HomeProps } from 'types/home';
 
-const UsersConnectedRoom: FC<HomeProps> = ({session}) => {
+const UsersConnectedRoom: FC<{session:UseSession}> = ({session}) => {
 
   return (
     <>

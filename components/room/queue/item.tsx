@@ -4,17 +4,20 @@ import SongPlaying from 'components/icon/playing'
 import Image from 'next/image'
 import React, { FC, useState } from 'react'
 import { Draggable } from 'react-beautiful-dnd'
+import { useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
+import { onChangeClickedSongFromQueue, onSetPause, onSetPlay, selectCurrentSongId, selectPaused } from 'redux/slice/roomSlice'
+import { DraggableListItemProps } from 'types/queue'
 
-type DraggableListItemProps = {
-    song: any,
-    index: number,
-    currentIndex?: number,
-    setCurrentIndex?: any
-}
 
-const DraggableListItem: FC<DraggableListItemProps> = ({song, index, currentIndex, setCurrentIndex}) => {
+const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElement}) => {
 
-    const [showPlay, setShowPlay] = useState<boolean>(false)
+    const currentTrackId = useSelector(selectCurrentSongId);
+    const paused = useSelector(selectPaused);
+
+    const dispatch = useDispatch();
+    
+    const [showPlay, setShowPlay] = useState<boolean>(false);
 
     const onMouseEnterHandler = () => {
         setShowPlay(true);
@@ -23,8 +26,13 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, currentInde
         setShowPlay(false);
     }
 
-    const onClickHandler = (result: any) => {
-        console.log(result)
+    const onClickHandler = (id: string) => {
+        if(id !== currentTrackId)
+            dispatch(onChangeClickedSongFromQueue(id));
+        if(audioElement.current.paused)
+            audioElement.current.play();
+        else
+            audioElement.current.pause();
     }
     
   return (
@@ -39,26 +47,30 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, currentInde
                 ref={provided.innerRef}
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}
-                className={`${index === currentIndex ? "scale-105 bg-black " : "scale-100 bg-white/5 hover:bg-black hover:shadow-xl "} my-1 py-2 px-4 inline-flex flex-row items-center rounded-md transition duration-500`}
+                className={`${song.id === currentTrackId ? "scale-105 bg-black " : "scale-100 bg-white/5 hover:bg-black hover:scale-105 hover:shadow-xl "} my-1 py-2 px-4 inline-flex flex-row items-center rounded-md transition duration-500`}
                 onMouseEnter={onMouseEnterHandler}
                 onMouseLeave={onMouseLeaveHandler}
-                onClick={onClickHandler}
+                onClick={() => onClickHandler(song.id)}
             >
                 <section className='w-3/4 inline-flex flex-row gap-5 items-center'>
                     <span className='relative inline-flex flex-col m-0 p-0 cursor-grab active:cursor-grabbing'>
                         <DragIcon className='w-5 h-5' />
                     </span> 
                     <span>
-                        {showPlay && index !== currentIndex && (
+                        {/* Logic can be optimized later (brain not working now!!🤣) */}
+                        {showPlay && (song.id !== currentTrackId ? (
                             <span className='absolute inline-flex items-center justify-center cursor-pointer bg-black/50 h-[45px] w-[45px] z-10 animate-enter-div-2'>
                                 <PlayIcon className='w-6 h-6' />
                             </span>
-                        )}
-                        {index === currentIndex && (
-                            <span className='absolute inline-flex items-center justify-center cursor-pointer bg-black/50 h-[45px] w-[45px] z-10 animate-enter-div'>
-                                <SongPlaying type={3} />
+                        ):( !paused  ? (
+                            <span className='absolute inline-flex items-center justify-center cursor-pointer bg-black/50 h-[45px] w-[45px] z-10 animate-enter-div-2'>
+                                <PauseIcon className='w-6 h-6' />
                             </span>
-                        )}
+                        ): (
+                            <span className='absolute inline-flex items-center justify-center cursor-pointer bg-black/50 h-[45px] w-[45px] z-10 animate-enter-div-2'>
+                                <PlayIcon className='w-6 h-6' />
+                            </span>
+                        )))}
                         <Image
                             src={song.image[1].link}
                             alt={`Song Icon ${song.image[1].quality}`}
@@ -73,10 +85,15 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, currentInde
                     </span>
                 </section>
                 <div className='flex-0' />
-                <section className='w-1/4 inline-flex flex-row justify-end gap-4'>
+                <section className='w-1/4 inline-flex flex-row justify-end gap-5'>
                     {/* <span>
                         <TrashIcon className='w-6 h-6' />
                     </span> */}
+                    {song.id === currentTrackId && !paused && (
+                            <span className='inline-flex items-center justify-center cursor-pointer bg-inherit animate-enter-div'>
+                                <SongPlaying type={3} />
+                            </span>
+                    )}
                     <span>
                         <HeartIcon className='w-6 h-6' />
                     </span>

@@ -123,6 +123,8 @@ interface SaavnSongObjectTypes {
   label?: string,
   primaryArtists?: string,
   primaryArtistsId?: string,
+  featuredArtists?: string,
+  featuredArtistsId?: string,
   explicitContent?: number,
   playCount?: number,
   language?: string,

@@ -1,31 +1,29 @@
 import { DragDropContext, Droppable, resetServerContext } from "react-beautiful-dnd";
 import Songs from 'songs.json';
-import React, { FC, useState } from 'react'
+import React, { FC, MutableRefObject, useState } from 'react'
 import DraggableListItem from './item';
 import EmptyQueue from "./empty";
+import { useSelector } from "react-redux";
+import { onReaarrangeSongQueue, selectSongsQueue } from "redux/slice/roomSlice";
+import { useDispatch } from "react-redux";
 
 resetServerContext();
 
-const DraggableList : FC<{currentIndex?: number, setCurrentIndex?: any}> = ({currentIndex, setCurrentIndex}) => {
+const DraggableList : FC<{audioElement: MutableRefObject<HTMLAudioElement|null>}> = ({audioElement}) => {
 
-	const [songs, setSongs] = useState<any>(Songs);
+	const songsQueue = useSelector(selectSongsQueue);
 
-	const reorderSongs = (songs: any, indexReplacedFrom : number, indexReplacedTo : number) => {
-		const result = Array.from(songs);
-		const [removed] = result.splice(indexReplacedFrom, 1);
-		result.splice(indexReplacedTo, 0, removed);
-		setSongs(result);
-	}
+	const dispatch = useDispatch();
 
     const onDragEnd = (result: any) : void => {
 		if (!result.destination) {
 			return;
 		}
-		reorderSongs(
-			songs, 
-			result.source.index, 
-			result.destination.index
-		);
+
+		dispatch(onReaarrangeSongQueue({
+			indexReplacedFrom: result.source.index, 
+			indexReplacedTo: result.destination.index
+		}))
     }
 
   return (
@@ -39,16 +37,16 @@ const DraggableList : FC<{currentIndex?: number, setCurrentIndex?: any}> = ({cur
                 >
 					<li key="1" className="mt-16"></li>
 					{
-						songs.length === 0 ? (
+						songsQueue.length === 0 ? (
 							<>
 								<EmptyQueue />
 							</>
 						) 
 						:
 						(
-							songs.map(
+							songsQueue.map(
 								(song: any, index: number): JSX.Element => (
-									<DraggableListItem song={song} index={index} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} />
+									<DraggableListItem song={song} index={index} audioElement={audioElement} />
 								)
 							)
 						)

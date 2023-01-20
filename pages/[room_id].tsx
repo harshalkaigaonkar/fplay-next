@@ -12,7 +12,7 @@ import AudioProvider from 'components/room/audio';
 import TrackQueue from 'components/room/queue';
 import MusicPanelButton from 'components/room/track/button';
 import UsersConnectedRoom from 'components/room/conections';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL}`)
 
@@ -26,11 +26,9 @@ export type HomeProps = {
 const Home: NextPage<HomeProps> = ({room_id}) => {
 
   const {data : session, status}: UseSession = useSession();
-
-  const [currentIndex, setCurrentIndex] = useState<number>(0); //to redux
-  const [paused, setPaused] = useState<boolean>(false) //to redux
-
   
+  const audioElement = useRef<HTMLAudioElement|null>(null);
+
   return (
     <div className='m-0 p-0'>
       <Head>
@@ -39,10 +37,10 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <RoomLayout session={session} room_id={room_id} paused={paused}>
+      <RoomLayout session={session} room_id={room_id}>
         <section className='flex flex-row gap-10'>
-          <AudioProvider socket={socket} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} paused={paused} setPaused={setPaused} />
-          <TrackQueue currentIndex={currentIndex} setCurrentIndex={setCurrentIndex}  />
+          <AudioProvider socket={socket} audioElement={audioElement}  />
+          <TrackQueue socket={socket} audioElement={audioElement} />
         </section>
         <div className='w-full h-auto'>
           <UsersConnectedRoom session={session} />
