@@ -21,12 +21,10 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
 
     const onPlayHandler = () => {
         audioElement.current.play();
-        dispatch(onSetPlay());
     }
     
     const onPauseHandler = () => {
         audioElement.current.pause();
-        dispatch(onSetPause());
     }
 
     const onLikeHandler = () => {

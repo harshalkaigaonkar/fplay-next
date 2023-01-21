@@ -29,8 +29,11 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
     const onClickHandler = (id: string) => {
         if(id !== currentTrackId)
             dispatch(onChangeClickedSongFromQueue(id));
-        if(audioElement.current.paused)
+        console.log(audioElement.current.paused)
+        if(audioElement.current.paused) {
             audioElement.current.play();
+            dispatch(onSetPlay());
+        }
         else
             audioElement.current.pause();
     }
@@ -47,7 +50,7 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                 ref={provided.innerRef}
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}
-                className={`${song.id === currentTrackId ? "scale-105 bg-black " : "scale-100 bg-white/5 hover:bg-black hover:scale-105 hover:shadow-xl "} my-1 py-2 px-4 inline-flex flex-row items-center rounded-md transition duration-500`}
+                className={`${song.id === currentTrackId ? "scale-105 bg-black " : "scale-100 bg-white/5 hover:bg-black hover:scale-105 hover:shadow-xl "} my-1 py-2 px-4 inline-flex flex-row items-center rounded-md transition ease-in-out duration-700`}
                 onMouseEnter={onMouseEnterHandler}
                 onMouseLeave={onMouseLeaveHandler}
                 onClick={() => onClickHandler(song.id)}
