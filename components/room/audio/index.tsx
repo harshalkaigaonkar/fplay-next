@@ -3,7 +3,7 @@ import { HomeProps } from 'types/home'
 import AudioPlayer from './player';
 import { secToMin } from 'helpers';
 import { useSelector } from 'react-redux';
-import { onChangeNextSongFromQueue, onSetPause, onSetPlay, onUpdateTime, selectCurrentSongId, selectPaused, selectSongsQueue, selectTime } from 'redux/slice/roomSlice';
+import { onChangeNextSongFromQueue, onSetPause, onSetPlay, onUpdateTime, selectCurrentSongId, selectPaused, selectSongsQueue } from 'redux/slice/roomSlice';
 import { useDispatch } from 'react-redux';
 import { SaavnSongObjectTypes } from 'types';
 

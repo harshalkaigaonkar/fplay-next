@@ -1,9 +1,10 @@
 import { ArrowLeftIcon, ArrowUpIcon, ArrowUturnLeftIcon, BookmarkIcon, CheckIcon, EllipsisVerticalIcon, Square2StackIcon, UserCircleIcon } from '@heroicons/react/20/solid'
+import AddTrackPanelIcon from 'components/icon/addTrack'
 import SongPlaying from 'components/icon/playing'
 import Image from 'next/image'
 import React, { FC, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { onDownvote, onUpvote, selectPaused, selectSongsQueue, selectUpvotes } from 'redux/slice/roomSlice'
+import { onDownvote, onUpvote,onOpenPanel, selectPaused, selectSongsQueue, selectUpvotes } from 'redux/slice/roomSlice'
 import { HeaderProps } from 'types/header'
 
 const emoji = require('node-emoji')
@@ -43,6 +44,10 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
 
     const onBackHandler = () => {
         window.location.href = "/";
+    }
+
+    const onOpenPanelHandler = () => {
+        dispatch(onOpenPanel());
     }
 
   return (
@@ -88,9 +93,9 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
             </span>
         </div>
         <div className='w-60 inline-flex items-center justify-around text-white'>
-            {/* <span className='p-4 rounded-full transition duration-300 hover:bg-[#434343] active:bg-[#343434] hover:cursor-pointer'>
-                <EllipsisVerticalIcon className='w-7 h-6' />
-            </span> */}
+            <span onClick={onOpenPanelHandler} className='p-4 rounded-full transition duration-300 hover:bg-[#434343] active:bg-[#343434] hover:cursor-pointer'>
+                <AddTrackPanelIcon className='w-8 h-7' />
+            </span>
             <span className='p-4 rounded-full hover:bg-[#434343] active:bg-[#343434] hover:cursor-pointer'>
                 <BookmarkIcon className='w-7 h-6' />
             </span>

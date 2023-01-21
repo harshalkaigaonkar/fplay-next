@@ -10,9 +10,10 @@ import { Session } from 'next-auth';
 import RoomLayout from 'components/layout/room';
 import AudioProvider from 'components/room/audio';
 import TrackQueue from 'components/room/queue';
-import MusicPanelButton from 'components/room/track/button';
+import MusicPanelButton from 'components/track/button';
 import UsersConnectedRoom from 'components/room/conections';
 import { useRef, useState } from 'react';
+import MediaPanel from 'components/panel';
 
 const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL}`)
 
@@ -46,7 +47,7 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
           <UsersConnectedRoom session={session} />
         </div>
       </RoomLayout>
-      <MusicPanelButton />
+      <MediaPanel />
     </div>
   )
 }

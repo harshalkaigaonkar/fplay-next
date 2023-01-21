@@ -21,4 +21,5 @@ type InitialRoomStateTypes = {
     time: number,
     users: AuthUserType.user[]|any[],
     upvotes: number,
+    bottomSheet: booelan
 }

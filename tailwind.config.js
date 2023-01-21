@@ -36,6 +36,14 @@ module.exports = {
             'transform': 'translateY(0px)',
             'opacity': '100'
           }
+        },
+        enter_bottom: {
+          '0%': {
+            'height': '5%',
+          },
+          '100%': {
+            'height': '100%'
+          }
         }
       },
     animation: {
@@ -47,7 +55,9 @@ module.exports = {
       "enter-div": "enter 0.5s linear",
       "enter-div-1": "enter 0.1s linear",
       "enter-div-2": "enter 0.2s linear",
-      "enter-opacity": "enter_opacity 2s ease-out"
+      "enter-opacity": "enter_opacity 2s ease-out",
+      "enter-bottom": "enter_bottom .3s linear alternate",
+      "enter-bottom-reverse": "enter_bottom 2s reverse",
     }
     },
   },

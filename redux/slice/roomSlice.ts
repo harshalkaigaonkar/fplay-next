@@ -11,6 +11,8 @@ const initialState : InitialRoomStateTypes = {
     time: 0,
     users: [],
     upvotes: 0,
+    //helper state
+    bottomSheet: false
 }
 
 export const rooomSlice = createSlice({ 
@@ -106,6 +108,12 @@ export const rooomSlice = createSlice({
     onSetPause: (state) => {
         state.paused = true;
     },
+    onClosePanel: (state) => {
+        state.bottomSheet = false;
+    },
+    onOpenPanel: (state) => {
+        state.bottomSheet = true;
+    }
   }
 })
 
@@ -121,7 +129,9 @@ export const {
     onUpdateTime,
     onChangeNextSongFromQueue,
     onChangePrevSongFromQueue,
-    onChangeClickedSongFromQueue
+    onChangeClickedSongFromQueue,
+    onClosePanel,
+    onOpenPanel
 } = rooomSlice.actions;
 
 export const selectSongsQueue = (state: RootState) => state.room.songsQueue;
@@ -130,5 +140,6 @@ export const selectPaused = (state: RootState) => state.room.paused;
 export const selectTime = (state: RootState) => state.room.time;
 export const selectUsers = (state: RootState) => state.room.users;
 export const selectUpvotes = (state: RootState) => state.room.upvotes;
+export const selectBottomSheet = (state: RootState) => state.room.bottomSheet;
 
 export default rooomSlice.reducer
