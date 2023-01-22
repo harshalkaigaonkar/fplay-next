@@ -16,7 +16,7 @@ const BottomSheet: FC<{children: JSX.Element}> = ({children}) => {
             dispatch(onOpenPanel());
     }
     return (
-      <span className='animate-enter-opacity'>
+      <span className='animate-enter-opacity select-none'>
             {bottomSheet && <span onClick={onPanelControl} className="fixed inset-0 z-30" />}
             <section className={` ${bottomSheet ? "h-[90%] animate-enter-bottom": ""}
             fixed max-h-[90%] min-h-[5%] bottom-0 left-20 right-20 bg-black z-40 rounded-xl border-solid border-white`}>
