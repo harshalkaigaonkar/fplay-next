@@ -7,5 +7,5 @@ type TrackQueueProps = {
 type DraggableListItemProps = {
     song: SaavnSongObjectTypes|any,
     index: number,
-    audioElement: MutableRefObject<HTMLAudioElement|null>
+    audioElement?: MutableRefObject<HTMLAudioElement|null>
 }

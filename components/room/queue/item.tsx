@@ -28,8 +28,8 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
 
     const onClickHandler = (id: string) => {
         if(id !== currentTrackId)
-            dispatch(onChangeClickedSongFromQueue(id));
-        console.log(audioElement.current.paused)
+            dispatch(onChangeClickedSongFromQueue(id));    
+        if(!audioElement.current) return;
         if(audioElement.current.paused) {
             audioElement.current.play();
             dispatch(onSetPlay());
@@ -50,7 +50,7 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                 ref={provided.innerRef}
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}
-                className={`${song.id === currentTrackId ? "scale-105 bg-black " : "scale-100 bg-white/5 hover:bg-black hover:scale-105 hover:shadow-xl "} my-1 py-2 px-4 inline-flex flex-row items-center rounded-md transition ease-in-out duration-700`}
+                className={`${song.id === currentTrackId ? "scale-105 bg-white/10 " : "scale-100 bg-white/5 hover:bg-white/10 hover:scale-105 hover:shadow-xl "} my-1 py-2 px-4 inline-flex flex-row items-center rounded-md transition ease-in-out duration-700`}
                 onMouseEnter={onMouseEnterHandler}
                 onMouseLeave={onMouseLeaveHandler}
                 onClick={() => onClickHandler(song.id)}
@@ -62,15 +62,15 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                     <span>
                         {/* Logic can be optimized later (brain not working now!!🤣) */}
                         {showPlay && (song.id !== currentTrackId ? (
-                            <span className='absolute inline-flex items-center justify-center cursor-pointer bg-black/50 h-[45px] w-[45px] z-10 animate-enter-div-2'>
+                            <span className='absolute inline-flex items-center justify-center cursor-pointer bg-black/50 h-[45px] w-[45px] rounded-md z-10 animate-enter-div-2'>
                                 <PlayIcon className='w-6 h-6' />
                             </span>
                         ):( !paused  ? (
-                            <span className='absolute inline-flex items-center justify-center cursor-pointer bg-black/50 h-[45px] w-[45px] z-10 animate-enter-div-2'>
+                            <span className='absolute inline-flex items-center justify-center cursor-pointer bg-black/50 h-[45px] w-[45px] rounded-md z-10 animate-enter-div-2'>
                                 <PauseIcon className='w-6 h-6' />
                             </span>
                         ): (
-                            <span className='absolute inline-flex items-center justify-center cursor-pointer bg-black/50 h-[45px] w-[45px] z-10 animate-enter-div-2'>
+                            <span className='absolute inline-flex items-center justify-center cursor-pointer bg-black/50 h-[45px] w-[45px] rounded-md z-10 animate-enter-div-2'>
                                 <PlayIcon className='w-6 h-6' />
                             </span>
                         )))}
@@ -83,8 +83,8 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                         />
                     </span>
                     <span className='inline-flex flex-col gap-2'>
-                        <h5 className='w-full font-semibold'>{song.name}</h5>
-                        <h6 className='font-normal'>{song.primaryArtists}{song.featuredArtists && ` ft. ${song.featuredArtists}`}</h6>
+                        <h5 className='min-w-28 w-full font-semibold text-ellipsis overflow-hidden'>{song.name}</h5>
+                        <h6 className='min-w-28 w-full font-normal text-ellipsis overflow-hidden'>{song.primaryArtists}{song.featuredArtists && ` ft. ${song.featuredArtists}`}</h6>
                     </span>
                 </section>
                 <div className='flex-0' />

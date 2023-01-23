@@ -50,10 +50,10 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
     
   
     return (
-        <div className='h-[38.5rem] mt-5 px-5 py-10 flex flex-col items-center gap-2 bg-gradient-to-br from-black to-[#7A7A7A] rounded-[40px]'>
+        <div className='h-full mt-5 px-5 py-10 flex flex-col items-center gap-2 bg-gradient-to-br from-black to-[#7A7A7A] rounded-[40px]'>
             {currentTrack && (
                 <>
-                    <span className='w-full inline-flex flex-row items-center justify-evenly'>
+                    <span className='w-full h-fit inline-flex flex-row items-center justify-evenly'>
                         <span onClick={onPrevTrack} className='p-2 inline-flex items-center h-fit text-white/70 rounded-full hover:-translate-x-1 hover:bg-white/5 cursor-pointer transition duration-500 active:bg-[#121212]'>
                             <ChevronLeftIcon className='w-20 h-20' />
                         </span>

@@ -16,6 +16,13 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
     const paused = useSelector(selectPaused);
     const dispatch = useDispatch();
     
+    // may be to redux or cancelled or from redis
+    const [upvoted, setUpvoted] = useState<boolean>(false) // should be controlled from backend
+
+    //part of local state
+    const [copied, setCopied] = useState<boolean>(false) // should depend on clipboard
+    
+
     // to check for exisiting url in clipbord - pending (asks for permission for checking text in clipboard)
     function checkClipboardForCode() {
         if(typeof navigator === 'object' && navigator) {
@@ -25,11 +32,6 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
         }
         return false;
     }
-    // may be to redux or cancelled or from redis
-    const [upvoted, setUpvoted] = useState<boolean>(false) // should be controlled from backend
-
-    //part of local state
-    const [copied, setCopied] = useState<boolean>(false) // should depend on clipboard
 
     const onCopyCodeHandler = async () => {
         await navigator.clipboard.writeText(window.location.href);
@@ -58,19 +60,11 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
             </span>
             <span 
                 className={` ${!copied && "hover:bg-[#434343] active:bg-[#343434]"}
-                    p-4 rounded-full transition duration-300 cursor-pointer`}
+                    p-4 rounded-full transition duration-300 cursor-pointer inline-flex flex-row items-center justify-center`}
                 onClick={onCopyCodeHandler}
             >    
                 <Square2StackIcon className='w-7 h-6' />
-                {copied && <CheckIcon className='w-4 h-4' />}
-            </span>
-            <span 
-                className={` ${upvoted ? "text-white/50 bg-white/30" : "bg-white/5"}
-                    w-20 px-4 py-1 inline-flex gap-3 items-center rounded-full border-solid border-white/10 cursor-pointer`}
-                onClick={onManipulateUpvotes}    
-            >
-                <ArrowUpIcon className='w-6 h-6' />
-                <p>{upvotes}</p>
+                {copied ? <CheckIcon className='w-4 h-4' /> : <div className='w-4 h-4' />}
             </span>
         </div>
         <div className='inline-flex flex-0 items-center justify-center gap-5'>
@@ -92,12 +86,20 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
                 {!paused ? <SongPlaying type={5} /> : <SongPlaying type={0} />}
             </span>
         </div>
-        <div className='w-60 inline-flex items-center justify-around text-white'>
-            <span onClick={onOpenPanelHandler} className='p-4 rounded-full transition duration-300 hover:bg-[#434343] active:bg-[#343434] hover:cursor-pointer'>
+        <div className='lg:w-80 inline-flex items-center justify-around text-white'>
+            {/* <span onClick={onOpenPanelHandler} className='p-4 rounded-full transition duration-300 hover:bg-[#434343] active:bg-[#343434] hover:cursor-pointer'>
                 <AddTrackPanelIcon className='w-8 h-7' />
-            </span>
-            <span className='p-4 rounded-full hover:bg-[#434343] active:bg-[#343434] hover:cursor-pointer'>
+            </span> */}
+            {/* <span className='p-4 rounded-full hover:bg-[#434343] active:bg-[#343434] hover:cursor-pointer'>
                 <BookmarkIcon className='w-7 h-6' />
+            </span> */}
+            <span 
+                className={` ${upvoted ? "text-white/50 bg-white/30" : "bg-white/5"}
+                    w-20 px-4 py-1 inline-flex gap-3 items-center rounded-full border-solid border-white/10 cursor-pointer`}
+                onClick={onManipulateUpvotes}    
+            >
+                <ArrowUpIcon className='w-6 h-6' />
+                <p>{upvotes}</p>
             </span>
             <span className='inline-flex items-center p-4 rounded-full cursor-default'>
                 <Image

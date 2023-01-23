@@ -39,7 +39,7 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
       </Head>
 
       <RoomLayout session={session} room_id={room_id}>
-        <section className='flex flex-row gap-10'>
+        <section className='h-[38.5rem] flex flex-row gap-10'>
           <AudioProvider socket={socket} audioElement={audioElement}  />
           <TrackQueue socket={socket} audioElement={audioElement} />
         </section>
@@ -47,7 +47,7 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
           <UsersConnectedRoom session={session} />
         </div>
       </RoomLayout>
-      <MediaPanel />
+      <MediaPanel audioElement={audioElement} />
     </div>
   )
 }

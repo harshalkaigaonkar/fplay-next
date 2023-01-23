@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 
 resetServerContext();
 
-const DraggableList : FC<{audioElement: MutableRefObject<HTMLAudioElement|null>}> = ({audioElement}) => {
+const DraggableList : FC<{audioElement?: MutableRefObject<HTMLAudioElement|null>}> = ({audioElement}) => {
 
 	const songsQueue = useSelector(selectSongsQueue);
 

@@ -8,7 +8,7 @@ const UsersConnectedRoom: FC<{session:UseSession}> = ({session}) => {
 
   return (
     <>
-        <h3 className='-mt-5 text-center'>Connected Users (1)</h3>
+        <h3 className=' mt-10 text-center'>Connected Users (1)</h3>
         <div className='flex flex-row flex-wrap justify-center my-10'>
             <section className='w-40 py-5 flex flex-col justify-center items-center gap-3'>
                 <div className='inline-flex items-center rounded-full border-solid border-white'>
