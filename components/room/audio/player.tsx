@@ -73,20 +73,20 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
                         </span>
                     </span>
                     <span className='py-2 w-full inline-flex flex-row justify-center items-center gap-10'>
-                        <span className='inline-flex justify-center items-center p-2 rounded-xl text-white transition duration-700 hover:shadow-2xl hover:shadow-black hover:bg-[#7A7A7A]/10 cursor-pointer'>
+                        <span className='bg-inherit outline-none border-none inline-flex justify-center items-center p-2 rounded-xl text-white transition duration-700 hover:shadow-2xl hover:shadow-black hover:bg-[#7A7A7A]/10 cursor-pointer'>
                             <AddToPlaylistIcon className='lg:w-10 lg:h-10 md:w-8 md:w-8' />
                         </span>
-                        <span
+                        <button
                             onClick={paused || (audioElement.current && audioElement.current.paused) ? onPlayHandler : onPauseHandler}
-                            className='inline-flex justify-center items-center lg:p-4 md:p-1 sm:p-1 rounded-full text-white transition duration-700 hover:shadow-2xl hover:shadow-black hover:bg-[#7A7A7A]/10 cursor-pointer'
+                            className='bg-inherit outline-none border-none inline-flex justify-center items-center lg:p-4 md:p-1 sm:p-1 rounded-full text-white transition duration-700 hover:shadow-2xl hover:shadow-black hover:bg-[#7A7A7A]/10 cursor-pointer'
                         >
                             {paused || (audioElement.current && audioElement.current.paused) ? 
                             <PlayIcon className='lg:w-16 lg:h-16 md:w-14 md:h-14' /> :
                             <PauseIcon className='lg:w-16 lg:h-16 md:w-14 md:h-14' />}
-                        </span>
+                        </button>
                         <span
                             onClick={onLikeHandler} 
-                            className='inline-flex justify-center items-center p-2 rounded-xl text-white transition duration-700 hover:shadow-2xl hover:shadow-black hover:bg-[#7A7A7A]/10 cursor-pointer'
+                            className='bg-inherit outline-none border-none inline-flex justify-center items-center p-2 rounded-xl text-white transition duration-700 hover:shadow-2xl hover:shadow-black hover:bg-[#7A7A7A]/10 cursor-pointer'
                         >
                             {liked ? 
                             <HeartIcon className='lg:w-10 lg:h-10 md:w-8 md:w-8' /> :
