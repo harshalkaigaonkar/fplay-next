@@ -10,7 +10,7 @@ import { onChangeClickedSongFromQueue, onSetPause, onSetPlay, selectCurrentSongI
 import { DraggableListItemProps } from 'types/queue'
 
 
-const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElement}) => {
+const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElement, fromPanel}) => {
 
     const currentTrackId = useSelector(selectCurrentSongId);
     const paused = useSelector(selectPaused);
@@ -74,6 +74,11 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                                 <PlayIcon className='w-6 h-6' />
                             </span>
                         )))}
+                        {!showPlay && fromPanel && song.id === currentTrackId && (
+                            <span className='absolute inline-flex items-center justify-center cursor-pointer bg-black/50 h-[45px] w-[45px] rounded-md z-10 animate-enter-div-2'>
+                                <SongPlaying type={3} />
+                            </span>
+                        )}
                         <Image
                             src={song.image[1].link}
                             alt={`Song Icon ${song.image[1].quality}`}
@@ -82,9 +87,9 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                             className="rounded-md overflow-hidden z-0"
                         />
                     </span>
-                    <span className='inline-flex flex-col gap-2'>
-                        <h5 className='min-w-28 w-full font-semibold text-ellipsis overflow-hidden'>{song.name}</h5>
-                        <h6 className='min-w-28 w-full font-normal text-ellipsis overflow-hidden'>{song.primaryArtists}{song.featuredArtists && ` ft. ${song.featuredArtists}`}</h6>
+                    <span className='inline-flex flex-col gap-2 truncate'>
+                        <h5 className='w-full font-semibold'>{song.name}</h5>
+                        <h6 className='w-full font-normal'>{song.primaryArtists}{song.featuredArtists && ` ft. ${song.featuredArtists}`}</h6>
                     </span>
                 </section>
                 <div className='flex-0' />
@@ -92,7 +97,7 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                     {/* <span>
                         <TrashIcon className='w-6 h-6' />
                     </span> */}
-                    {song.id === currentTrackId && !paused && (
+                    {song.id === currentTrackId && !paused && !fromPanel && (
                             <span className='inline-flex items-center justify-center cursor-pointer bg-inherit animate-enter-div'>
                                 <SongPlaying type={3} />
                             </span>

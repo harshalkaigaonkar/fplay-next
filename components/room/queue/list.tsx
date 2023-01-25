@@ -6,10 +6,11 @@ import EmptyQueue from "./empty";
 import { useSelector } from "react-redux";
 import { onReaarrangeSongQueue, selectSongsQueue } from "redux/slice/roomSlice";
 import { useDispatch } from "react-redux";
+import { TrackQueueProps } from "types/queue";
 
 resetServerContext();
 
-const DraggableList : FC<{audioElement?: MutableRefObject<HTMLAudioElement|null>}> = ({audioElement}) => {
+const DraggableList : FC<TrackQueueProps> = ({audioElement, fromPanel}) => {
 
 	const songsQueue = useSelector(selectSongsQueue);
 
@@ -46,7 +47,7 @@ const DraggableList : FC<{audioElement?: MutableRefObject<HTMLAudioElement|null>
 						(
 							songsQueue.map(
 								(song: any, index: number): JSX.Element => (
-									<DraggableListItem song={song} index={index} audioElement={audioElement} />
+									<DraggableListItem song={song} index={index} audioElement={audioElement} fromPanel={fromPanel} />
 								)
 							)
 						)
