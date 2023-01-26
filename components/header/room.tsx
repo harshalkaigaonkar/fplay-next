@@ -64,7 +64,7 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
                 onClick={onCopyCodeHandler}
             >    
                 <Square2StackIcon className='w-7 h-6' />
-                {copied ? <CheckIcon className='w-4 h-4' /> : <div className='w-4 h-4' />}
+                {copied && <CheckIcon className='w-4 h-4 animate-enter-div-1' />}
             </span>
         </div>
         <div className='inline-flex flex-0 items-center justify-center gap-5'>
@@ -99,7 +99,7 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
                 onClick={onManipulateUpvotes}    
             >
                 <ArrowUpIcon className='w-6 h-6' />
-                <p>{upvotes}</p>
+                <p className='w-2'>{upvotes}</p>
             </span>
             <span className='inline-flex items-center p-4 rounded-full cursor-default'>
                 <Image
