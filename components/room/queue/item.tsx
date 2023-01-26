@@ -74,7 +74,7 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                                 <PlayIcon className='w-6 h-6' />
                             </span>
                         )))}
-                        {!showPlay && fromPanel && song.id === currentTrackId && (
+                        {!showPlay && fromPanel && song.id === currentTrackId && !paused && (
                             <span className='absolute inline-flex items-center justify-center cursor-pointer bg-black/50 h-[45px] w-[45px] rounded-md z-10 animate-enter-div-2'>
                                 <SongPlaying type={3} />
                             </span>

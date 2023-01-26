@@ -23,6 +23,25 @@ body {
   transition: 0.5s linear;
 }
 
+::-webkit-scrollbar {
+  @apply p-4 w-2
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  @apply shadow-xl rounded-full
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  @apply bg-black/50 rounded-md
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-black/90 cursor-pointer
+}
+
 h1,
 h2,
 h3,
