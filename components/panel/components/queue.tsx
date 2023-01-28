@@ -10,8 +10,8 @@ const PanelDraggableQueue: FC<{audioElement ?: MutableRefObject<HTMLAudioElement
     const dispatch = useDispatch();
 
     return (
-        <div className='w-1/3 h-full flex flex-col border-t-0 border-r-0 border-solid border-white border-l-[0.5px]'>
-            <header className='sticky py-2 px-10 w-full h-20 inline-flex justify-between items-center border-t-0 border-x-0 border-solid border-white/10 bg-opacity-50 backdrop-blur backdrop-filter rounded-tr-xl z-20'>
+        <div className='w-1/3 h-full flex flex-col border-y-0 border-r-0 border-solid border-white border-l-[0.5px]'>
+            <header className='sticky py-6 px-10 w-full h-20 inline-flex justify-between items-center border-t-0 border-x-0 border-solid border-white/10 bg-opacity-50 backdrop-blur backdrop-filter rounded-tr-xl z-20'>
                 <h1 className='text-[20px]'>Songs Queue</h1>
             </header>
             {songs.length > 0 ? (
