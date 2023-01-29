@@ -18,24 +18,22 @@ const PanelSearch = () => {
   return (
     <div className='w-2/3 h-full flex flex-col border-y-0 border-l-0 border-solid border-white border-r-[0.5px]'>
         <header className='sticky py-2 px-10 h-20 inline-flex justify-between items-center border-t-0 border-x-0 border-solid border-white/10 bg-opacity-50 backdrop-blur backdrop-filter rounded-tl-xl'>
-            <h1 className='text-[20px] w-60'>Search Songs</h1>
-			<form 
-				onClick={openSearchHandler}
+            <h1 className='font-bold text-[20px] w-60'>Search Songs</h1>
+			<section
 				className={` ${searchActive ? "w-full animate-enter-left-1 cursor-default ": "w-60 text-transparent cursor-pointer"}
-				h-12 px-10 py-1 flex flex-row border-solid gap-5 border-gray-500 hover:border-gray-800 items-center rounded-full transition duration-300 text-inherit text-[13px] font-semibold bg-white`} 
+				h-12 py-1 px-3 flex flex-row justify-center border-solid gap-2 border-[#808080] hover:border-gray-800 items-center rounded-full transition duration-700 text-inherit text-[13px] font-semibold bg-black hover:bg-[#343434] active:opacity-25`} 
 			>
 				{
 					searchActive ? (
 						<>
 							<span>
-								<MagnifyingGlassIcon className='w-6 h-6 text-black' />
+								<MagnifyingGlassIcon className='w-6 h-6' />
 							</span>
 							<input 
 								autoFocus
 								type={"text"}
-								className="py-1 px-3 appearance-none flex-1 text-black placeholder-black bg-inherit border-t-0 border-x-0 border-solid border-black focus:outline-none"
-								placeholder="Search your songs here." 
-								onClick={openSearchHandler}
+								className="py-1 px-3 appearance-none flex-1 bg-inherit placeholder-white text-white border-t-0 border-x-0 border-solid border-white focus:outline-none"
+								placeholder="Search your songs here..."
 							/>
 							<span
 								onClick={closeSearchHandler}
@@ -46,18 +44,18 @@ const PanelSearch = () => {
 							</span>
 						</>
 					) : (
-						<>
-							<p className='w-full text-center font-bold text-black'>Search your songs here.</p>
-						</>
+						<span className='w-inherit h-inherit bg-gradient-to-r from-gray-200 via-gray-400 to-gray-600 bg-clip-text' onClick={openSearchHandler}>
+							<p className='w-full font-bold text-transparent cursor-pointer'>Search your songs here.</p>
+						</span>
 					)
 				}
-			</form>
+			</section>
 			{/* <div className={`w-60 h-fit p-3 flex border-solid border-white hover:border-gray-700 active:border-gray-800 items-center justify-center rounded-full bg-gradient-to-r from-gray-200 via-gray-400 to-gray-600 bg-clip-text transition duration-150 cursor-pointer`}>
 				<p className={`w-full text-[13px] font-semibold text-transparent text-center cursor-pointer`}>Search your songs here.</p>
 			</div> */}
         </header>
         <div className='flex-1 min-w-full inline-flex justify-center items-center'>
-            <p className='text-xl text-white/30'>Search and Play Songs or Add To Queue ✨</p>
+            <p className='font-semibold text-xl text-white/30'>Search and Play Songs or Add To Queue ✨</p>
         </div>
     </div>
   )

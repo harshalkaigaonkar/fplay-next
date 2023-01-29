@@ -50,7 +50,7 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
     
   
     return (
-        <div className='h-full mt-5 px-5 py-10 flex flex-col items-center gap-2 bg-gradient-to-br from-black to-[#7A7A7A] rounded-[40px]'>
+        <div className='h-full mt-5 px-5 py-10 flex flex-col items-center gap-2 bg-gradient-to-r from-gray-800 via-gray-900 to-black rounded-[40px]'>
             {currentTrack && (
                 <>
                     <span className='w-full h-fit inline-flex flex-row items-center justify-evenly'>
@@ -74,7 +74,7 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
                     </span>
                     <span className='py-2 w-full inline-flex flex-row justify-center items-center gap-10'>
                         <span className='bg-inherit outline-none border-none inline-flex justify-center items-center p-2 rounded-xl text-white transition duration-700 hover:shadow-2xl hover:shadow-black hover:bg-[#7A7A7A]/10 cursor-pointer'>
-                            <AddToPlaylistIcon className='lg:w-10 lg:h-10 md:w-8 md:w-8' />
+                            <AddToPlaylistIcon className='lg:w-10 lg:h-10 md:w-8' />
                         </span>
                         <button
                             onClick={paused || (audioElement.current && audioElement.current.paused) ? onPlayHandler : onPauseHandler}
@@ -89,8 +89,8 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
                             className='bg-inherit outline-none border-none inline-flex justify-center items-center p-2 rounded-xl text-white transition duration-700 hover:shadow-2xl hover:shadow-black hover:bg-[#7A7A7A]/10 cursor-pointer'
                         >
                             {liked ? 
-                            <HeartIcon className='lg:w-10 lg:h-10 md:w-8 md:w-8' /> :
-                            <OutlineHeartIcon className='lg:w-10 lg:h-10 md:w-8 md:w-8' /> }
+                            <HeartIcon className='lg:w-10 lg:h-10 md:w-8' /> :
+                            <OutlineHeartIcon className='lg:w-10 lg:h-10 md:w-8' /> }
                         </span>
                     </span>
                     <span className='w-full px-12'>
