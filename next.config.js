@@ -4,7 +4,8 @@ const nextConfig = {
   images: {
     domains: [
       "lh3.googleusercontent.com",
-      "c.saavncdn.com"
+      "c.saavncdn.com",
+      "www.jiosaavn.com",
     ]
   }
 }

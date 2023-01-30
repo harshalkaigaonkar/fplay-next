@@ -23,3 +23,10 @@ type InitialRoomStateTypes = {
     upvotes: number,
     bottomSheet: booelan
 }
+
+type InitialSearchStateTypes = {
+    query: string,
+    results: any,
+    loading: boolean,
+    error: string|null
+}

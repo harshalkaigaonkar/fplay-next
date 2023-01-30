@@ -3,6 +3,7 @@ import React, { FC, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { onClosePanel, onOpenPanel, selectBottomSheet } from 'redux/slice/roomSlice'
+import { clearQuery, nullifyError } from 'redux/slice/searchSlice'
 
 const BottomSheet: FC<{children: JSX.Element}> = ({children}) => {
    
@@ -10,8 +11,10 @@ const BottomSheet: FC<{children: JSX.Element}> = ({children}) => {
     const dispatch = useDispatch();
 
     const onPanelControl = () => {
-        if(bottomSheet)
+        if(bottomSheet){
+            dispatch(clearQuery());
             dispatch(onClosePanel());
+        }
         else
             dispatch(onOpenPanel());
     }

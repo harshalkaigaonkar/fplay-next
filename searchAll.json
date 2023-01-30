@@ -1,0 +1,344 @@
+{
+ "status": "SUCCESS",
+ "message": null,
+ "data": {
+ "topQuery": {
+ "results": [
+ {
+ "id": "599452",
+ "title": "Imagine Dragons",
+ "image": [
+ {
+ "quality": "50x50",
+ "link": "https://c.saavncdn.com/artists/Imagine_Dragons_50x50.jpg"
+ },
+ {
+ "quality": "150x150",
+ "link": "https://c.saavncdn.com/artists/Imagine_Dragons_150x150.jpg"
+ },
+ {
+ "quality": "500x500",
+ "link": "https://c.saavncdn.com/artists/Imagine_Dragons_500x500.jpg"
+ }
+ ],
+ "url": "https://www.jiosaavn.com/artist/imagine-dragons-songs/f0aFxsa231o_",
+ "type": "artist",
+ "description": "Artist",
+ "position": 1
+ }
+ ],
+ "position": 0
+ },
+ "songs": {
+ "results": [
+ {
+ "id": "yDeAS8Eh",
+ "title": "Bones",
+ "image": [
+ {
+ "quality": "50x50",
+ "link": "https://c.saavncdn.com/038/Bones-English-2022-20220311113603-50x50.jpg"
+ },
+ {
+ "quality": "150x150",
+ "link": "https://c.saavncdn.com/038/Bones-English-2022-20220311113603-150x150.jpg"
+ },
+ {
+ "quality": "500x500",
+ "link": "https://c.saavncdn.com/038/Bones-English-2022-20220311113603-500x500.jpg"
+ }
+ ],
+ "album": "Bones",
+ "url": "https://www.jiosaavn.com/song/bones/CSwOcCcIcls",
+ "type": "song",
+ "description": "Imagine Dragons · Bones",
+ "position": 1,
+ "primaryArtists": "Imagine Dragons",
+ "singers": "Imagine Dragons",
+ "language": "english"
+ },
+ {
+ "id": "BeXBcbVK",
+ "title": "Believer",
+ "image": [
+ {
+ "quality": "50x50",
+ "link": "https://c.saavncdn.com/248/Evolve-English-2017-20180716230950-50x50.jpg"
+ },
+ {
+ "quality": "150x150",
+ "link": "https://c.saavncdn.com/248/Evolve-English-2017-20180716230950-150x150.jpg"
+ },
+ {
+ "quality": "500x500",
+ "link": "https://c.saavncdn.com/248/Evolve-English-2017-20180716230950-500x500.jpg"
+ }
+ ],
+ "album": "Evolve",
+ "url": "https://www.jiosaavn.com/song/believer/Mg0zcxdSYXg",
+ "type": "song",
+ "description": "Imagine Dragons · Evolve",
+ "position": 2,
+ "primaryArtists": "Imagine Dragons",
+ "singers": "Imagine Dragons",
+ "language": "english"
+ },
+ {
+ "id": "drvhW8ob",
+ "title": "Enemy (from the series Arcane League of Legends)",
+ "image": [
+ {
+ "quality": "50x50",
+ "link": "https://c.saavncdn.com/943/Enemy-from-the-series-Arcane-League-of-Legends--English-2021-20211028173417-50x50.jpg"
+ },
+ {
+ "quality": "150x150",
+ "link": "https://c.saavncdn.com/943/Enemy-from-the-series-Arcane-League-of-Legends--English-2021-20211028173417-150x150.jpg"
+ },
+ {
+ "quality": "500x500",
+ "link": "https://c.saavncdn.com/943/Enemy-from-the-series-Arcane-League-of-Legends--English-2021-20211028173417-500x500.jpg"
+ }
+ ],
+ "album": "Enemy (from the series Arcane League of Legends)",
+ "url": "https://www.jiosaavn.com/song/enemy-from-the-series-arcane-league-of-legends/FBodWSMIWFE",
+ "type": "song",
+ "description": "Imagine Dragons, Jid, Arcane, League Of Legends · Enemy (from the series Arcane League of Legends)",
+ "position": 3,
+ "primaryArtists": "Imagine Dragons, Jid, Arcane, League Of Legends",
+ "singers": "Imagine Dragons, Jid, Arcane, League Of Legends",
+ "language": "english"
+ }
+ ],
+ "position": 2
+ },
+ "albums": {
+ "results": [
+ {
+ "id": "33436571",
+ "title": "Bones",
+ "image": [
+ {
+ "quality": "50x50",
+ "link": "https://c.saavncdn.com/038/Bones-English-2022-20220311113603-50x50.jpg"
+ },
+ {
+ "quality": "150x150",
+ "link": "https://c.saavncdn.com/038/Bones-English-2022-20220311113603-150x150.jpg"
+ },
+ {
+ "quality": "500x500",
+ "link": "https://c.saavncdn.com/038/Bones-English-2022-20220311113603-500x500.jpg"
+ }
+ ],
+ "artist": "Imagine Dragons",
+ "url": "https://www.jiosaavn.com/album/bones/8jGpGcwI,fM_",
+ "type": "album",
+ "description": "2022 · English Album · Imagine Dragons",
+ "position": 1,
+ "year": "2022",
+ "songIds": "yDeAS8Eh",
+ "language": "english"
+ },
+ {
+ "id": "30541534",
+ "title": "Enemy (from the series Arcane League of Legends)",
+ "image": [
+ {
+ "quality": "50x50",
+ "link": "https://c.saavncdn.com/943/Enemy-from-the-series-Arcane-League-of-Legends--English-2021-20211028173417-50x50.jpg"
+ },
+ {
+ "quality": "150x150",
+ "link": "https://c.saavncdn.com/943/Enemy-from-the-series-Arcane-League-of-Legends--English-2021-20211028173417-150x150.jpg"
+ },
+ {
+ "quality": "500x500",
+ "link": "https://c.saavncdn.com/943/Enemy-from-the-series-Arcane-League-of-Legends--English-2021-20211028173417-500x500.jpg"
+ }
+ ],
+ "artist": "Imagine Dragons, Jid, Arcane, League of Legends",
+ "url": "https://www.jiosaavn.com/album/enemy-from-the-series-arcane-league-of-legends/SDG5g-p,CwA_",
+ "type": "album",
+ "description": "2021 · English Album · Imagine Dragons, Jid, Arcane, League of Legends",
+ "position": 2,
+ "year": "2021",
+ "songIds": "drvhW8ob",
+ "language": "english"
+ },
+ {
+ "id": "13435951",
+ "title": "Evolve",
+ "image": [
+ {
+ "quality": "50x50",
+ "link": "https://c.saavncdn.com/248/Evolve-English-2017-20180716230950-50x50.jpg"
+ },
+ {
+ "quality": "150x150",
+ "link": "https://c.saavncdn.com/248/Evolve-English-2017-20180716230950-150x150.jpg"
+ },
+ {
+ "quality": "500x500",
+ "link": "https://c.saavncdn.com/248/Evolve-English-2017-20180716230950-500x500.jpg"
+ }
+ ],
+ "artist": "Imagine Dragons",
+ "url": "https://www.jiosaavn.com/album/evolve/gvCWqZLfVbs_",
+ "type": "album",
+ "description": "2018 · English Album · Imagine Dragons",
+ "position": 3,
+ "year": "2018",
+ "songIds": "uQKEtZYc, JM05-GBQ, sZULdFlE, BeXBcbVK, O0F3-PWY, _n4tm2Ws, eOhQat6c, RLWcTXW7, -KYvAnod, zikdtWU6, tRu8-oj5, VmddtEso",
+ "language": "english"
+ }
+ ],
+ "position": 3
+ },
+ "artists": {
+ "results": [
+ {
+ "id": "4992352",
+ "title": "Kygo & Imagine Dragons",
+ "image": [
+ {
+ "quality": "50x50",
+ "link": "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"
+ },
+ {
+ "quality": "150x150",
+ "link": "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"
+ },
+ {
+ "quality": "500x500",
+ "link": "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"
+ }
+ ],
+ "url": "https://www.jiosaavn.com/artist/kygo--imagine-dragons-songs/KCCw9dHrmMY_",
+ "type": "artist",
+ "description": "Singer",
+ "position": 2
+ },
+ {
+ "id": "13217374",
+ "title": "Imagine Dragons Publishing",
+ "image": [
+ {
+ "quality": "50x50",
+ "link": "https://www.jiosaavn.com/_i/3.0/artist-default-film.png"
+ },
+ {
+ "quality": "150x150",
+ "link": "https://www.jiosaavn.com/_i/3.0/artist-default-film.png"
+ },
+ {
+ "quality": "500x500",
+ "link": "https://www.jiosaavn.com/_i/3.0/artist-default-film.png"
+ }
+ ],
+ "url": "https://www.jiosaavn.com/artist/imagine-dragons-publishing-songs/mSkvl1xxVKA_",
+ "type": "artist",
+ "description": "Musicpublisher",
+ "position": 3
+ },
+ {
+ "id": "13461219",
+ "title": "Imagine Dragons Not Today",
+ "image": [
+ {
+ "quality": "50x50",
+ "link": "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"
+ },
+ {
+ "quality": "150x150",
+ "link": "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"
+ },
+ {
+ "quality": "500x500",
+ "link": "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"
+ }
+ ],
+ "url": "https://www.jiosaavn.com/artist/imagine-dragons-not-today-songs/kLMewTYauC0_",
+ "type": "artist",
+ "description": "Music director",
+ "position": 4
+ }
+ ],
+ "position": 4
+ },
+ "playlists": {
+ "results": [
+ {
+ "id": "154025790",
+ "title": "Lets Play - Imagine Dragons",
+ "image": [
+ {
+ "quality": "50x50",
+ "link": "https://c.saavncdn.com/editorial/logo/RadioactiveHitsImagineDragons_20210903084917_50x50.jpg"
+ },
+ {
+ "quality": "150x150",
+ "link": "https://c.saavncdn.com/editorial/logo/RadioactiveHitsImagineDragons_20210903084917_150x150.jpg"
+ },
+ {
+ "quality": "500x500",
+ "link": "https://c.saavncdn.com/editorial/logo/RadioactiveHitsImagineDragons_20210903084917_500x500.jpg"
+ }
+ ],
+ "url": "https://www.jiosaavn.com/featured/lets-play---imagine-dragons/RgGxJg6gKsduOxiEGmm6lQ__",
+ "type": "playlist",
+ "language": "english",
+ "description": "Saavn Editor",
+ "position": 1
+ },
+ {
+ "id": "811456996",
+ "title": "Imagine Dragons - English - JioTunes",
+ "image": [
+ {
+ "quality": "50x50",
+ "link": "https://c.saavncdn.com/editorial/logo/JioTunesImagineDragonsEnglish_20200706062150_50x50.jpg"
+ },
+ {
+ "quality": "150x150",
+ "link": "https://c.saavncdn.com/editorial/logo/JioTunesImagineDragonsEnglish_20200706062150_150x150.jpg"
+ },
+ {
+ "quality": "500x500",
+ "link": "https://c.saavncdn.com/editorial/logo/JioTunesImagineDragonsEnglish_20200706062150_500x500.jpg"
+ }
+ ],
+ "url": "https://www.jiosaavn.com/featured/imagine-dragons---english---jiotunes/8PPDmhREi8rfemJ68FuXsA__",
+ "type": "playlist",
+ "language": "english",
+ "description": "Saavn Editor",
+ "position": 2
+ },
+ {
+ "id": "107809244",
+ "title": "Imagine Dragons - Spotlight",
+ "image": [
+ {
+ "quality": "50x50",
+ "link": "https://c.saavncdn.com/editorial/599452_english_20180806232241_50x50.jpg"
+ },
+ {
+ "quality": "150x150",
+ "link": "https://c.saavncdn.com/editorial/599452_english_20180806232241_150x150.jpg"
+ },
+ {
+ "quality": "500x500",
+ "link": "https://c.saavncdn.com/editorial/599452_english_20180806232241_500x500.jpg"
+ }
+ ],
+ "url": "https://www.jiosaavn.com/featured/imagine-dragons---spotlight/-Ajd9gNa0l-ufxkxMEIbIw__",
+ "type": "playlist",
+ "language": "english",
+ "description": "Saavn Editor",
+ "position": 3
+ }
+ ],
+ "position": 1
+ }
+ }
+ }

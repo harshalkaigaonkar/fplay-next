@@ -1,19 +1,47 @@
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { XCircleIcon } from '@heroicons/react/24/outline';
+import LoadingIcon from 'components/icon/loading';
 import e from 'cors';
-import React, {useState} from 'react'
+import { fetchAllThroughSearchQuery, fetchSongsThroughSearchQuery } from 'helpers/music/fetchSongs';
+import React, {useState, useRef} from 'react'
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { changeSearchQuery, selectQuery, selectResults, setError, startLoading, updateSearchResults } from 'redux/slice/searchSlice';
+import { resourceLimits } from 'worker_threads';
+import PanelSearched from './result';
 
 const PanelSearch = () => {
 
+		const query = useSelector(selectQuery);
+		const results = useSelector(selectResults);
+		const dispatch = useDispatch();
+
   const [searchActive, setSearchActive] = useState<boolean>(false);
+		const inputElement = useRef<HTMLInputElement|null>(null);
 
   const openSearchHandler = () => {
 	setSearchActive(true);
   }
 
   const closeSearchHandler = () => {
-	setSearchActive(false);
+			dispatch(changeSearchQuery(""));
+			// setSearchActive(false);
   }
+
+		const queryChangeHandler  = () => {
+			if(inputElement.current) {
+				const searchQuery = inputElement.current.value;
+				dispatch(changeSearchQuery(searchQuery))
+				dispatch(startLoading());
+				setTimeout(async () => {
+						const res = await fetchAllThroughSearchQuery(searchQuery);
+						if(typeof res !== 'string') 
+							dispatch(updateSearchResults(res));
+							else
+							dispatch(setError(`No Result found for ${query}`))
+				}, 2000);
+			}
+		}
 
   return (
     <div className='w-2/3 h-full flex flex-col border-y-0 border-l-0 border-solid border-white border-r-[0.5px]'>
@@ -21,31 +49,35 @@ const PanelSearch = () => {
             <h1 className='font-bold text-[20px] w-60'>Search Songs</h1>
 			<section
 				className={` ${searchActive ? "w-full animate-enter-left-1 cursor-default ": "w-60 text-transparent cursor-pointer"}
-				h-12 py-1 px-3 flex flex-row justify-center border-solid gap-2 border-[#808080] hover:border-gray-800 items-center rounded-full transition duration-700 text-inherit text-[13px] font-semibold bg-black hover:bg-[#343434] active:opacity-25`} 
+				h-12 flex flex-row justify-center border-solid gap-2 border-[#808080] hover:border-gray-800 items-center rounded-full transition duration-700 text-inherit text-[13px] font-semibold bg-black active:opacity-25`} 
 			>
 				{
 					searchActive ? (
 						<>
-							<span>
+							<span className='ml-10'>
 								<MagnifyingGlassIcon className='w-6 h-6' />
 							</span>
 							<input 
+								id="search_query"
 								autoFocus
-								type={"text"}
+								ref={inputElement}
+								type="text"
+								value={query}
+								onChange={queryChangeHandler}
 								className="py-1 px-3 appearance-none flex-1 bg-inherit placeholder-white text-white border-t-0 border-x-0 border-solid border-white focus:outline-none"
 								placeholder="Search your songs here..."
 							/>
 							<span
 								onClick={closeSearchHandler}
-								className='inline-flex justify-center items-center rounded-full border border-transparent bg-gray-800 py-1 px-4 text-sm font-medium text-white hover:text-black hover:border-black shadow-lg hover:bg-white border-solid focus:outline-none cursor-pointer transition duration-150'
+								className='mr-2 inline-flex justify-center items-center rounded-full border border-transparent bg-black/40 py-1 px-4 text-sm font-medium text-white hover:text-black hover:border-black shadow-lg hover:bg-white border-solid focus:outline-none cursor-pointer transition duration-150'
 							>
 									<XMarkIcon className='w-4 h-4 cursor-pointer' />
 									<p className='ml-1 text-inherit cursor-pointer'>Cancel</p>
 							</span>
 						</>
 					) : (
-						<span className='w-inherit h-inherit bg-gradient-to-r from-gray-200 via-gray-400 to-gray-600 bg-clip-text' onClick={openSearchHandler}>
-							<p className='w-full font-bold text-transparent cursor-pointer'>Search your songs here.</p>
+						<span className='inline-flex justify-center items-center w-full h-full bg-gradient-to-b from-gray-200 via-gray-300 to-gray-400 bg-clip-text' onClick={openSearchHandler}>
+							<p className='w-full text-md text-center  text-white cursor-pointer'>Look for your songs here.</p>
 						</span>
 					)
 				}
@@ -54,9 +86,17 @@ const PanelSearch = () => {
 				<p className={`w-full text-[13px] font-semibold text-transparent text-center cursor-pointer`}>Search your songs here.</p>
 			</div> */}
         </header>
-        <div className='flex-1 min-w-full inline-flex justify-center items-center'>
-            <p className='font-semibold text-xl text-white/30'>Search and Play Songs or Add To Queue ✨</p>
-        </div>
+            {
+													query.length ? (
+															<div className='py-2 px-5'>
+																<PanelSearched />
+															</div>
+													):(
+														<div className='flex-1 min-w-full inline-flex justify-center items-center overflow-y-auto'>
+															<p className='font-semibold text-xl text-white/30'>Search and Play Songs or Add To Queue ✨</p>
+       						 </div>
+													)
+												}
     </div>
   )
 }
