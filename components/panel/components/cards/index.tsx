@@ -1,4 +1,5 @@
 import { EllipsisVerticalIcon, PlayIcon } from '@heroicons/react/20/solid';
+import AddToPlaylistIcon from 'components/icon/addToPlaylist';
 import Image from 'next/image'
 import React, {useState} from 'react'
 
@@ -42,7 +43,7 @@ const PanelSongResult: React.FC<{data: any, key: number}> = ({data, key}) => {
           <PlayIcon className='w-5 h-5' />
         </span>
         <span className='p-2 h-fit rounded-full bg-black inline-flex items-center cursor-pointer hover:bg-black/30 active:bg-black/60'>
-          <EllipsisVerticalIcon className='w-5 h-5' />
+          <AddToPlaylistIcon className='w-5 h-5' />
         </span>
       </div>
      )}

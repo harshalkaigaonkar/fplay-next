@@ -12,7 +12,6 @@ const BottomSheet: FC<{children: JSX.Element}> = ({children}) => {
 
     const onPanelControl = () => {
         if(bottomSheet){
-            dispatch(clearQuery());
             dispatch(onClosePanel());
         }
         else

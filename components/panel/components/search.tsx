@@ -25,7 +25,7 @@ const PanelSearch = () => {
 
   const closeSearchHandler = () => {
 			dispatch(changeSearchQuery(""));
-			// setSearchActive(false);
+			setSearchActive(false);
   }
 
 		const queryChangeHandler  = () => {
@@ -39,7 +39,7 @@ const PanelSearch = () => {
 							dispatch(updateSearchResults(res));
 							else
 							dispatch(setError(`No Result found for ${query}`))
-				}, 2000);
+				}, 100);
 			}
 		}
 
