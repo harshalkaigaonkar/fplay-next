@@ -1,10 +1,10 @@
 import LoadingIcon from 'components/icon/loading';
-import React, {useEffect} from 'react';
+import React, {useEffect, MutableRefObject} from 'react';
 import { useSelector } from 'react-redux';
 import { selectError, selectLoading, selectQuery, selectResults } from 'redux/slice/searchSlice';
 import PanelSongResult from './cards/index';
 
-const PanelSearched: React.FC = () => {
+const PanelSearched: React.FC<{audioElement?: MutableRefObject<HTMLAudioElement|null>}> = ({audioElement}) => {
 
  const query = useSelector(selectQuery);
  const data = useSelector(selectResults);
@@ -37,7 +37,7 @@ const PanelSearched: React.FC = () => {
         </span>
         <span className='mt-4 w-full flex justify-between overflow-y-auto overflow-x-hidden'>
           {data.topquery.data.map((item: any, index: number) => (
-            <PanelSongResult data={item} key={index} />
+            <PanelSongResult data={item} key={index} audioElement={audioElement} />
           ))}
         </span>
       </div>
@@ -52,7 +52,7 @@ const PanelSearched: React.FC = () => {
         </span>
         <span className='mt-4 w-full flex justify-between overflow-y-auto overflow-x-hidden'>
           {data.songs.data.map((item: any, index: number) => (
-            <PanelSongResult data={item} key={index} />
+            <PanelSongResult data={item} key={index} audioElement={audioElement} />
           ))}
         </span>
       </div>
@@ -70,7 +70,7 @@ const PanelSearched: React.FC = () => {
          {
           data.albums && data.albums.data.map((data: any, index: number) => (
            <>
-             <PanelSongResult data={data} key={index} />
+             <PanelSongResult data={data} key={index} audioElement={audioElement} />
            </>
           ))}
         </span>
@@ -89,7 +89,7 @@ const PanelSearched: React.FC = () => {
        <span className='mt-2 flex justify-between overflow-y-auto overflow-x-hidden'>
        {data.artists.data.map((data: any, index: number) => (
         <>
-          <PanelSongResult data={data} key={index} />
+          <PanelSongResult data={data} key={index} audioElement={audioElement} />
         </>
        ))}
        </span>

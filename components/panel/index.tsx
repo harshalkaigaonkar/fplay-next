@@ -9,7 +9,7 @@ const MediaPanel: FC<{audioElement ?: MutableRefObject<HTMLAudioElement|null>}> 
     <>
         <BottomSheet>
             <section className='flex flex-row w-full h-full'>
-              <PanelSearch />
+              <PanelSearch audioElement={audioElement} />
               <PanelDraggableQueue audioElement={audioElement} />
             </section>
         </BottomSheet>

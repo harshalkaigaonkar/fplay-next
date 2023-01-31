@@ -1,16 +1,15 @@
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { XCircleIcon } from '@heroicons/react/24/outline';
 import LoadingIcon from 'components/icon/loading';
-import e from 'cors';
 import { fetchAllThroughSearchQuery, fetchSongsThroughSearchQuery } from 'helpers/music/fetchSongs';
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, FC, MutableRefObject} from 'react'
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { changeSearchQuery, selectQuery, selectResults, setError, startLoading, updateSearchResults } from 'redux/slice/searchSlice';
 import { resourceLimits } from 'worker_threads';
 import PanelSearched from './result';
 
-const PanelSearch = () => {
+const PanelSearch: FC<{audioElement?: MutableRefObject<HTMLAudioElement|null>}> = ({audioElement}) => {
 
 		const query = useSelector(selectQuery);
 		const results = useSelector(selectResults);
@@ -89,7 +88,7 @@ const PanelSearch = () => {
             {
 													query.length ? (
 															<div className='py-2 px-5'>
-																<PanelSearched />
+																<PanelSearched audioElement={audioElement} />
 															</div>
 													):(
 														<div className='flex-1 min-w-full inline-flex justify-center items-center overflow-y-auto'>

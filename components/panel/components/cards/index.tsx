@@ -1,11 +1,20 @@
-import { EllipsisVerticalIcon, PlayIcon } from '@heroicons/react/20/solid';
+import { EllipsisVerticalIcon, PauseIcon, PlayIcon } from '@heroicons/react/20/solid';
 import AddToPlaylistIcon from 'components/icon/addToPlaylist';
+import SongPlaying from 'components/icon/playing';
+import { fetchSongObj } from 'helpers/music/idToObj';
 import Image from 'next/image'
-import React, {useState} from 'react'
+import React, {useState, useEffect, MutableRefObject} from 'react'
+import { useSelector, useDispatch } from 'react-redux';
+import { onAddSongIntoQueue, selectCurrentSongId, selectPaused } from 'redux/slice/roomSlice';
 
-const PanelSongResult: React.FC<{data: any, key: number}> = ({data, key}) => {
+const PanelSongResult: React.FC<{data: any, key: number, audioElement?: MutableRefObject<HTMLAudioElement|null>}> = ({data, key, audioElement}) => {
+
+  const currentSongId = useSelector(selectCurrentSongId);
+  const paused = useSelector(selectPaused);
+  const dispatch = useDispatch();
 
  const [mouseEnter, setMouseEnter] = useState<boolean>(false);
+ const [addToQueueLoading, setAddToQueueLoading] = useState<0|1|2>(0);
 
  const mouseEnterHandler = () => {
   setMouseEnter(true);
@@ -13,6 +22,16 @@ const PanelSongResult: React.FC<{data: any, key: number}> = ({data, key}) => {
 
  const mouseLeaveHandler = () => {
   setMouseEnter(false);
+ }
+
+ const pauseHandler = () => {
+  if(!audioElement?.current) return;
+  audioElement.current.pause();
+ }
+
+ const addToQueueHandler = async () => {
+  const songObj = await fetchSongObj(data.id);
+  dispatch(onAddSongIntoQueue([songObj]));
  }
 
   return (
@@ -37,16 +56,40 @@ const PanelSongResult: React.FC<{data: any, key: number}> = ({data, key}) => {
       <p className='text-sm font-bold cursor-pointer truncate'>{data.title || data.name}</p>
       <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{data.description}{data.primaryArtists && `${data.primaryArtists}`}{data.featuringArtists && `ft. ${data.featuringArtists}`}</p>
      </span>
-     {mouseEnter && (
+     {mouseEnter ? (
       <div className='mx-[1px] flex-1 flex flex-row items-center justify-evenly animate-enter-div-1'>
-        <span className='p-2 h-fit rounded-full bg-black inline-flex items-center cursor-pointer hover:bg-black/30 active:bg-black/60'>
-          <PlayIcon className='w-5 h-5' />
-        </span>
-        <span className='p-2 h-fit rounded-full bg-black inline-flex items-center cursor-pointer hover:bg-black/30 active:bg-black/60'>
-          <AddToPlaylistIcon className='w-5 h-5' />
-        </span>
+        {
+          currentSongId === data.id && !paused ? (
+            <span 
+              className='p-2 h-fit rounded-full bg-black inline-flex items-center cursor-pointer hover:bg-black/30 active:bg-black/60'
+              onClick={pauseHandler} 
+            >  
+              <PauseIcon className='w-5 h-5' />
+            </span>
+          ) : (
+            <span className='p-2 h-fit rounded-full bg-black inline-flex items-center cursor-pointer hover:bg-black/30 active:bg-black/60'>
+              <PlayIcon className='w-5 h-5' />
+            </span>
+          )
+        }
+        {
+          data.type === 'song' && (
+            <span 
+              className='p-2 h-fit rounded-full bg-black inline-flex items-center cursor-pointer hover:bg-black/30 active:bg-black/60'
+              onClick={addToQueueHandler}  
+            >
+              <AddToPlaylistIcon className='w-5 h-5' />
+            </span>
+          )
+        }
       </div>
-     )}
+     ) :
+      currentSongId === data.id && !paused && (
+        <span className='flex-1 flex justify-center'>
+          <SongPlaying type={3} />
+        </span>
+      )  
+     }
     </div>
   )
 }

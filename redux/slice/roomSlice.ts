@@ -44,6 +44,7 @@ export const rooomSlice = createSlice({
         return;
         const updatedSongsQueue = state.songsQueue.concat(action.payload);
         state.songsQueue = updatedSongsQueue;
+        console.log(updatedSongsQueue.length)
     },
     /**
      * 
