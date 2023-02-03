@@ -1,12 +1,14 @@
+import { Popover } from '@headlessui/react'
 import { EllipsisVerticalIcon, HeartIcon, PauseIcon, PlayIcon, TrashIcon } from '@heroicons/react/20/solid'
 import DragIcon from 'components/icon/dragIcon'
 import SongPlaying from 'components/icon/playing'
+import ItemOptions from 'components/popover/item'
 import Image from 'next/image'
 import React, { FC, useState } from 'react'
 import { Draggable } from 'react-beautiful-dnd'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
-import { onChangeClickedSongFromQueue, onSetPause, onSetPlay, selectCurrentSongId, selectPaused } from 'redux/slice/roomSlice'
+import { onChangeClickedSongFromQueue, onRemoveSongFromQueue, onSetPause, onSetPlay, selectCurrentSongId, selectPaused } from 'redux/slice/roomSlice'
 import { DraggableListItemProps } from 'types/queue'
 
 
@@ -26,9 +28,9 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
         setShowPlay(false);
     }
 
-    const onClickHandler = (id: string) => {
-        if(id !== currentTrackId)
-            dispatch(onChangeClickedSongFromQueue(id));    
+    const onClickHandler = () => {
+        if(song.id !== currentTrackId)
+            dispatch(onChangeClickedSongFromQueue(song.id));    
         if(!audioElement.current) return;
         if(audioElement.current.paused) {
             audioElement.current.play();
@@ -36,6 +38,14 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
         }
         else
             audioElement.current.pause();
+    }
+
+    const deleteHandler = () => {
+        // if(song.id !== currentTrackId) {
+        //     return;
+        // }
+        dispatch(onRemoveSongFromQueue(song.id));
+        
     }
     
   return (
@@ -53,7 +63,7 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                 className={`${song.id === currentTrackId ? "scale-105 bg-white/10 " : "scale-100 bg-white/5 hover:bg-white/10 hover:scale-105 hover:shadow-xl "} my-1 py-2 px-4 inline-flex flex-row items-center rounded-md transition ease-in-out duration-700`}
                 onMouseEnter={onMouseEnterHandler}
                 onMouseLeave={onMouseLeaveHandler}
-                onClick={() => onClickHandler(song.id)}
+                onClick={onClickHandler}
             >
                 <section className='w-3/4 inline-flex flex-row gap-5 items-center'>
                     <span className='relative inline-flex flex-col m-0 p-0 cursor-grab active:cursor-grabbing'>
@@ -80,10 +90,11 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                             </span>
                         )}
                         <Image
-                            src={song.image[1].link}
+                            src={song.image[1].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
                             alt={`Song Icon ${song.image[1].quality}`}
                             width={45}
                             height={45}
+                            layout="fixed"
                             className="rounded-md overflow-hidden z-0"
                         />
                     </span>
@@ -102,11 +113,24 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                                 <SongPlaying type={3} />
                             </span>
                     )}
-                    <span>
+                    {/* <span>
                         <HeartIcon className='w-6 h-6' />
-                    </span>
+                    </span> */}
                     <span>
-                        <EllipsisVerticalIcon className='w-6 h-6' />
+                        <Popover className='relative'>
+                            {({open}) => (
+                            <>
+                                <Popover.Button
+                                    className={`
+                                    ${open ? '' : 'text-opacity-90'}
+                                    group inline-flex items-center rounded-md px-3 py-2 text-base font-medium text-white hover:text-opacity-100 hover:bg-[#232323] focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 bg-transparent border-none`}
+                                >
+                                <EllipsisVerticalIcon className='w-6 h-6' />                   
+                                </Popover.Button>
+                                {/* <ItemOptions deleteHandler={deleteHandler} /> */}
+                            </>
+                            )}
+                        </Popover>
                     </span>
                 </section>
             </li>

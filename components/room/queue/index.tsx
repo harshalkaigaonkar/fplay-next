@@ -1,8 +1,11 @@
-import React, { FC, MutableRefObject } from 'react'
+import React, { FC, useRef, MutableRefObject } from 'react'
 import { TrackQueueProps } from 'types/queue';
+import BottomScrollButton from './button/scrolltoBottom';
 import DraggableList from './list';
 
 const TrackQueue: FC<TrackQueueProps> = ({socket, audioElement}) => {
+
+  const listRef = useRef<HTMLDivElement|null>(null);
 
   return (
     <div className='w-full h-full mt-5 pt-0 flex flex-col bg-white/5 overflow-hidden rounded-[40px]'>
@@ -10,6 +13,7 @@ const TrackQueue: FC<TrackQueueProps> = ({socket, audioElement}) => {
           <h2 className='w-full text-start'>Songs Queue</h2>
         </section>
         <DraggableList audioElement={audioElement} />
+        {/* <BottomScrollButton  /> */}
     </div>
   )
 }

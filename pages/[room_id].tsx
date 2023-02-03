@@ -43,9 +43,9 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
           <AudioProvider socket={socket} audioElement={audioElement}  />
           <TrackQueue socket={socket} audioElement={audioElement} />
         </section>
-        <div className='w-full h-auto'>
+        {/* <div className='w-full h-auto'>
           <UsersConnectedRoom session={session} />
-        </div>
+        </div> */}
       </RoomLayout>
       <MediaPanel audioElement={audioElement} />
     </div>

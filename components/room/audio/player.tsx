@@ -51,8 +51,7 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
   
     return (
         <div className='h-full mt-5 px-5 py-10 flex flex-col items-center gap-2 bg-gradient-to-r from-gray-800 via-gray-900 to-black rounded-[40px]'>
-            {currentTrack && (
-                <>
+
                     <span className='w-full h-fit inline-flex flex-row items-center justify-evenly'>
                         <span onClick={onPrevTrack} className='p-2 inline-flex items-center h-fit text-white/70 rounded-full hover:-translate-x-1 hover:bg-white/5 cursor-pointer transition duration-500 active:bg-[#121212]'>
                             <ChevronLeftIcon className='w-20 h-20' />
@@ -107,12 +106,10 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
                             className='appearance-none w-full h-1 rounded thumb bg-white' 
                         />
                     </span>
-                    <span className='w-full px-12 my-2'>
+                    <span className='w-96 px-12 my-2'>
                         <h1 className='lg:w-full truncate oveflow-hidden font-bold text-center'>{currentTrack.name}</h1>
                         <h5 className='lg:mt-2 lg:w-full truncate oveflow-hidden font-normal text-center'>{currentTrack.primaryArtists}{currentTrack.featuredArtists && ` ft. ${currentTrack.featuredArtists}`}</h5>
                     </span>
-                </>
-            )}
         </div>
     );
 }

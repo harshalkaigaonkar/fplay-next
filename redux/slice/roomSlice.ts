@@ -38,13 +38,14 @@ export const rooomSlice = createSlice({
         if(
             action.payload.length 
             && 
-            action.payload.find(
-                (item: SaavnSongObjectTypes|any) => item.id === state.currentSongId)
+            state.songsQueue.find(
+                (item: SaavnSongObjectTypes) => {
+                   return action.payload.find((addItem: SaavnSongObjectTypes) => addItem.id === item.id) ? true: false;
+                })
         )
         return;
         const updatedSongsQueue = state.songsQueue.concat(action.payload);
         state.songsQueue = updatedSongsQueue;
-        console.log(updatedSongsQueue.length)
     },
     /**
      * 
@@ -52,14 +53,14 @@ export const rooomSlice = createSlice({
      * @param action refers to index from queue
      * @returns updated songs queue
      */
-    onRemoveSongFromQueue: (state, action: PayloadAction<number>): SaavnSongObjectTypes[]|any => {
-        if(state.songsQueue.length-1 <  action.payload)
+    onRemoveSongFromQueue: (state, action: PayloadAction<string>): SaavnSongObjectTypes[]|any => {
+        if(!state.songsQueue.find((item: SaavnSongObjectTypes) => item.id === action.payload))
             return {
                 type: 'error',
-                error: "Index does not exist!!"
+                error: "Id does not exist in Queue!!"
             }
 
-        const updatedSongsQueue = state.songsQueue.filter((item, index) => index !== action.payload);
+        const updatedSongsQueue = state.songsQueue.filter((item: SaavnSongObjectTypes) => item.id !== action.payload);
         state.songsQueue = updatedSongsQueue;
     },
     /**

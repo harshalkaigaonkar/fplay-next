@@ -2,13 +2,19 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import React, { FC, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
-import { onClosePanel, onOpenPanel, selectBottomSheet } from 'redux/slice/roomSlice'
+import { onClosePanel, onOpenPanel, selectBottomSheet, selectCurrentSongId, selectSongsQueue } from 'redux/slice/roomSlice'
 import { clearQuery, nullifyError } from 'redux/slice/searchSlice'
+import { SaavnSongObjectTypes } from 'types'
 
 const BottomSheet: FC<{children: JSX.Element}> = ({children}) => {
    
     const bottomSheet = useSelector(selectBottomSheet);
+    const currentSongId = useSelector(selectCurrentSongId);
+    const songsQueue = useSelector(selectSongsQueue);
     const dispatch = useDispatch();
+
+    const [currentTrack, setCurrentTrack] = useState<SaavnSongObjectTypes>(songsQueue.find((item: SaavnSongObjectTypes) => item.id === currentSongId));
+
 
     const onPanelControl = () => {
         if(bottomSheet){
@@ -32,10 +38,16 @@ const BottomSheet: FC<{children: JSX.Element}> = ({children}) => {
                     </button>
                 </span>
                 <>
-                {bottomSheet && 
+                {bottomSheet ?
                     <span className='transition delay-300 animate-enter-opacity'>
                         {children}
-                    </span>
+                    </span> 
+                    :
+                    <span 
+                     onClick={onPanelControl}
+                     className='w-full transition delay-500 animate-enter-opacity inline-flex items-center py-2 px-4'>
+                        <h4>Search Songs Here.</h4>
+                    </span> 
                 }
                 </>
             </section>

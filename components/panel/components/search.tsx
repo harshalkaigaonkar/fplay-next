@@ -15,7 +15,7 @@ const PanelSearch: FC<{audioElement?: MutableRefObject<HTMLAudioElement|null>}> 
 		const results = useSelector(selectResults);
 		const dispatch = useDispatch();
 
-  const [searchActive, setSearchActive] = useState<boolean>(false);
+  const [searchActive, setSearchActive] = useState<boolean>(query !== "");
 		const inputElement = useRef<HTMLInputElement|null>(null);
 
   const openSearchHandler = () => {

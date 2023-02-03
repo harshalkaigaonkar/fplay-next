@@ -1,10 +1,13 @@
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
-import React from 'react'
+import React, { FC } from 'react'
 
-const LoadingIcon = () => {
+const LoadingIcon: FC<{className: string}> = ({className: classname}) => {
   return (
     <span className='w-full h-full flex items-center justify-center'>
-     <ArrowPathIcon className='animate-spin w-10 h-10 text-white' />
+     <ArrowPathIcon 
+      className={`${classname} 
+      animate-spin text-white`}
+    />
     </span>
   )
 }

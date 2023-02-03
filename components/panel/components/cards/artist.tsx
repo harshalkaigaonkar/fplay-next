@@ -5,10 +5,11 @@ import { fetchSongObj } from 'helpers/music/idToObj';
 import Image from 'next/image'
 import React, {useState, useEffect, MutableRefObject} from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { onAddSongIntoQueue, selectCurrentSongId, selectPaused } from 'redux/slice/roomSlice';
+import { onAddSongIntoQueue, selectCurrentSongId, selectPaused, selectSongsQueue } from 'redux/slice/roomSlice';
 
-const PanelSongResult: React.FC<{data: any, key: number, audioElement?: MutableRefObject<HTMLAudioElement|null>}> = ({data, key, audioElement}) => {
+const PanelArtistResult: React.FC<{data: any, key: number, audioElement?: MutableRefObject<HTMLAudioElement|null>}> = ({data, key, audioElement}) => {
 
+  const songsQueue = useSelector(selectSongsQueue)
   const currentSongId = useSelector(selectCurrentSongId);
   const paused = useSelector(selectPaused);
   const dispatch = useDispatch();
@@ -39,11 +40,10 @@ const PanelSongResult: React.FC<{data: any, key: number, audioElement?: MutableR
      key={key} 
      onMouseEnter={mouseEnterHandler} 
      onMouseLeave={mouseLeaveHandler} 
-     className="w-64 h-16 m-2 bg-[#121212] hover:bg-[#343434] flex flex-row flex-wrap justify-start items-center rounded-lg overflow-hidden cursor-pointer transition duration-500"
+     className="w-64 h-16 m-2 px-3 bg-[#121212] hover:bg-[#343434] flex flex-row justify-start items-center gap-3 overflow-hidden rounded-lg cursor-pointer transition duration-500"
     >
-     <span className='ml-2'>
       <Image
-       src={data.image || data.image[1].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
+       src={data.image[1].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
        alt={data.title + "_cover"}
        className={`${mouseEnter ? "rotate-0": "rotate-[20deg]"}
        rounded-full transition duration-300 cursor-pointer`}
@@ -51,35 +51,34 @@ const PanelSongResult: React.FC<{data: any, key: number, audioElement?: MutableR
        width={50}
        layout="fixed"
       />
-      </span>
-     <span className='ml-5 h-fit content-center overflow-hidden w-20'>
-      <p className='text-sm font-bold cursor-pointer truncate'>{data.title || data.name}</p>
-      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{data.description}{data.primaryArtists && `${data.primaryArtists}`}{data.featuringArtists && `ft. ${data.featuringArtists}`}</p>
+     <span className={`${mouseEnter ? "w-3/12 ": "w-2/3"} h-fit content-center`}>
+      <p className='text-sm font-bold cursor-pointer truncate'>{data.title}</p>
+      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{data.description}</p>
      </span>
-     {mouseEnter ? (
+     {/* {mouseEnter ? (
       <div className='mx-[1px] flex-1 flex flex-row items-center justify-evenly animate-enter-div-1'>
         {
           currentSongId === data.id && !paused ? (
-            <span 
+            <button 
               className='p-2 h-fit rounded-full bg-black inline-flex items-center cursor-pointer hover:bg-black/30 active:bg-black/60'
               onClick={pauseHandler} 
             >  
-              <PauseIcon className='w-5 h-5' />
-            </span>
+              <PauseIcon className='w-5 h-5 text-white' />
+            </button>
           ) : (
-            <span className='p-2 h-fit rounded-full bg-black inline-flex items-center cursor-pointer hover:bg-black/30 active:bg-black/60'>
-              <PlayIcon className='w-5 h-5' />
-            </span>
+            <button className='p-2 h-fit rounded-full bg-black inline-flex items-center cursor-pointer hover:bg-black/30 active:bg-black/60'>
+              <PlayIcon className='w-5 h-5 text-white' />
+            </button>
           )
         }
         {
           data.type === 'song' && (
-            <span 
+            <button 
               className='p-2 h-fit rounded-full bg-black inline-flex items-center cursor-pointer hover:bg-black/30 active:bg-black/60'
               onClick={addToQueueHandler}  
             >
-              <AddToPlaylistIcon className='w-5 h-5' />
-            </span>
+              <AddToPlaylistIcon className='w-5 h-5 text-white' />
+            </button>
           )
         }
       </div>
@@ -89,9 +88,9 @@ const PanelSongResult: React.FC<{data: any, key: number, audioElement?: MutableR
           <SongPlaying type={3} />
         </span>
       )  
-     }
+     } */}
     </div>
   )
 }
 
-export default PanelSongResult
+export default PanelArtistResult
