@@ -42,9 +42,9 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
     }
 
     const deleteHandler = () => {
-        // if(song.id !== currentTrackId) {
-        //     return;
-        // }
+        if(song.id === currentTrackId) {
+            return;
+        }
         dispatch(onRemoveSongFromQueue(song.id));
         
     }
@@ -117,22 +117,26 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                     {/* <span>
                         <HeartIcon className='w-6 h-6' />
                     </span> */}
-                    <span>
-                        <Popover className='relative'>
-                            {({open}) => (
-                            <>
-                                <Popover.Button
-                                    className={`
-                                    ${open ? '' : 'text-opacity-90'}
-                                    group inline-flex items-center rounded-md px-3 py-2 text-base font-medium text-white hover:text-opacity-100 hover:bg-[#232323] focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 bg-transparent border-none`}
-                                >
-                                <EllipsisVerticalIcon className='w-6 h-6' />                   
-                                </Popover.Button>
-                                {/* <ItemOptions deleteHandler={deleteHandler} /> */}
-                            </>
-                            )}
-                        </Popover>
-                    </span>
+                    {song.id !== currentTrackId && (
+                        <span>
+                            <Popover className='relative'>
+                                {({open}) => (
+                                <>
+                                    <Popover.Button
+                                        onClick={deleteHandler}
+                                        className={`
+                                        ${open ? '' : 'text-opacity-90'}
+                                        group inline-flex items-center rounded-md px-3 py-2 text-base font-medium text-white hover:text-opacity-100 hover:bg-[#232323] focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 bg-transparent border-none`}
+                                    >
+                                    {/* <EllipsisVerticalIcon className='w-6 h-6' /> */}
+                                    <TrashIcon className='w-4 h-4' />
+                                    </Popover.Button>
+                                    {/* <ItemOptions deleteHandler={deleteHandler} /> */}
+                                </>
+                                )}
+                            </Popover>
+                        </span>)
+                    }
                 </section>
             </li>
         )}
