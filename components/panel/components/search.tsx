@@ -1,11 +1,11 @@
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { XCircleIcon } from '@heroicons/react/24/outline';
 import LoadingIcon from 'components/icon/loading';
-import { fetchAllThroughSearchQuery, fetchSongsThroughSearchQuery } from 'helpers/music/fetchSongs';
+import { fetchAllThroughSearchQuery } from 'helpers/music/fetchAll';
 import React, {useState, useRef, FC, MutableRefObject} from 'react'
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { changeSearchQuery, selectQuery, selectResults, setError, startLoading, updateSearchResults } from 'redux/slice/searchSlice';
+import { changeSearchQuery, onActiveSearch, onUnactiveSearch, selectQuery, selectResults, selectSearchActive, setError, startLoading, updateSearchResults } from 'redux/slice/searchSlice';
 import { resourceLimits } from 'worker_threads';
 import PanelSearched from './result';
 
@@ -13,18 +13,18 @@ const PanelSearch: FC<{audioElement?: MutableRefObject<HTMLAudioElement|null>}> 
 
 		const query = useSelector(selectQuery);
 		const results = useSelector(selectResults);
+		const searchActive = useSelector(selectSearchActive);
 		const dispatch = useDispatch();
 
-  const [searchActive, setSearchActive] = useState<boolean>(query !== "");
 		const inputElement = useRef<HTMLInputElement|null>(null);
 
   const openSearchHandler = () => {
-	setSearchActive(true);
+			dispatch(onActiveSearch());
   }
 
   const closeSearchHandler = () => {
 			dispatch(changeSearchQuery(""));
-			setSearchActive(false);
+			dispatch(onUnactiveSearch());
   }
 
 		const queryChangeHandler  = () => {
@@ -32,19 +32,22 @@ const PanelSearch: FC<{audioElement?: MutableRefObject<HTMLAudioElement|null>}> 
 				const searchQuery = inputElement.current.value;
 				dispatch(changeSearchQuery(searchQuery))
 				dispatch(startLoading());
+				/**
+					* This can be optimized for no rate limit exceeding
+				 */
 				setTimeout(async () => {
 						const res = await fetchAllThroughSearchQuery(searchQuery);
 						if(typeof res !== 'string') 
 							dispatch(updateSearchResults(res));
 							else
-							dispatch(setError(`No Result found for ${query}`))
+							dispatch(setError(`No Result found for '${query}'`))
 				}, 100);
 			}
 		}
 
   return (
     <div className='w-2/3 h-full flex flex-col border-y-0 border-l-0 border-solid border-white border-r-[0.5px]'>
-        <header className='sticky py-2 px-10 h-20 inline-flex justify-between items-center border-t-0 border-x-0 border-solid border-white/10 bg-opacity-50 backdrop-blur backdrop-filter rounded-tl-xl'>
+        <header className='rlative py-2 px-10 h-20 inline-flex justify-between items-center border-t-0 border-x-0 border-solid border-white/10 bg-opacity-50 backdrop-blur backdrop-filter rounded-tl-xl'>
             <h1 className='font-bold text-[20px] w-60'>Search Songs</h1>
 			<section
 				className={` ${searchActive ? "w-full animate-enter-left-1 cursor-default ": "w-60 text-transparent cursor-pointer"}
@@ -87,7 +90,7 @@ const PanelSearch: FC<{audioElement?: MutableRefObject<HTMLAudioElement|null>}> 
         </header>
             {
 													query.length ? (
-															<div className='py-2 px-5'>
+															<div className='px-5'>
 																<PanelSearched audioElement={audioElement} />
 															</div>
 													):(

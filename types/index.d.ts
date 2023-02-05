@@ -121,10 +121,10 @@ interface SaavnSongObjectTypes {
   releaseDate?: string,
   duration?: string,
   label?: string,
-  primaryArtists?: string,
-  primaryArtistsId?: string,
-  featuredArtists?: string,
-  featuredArtistsId?: string,
+  primaryArtists?: any[],
+  primaryArtistsId?: any[],
+  featuredArtists?: any[],
+  featuredArtistsId?: any[],
   explicitContent?: number,
   playCount?: number,
   language?: string,
@@ -142,6 +142,35 @@ interface SaavnSongObjectTypes {
   }[],
   length?: number
  }
+
+ type SaavnArtistObjectTypes = {
+  id: string,
+  name: string,
+  url: string,
+  role: string,
+  image: { 
+    quality: string, 
+    link: string 
+  }[],
+  isRadioPresent: boolean
+ }
+
+ type SaavnAlbumObjectTypes = {
+    id: string,
+    name: string,
+    year: string,
+    type: string,
+    playCount: string,
+    language: string,
+    explicitContent: string,
+    songCount: string,
+    url: string,
+    primaryArtists?: any[],
+    featuredArtists: any[],
+    artists: any[],
+    image: any[],
+    songs: any[]
+  }
 interface MongooseGenreTypes extends Document {
  type: string
 }

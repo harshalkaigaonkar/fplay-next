@@ -6,6 +6,7 @@ import Image from 'next/image'
 import React, {useState, useEffect, MutableRefObject} from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { onAddSongIntoQueue, selectCurrentSongId, selectPaused, selectSongsQueue } from 'redux/slice/roomSlice';
+import { SaavnAlbumObjectTypes } from 'types';
 
 const PanelAlbumResult: React.FC<{data: any, key: number, audioElement?: MutableRefObject<HTMLAudioElement|null>}> = ({data, key, audioElement}) => {
 
@@ -15,7 +16,6 @@ const PanelAlbumResult: React.FC<{data: any, key: number, audioElement?: Mutable
   const dispatch = useDispatch();
 
  const [mouseEnter, setMouseEnter] = useState<boolean>(false);
- const [addToQueueLoading, setAddToQueueLoading] = useState<0|1|2>(0);
 
  const mouseEnterHandler = () => {
   setMouseEnter(true);
@@ -40,7 +40,7 @@ const PanelAlbumResult: React.FC<{data: any, key: number, audioElement?: Mutable
      key={key} 
      onMouseEnter={mouseEnterHandler} 
      onMouseLeave={mouseLeaveHandler} 
-     className="w-64 h-16 m-2 px-3 bg-[#121212] hover:bg-[#343434] flex flex-row justify-start items-center gap-3 overflow-hidden rounded-lg cursor-pointer transition duration-500"
+     className="w-60 h-16 m-2 px-3 bg-[#121212] hover:bg-[#343434] flex flex-row justify-evenly items-center gap-3 overflow-hidden rounded-lg cursor-pointer transition duration-500"
     >
       <Image
        src={data.image[1].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
@@ -51,9 +51,9 @@ const PanelAlbumResult: React.FC<{data: any, key: number, audioElement?: Mutable
        width={50}
        layout="fixed"
       />
-     <span className={`${mouseEnter ? "w-3/12 ": "w-2/3"} h-fit content-center`}>
-      <p className='text-sm font-bold cursor-pointer truncate'>{data.title}</p>
-      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{data.description}</p>
+     <span className={`w-2/3 h-fit content-center`}>
+      <p className='text-sm font-bold cursor-pointer truncate'>{data.title || data.name}</p>
+      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{data.description || `${data.year} . ${data.language.charAt(0).toUpperCase() + data.language.slice(1, data.language.length)} album . ${data.primaryArtists[0].name}`}</p>
      </span>
      {/* {mouseEnter ? (
       <div className='mx-[1px] flex-1 flex flex-row items-center justify-evenly animate-enter-div-1'>

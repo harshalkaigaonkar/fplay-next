@@ -29,5 +29,6 @@ type InitialSearchStateTypes = {
     results: any,
     loading: boolean,
     error: string|null,
-    overlayOpen: boolean
+    overlayOpen: boolean,
+    active: boolean
 }

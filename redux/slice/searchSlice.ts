@@ -10,7 +10,8 @@ const initialState : InitialSearchStateTypes = {
    results: null,
    loading: false,
    error: null,
-   overlayOpen: false
+   overlayOpen: false,
+   active: false
 }
 
 export const searchSlice = createSlice({ 
@@ -86,6 +87,20 @@ export const searchSlice = createSlice({
     closeOverlay : (state) => {
       state.overlayOpen = false;
     },
+    /**
+     * @param state current state
+     * @returns nothing
+     */
+    onActiveSearch : (state) => {
+      state.active = true;
+    },
+    /**
+     * @param state current state
+     * @returns nothing
+     */
+    onUnactiveSearch : (state) => {
+      state.active = false;
+    },
   }
 })
 
@@ -97,7 +112,9 @@ export const {
  nullifyError,
  clearQuery,
  openOverlay,
- closeOverlay
+ closeOverlay,
+ onActiveSearch,
+ onUnactiveSearch
 } = searchSlice.actions;
 
 export const selectQuery = (state: RootState) => state.search.query;
@@ -105,5 +122,6 @@ export const selectResults = (state: RootState) => state.search.results;
 export const selectLoading = (state: RootState) => state.search.loading;
 export const selectError = (state: RootState) => state.search.error;
 export const selectOverlayOpen = (state: RootState) => state.search.overlayOpen;
+export const selectSearchActive = (state: RootState) => state.search.active;
 
 export default searchSlice.reducer

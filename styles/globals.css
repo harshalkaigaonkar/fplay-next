@@ -34,12 +34,12 @@ body {
  
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  @apply bg-black/50 rounded-md
+  @apply bg-white/30 rounded-md cursor-pointer
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-black/90 cursor-pointer
+  @apply bg-white/20
 }
 
 h1,
