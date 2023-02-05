@@ -1,6 +1,7 @@
 import { CheckIcon, PauseIcon, PlayIcon } from '@heroicons/react/20/solid';
 import AddToPlaylistIcon from 'components/icon/addToPlaylist';
 import SongPlaying from 'components/icon/playing';
+import { decodeHTMLContent } from 'helpers';
 import { fetchSongObj } from 'helpers/music/idToObj';
 import Image from 'next/image'
 import React, {useState, MutableRefObject} from 'react'
@@ -65,8 +66,8 @@ const PanelSongResult: React.FC<{data: any, key: number, audioElement?: MutableR
        layout="fixed"
       />
      <span className={`${mouseEnter || currentSongId === data.id && !paused ? "w-3/12 ": "w-2/3"} h-fit content-center`}>
-      <p className='text-sm font-bold cursor-pointer truncate'>{data.title || data.name}</p>
-      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{data.description || `${data.primaryArtists} ${data.featuredArtists && `ft. ${data.featuredArtists}`}` }</p>
+      <p className='text-sm font-bold cursor-pointer truncate'>{decodeHTMLContent(data.title || data.name)}</p>
+      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{decodeHTMLContent(data.description || `${data.primaryArtists} ${data.featuredArtists && `ft. ${data.featuredArtists}`}`)}</p>
      </span>
      {mouseEnter ? (
       <div className='mx-[1px] flex-1 flex flex-row items-center justify-evenly animate-enter-div-1'>

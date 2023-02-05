@@ -76,7 +76,7 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
                     Music Room
                 </h2>
                 <h6 className='font-medium max-w-60 truncate'>
-                    {room_id}
+                    {room_id?.toLowerCase()}
                 </h6>
             </span>
             <h4 className='px-3 py-2 rounded-full transition duration-500 bg-white text-black'>

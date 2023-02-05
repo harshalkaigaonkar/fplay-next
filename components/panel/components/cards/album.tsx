@@ -1,6 +1,7 @@
 import { EllipsisVerticalIcon, PauseIcon, PlayIcon } from '@heroicons/react/20/solid';
 import AddToPlaylistIcon from 'components/icon/addToPlaylist';
 import SongPlaying from 'components/icon/playing';
+import { decodeHTMLContent } from 'helpers';
 import { fetchSongObj } from 'helpers/music/idToObj';
 import Image from 'next/image'
 import React, {useState, useEffect, MutableRefObject} from 'react'
@@ -25,16 +26,6 @@ const PanelAlbumResult: React.FC<{data: any, key: number, audioElement?: Mutable
   setMouseEnter(false);
  }
 
- const pauseHandler = () => {
-  if(!audioElement?.current) return;
-  audioElement.current.pause();
- }
-
- const addToQueueHandler = async () => {
-  const songObj = await fetchSongObj(data.id);
-  dispatch(onAddSongIntoQueue([songObj]));
- }
-
   return (
     <div 
      key={key} 
@@ -52,8 +43,8 @@ const PanelAlbumResult: React.FC<{data: any, key: number, audioElement?: Mutable
        layout="fixed"
       />
      <span className={`w-2/3 h-fit content-center`}>
-      <p className='text-sm font-bold cursor-pointer truncate'>{data.title || data.name}</p>
-      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{data.description || `${data.year} . ${data.language.charAt(0).toUpperCase() + data.language.slice(1, data.language.length)} album . ${data.primaryArtists[0].name}`}</p>
+      <p className='text-sm font-bold cursor-pointer truncate'>{decodeHTMLContent(data.title || data.name)}</p>
+      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{decodeHTMLContent(data.description || `${data.year} . ${data.language.charAt(0).toUpperCase() + data.language.slice(1, data.language.length)} album . ${data.primaryArtists[0].name}`)}</p>
      </span>
      {/* {mouseEnter ? (
       <div className='mx-[1px] flex-1 flex flex-row items-center justify-evenly animate-enter-div-1'>

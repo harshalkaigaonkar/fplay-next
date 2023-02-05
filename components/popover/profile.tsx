@@ -1,5 +1,6 @@
 import { Transition } from '@headlessui/react';
 import { ArrowLeftCircleIcon, BookmarkIcon, MusicalNoteIcon, UserCircleIcon } from '@heroicons/react/20/solid';
+import { decodeHTMLContent } from 'helpers';
 import Image from 'next/image';
 import React, {Fragment} from 'react'
 import { UseSession } from 'types';
@@ -24,11 +25,11 @@ const ProfilePopover: React.FC<ProfilePopoverProps> = ({session, onSignOut}) => 
         <header className='my-1 px-5 py-3 border-b-1 border-t-0 border-l-0 border-r-0 border-solid border-[#7a7a7a]'>
           <h5 
             className='h-fit min-w-full overflow-hidden truncate'>
-            {session && session.user.name}
+            {session && decodeHTMLContent(session.user.name)}
           </h5>
           <h6 
             className='h-fit p-0 m-0 max-w-full overflow-hidden text-ellipsis font-normal'>
-            {session && session.user.email}
+            {session && decodeHTMLContent(session.user.email)}
           </h6>
         </header>
         <li

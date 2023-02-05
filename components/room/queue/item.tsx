@@ -3,6 +3,7 @@ import { EllipsisVerticalIcon, HeartIcon, PauseIcon, PlayIcon, TrashIcon } from 
 import DragIcon from 'components/icon/dragIcon'
 import SongPlaying from 'components/icon/playing'
 import ItemOptions from 'components/popover/item'
+import { decodeHTMLContent } from 'helpers'
 import Image from 'next/image'
 import React, { FC, useState } from 'react'
 import { Draggable } from 'react-beautiful-dnd'
@@ -98,9 +99,9 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                             className="rounded-md overflow-hidden z-0"
                         />
                     </span>
-                    <span className='inline-flex flex-col gap-2 truncate'>
-                        <h5 className='w-full font-semibold'>{song.name}</h5>
-                        <h6 className='w-full font-normal'>{song.primaryArtists}{song.featuredArtists && ` ft. ${song.featuredArtists}`}</h6>
+                    <span className='max-w-24 w-full inline-flex flex-col gap-2 truncate'>
+                        <h5 className='w-full font-semibold'>{decodeHTMLContent(song.name)}</h5>
+                        <h6 className='w-full font-normal'>{decodeHTMLContent(`${song.primaryArtists}${song?.featuredArtists ? ` ft. ${song.featuredArtists}` : ""}`)}</h6>
                     </span>
                 </section>
                 <div className='flex-0' />

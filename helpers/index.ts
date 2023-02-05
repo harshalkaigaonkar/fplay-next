@@ -19,3 +19,8 @@ export const secToMin = (sec: number): string => {
         useGrouping: false
       })}`
 }
+export const decodeHTMLContent = (htmlText: string) => {
+  var txt = document.createElement("span");
+  txt.innerHTML = htmlText;
+  return txt.innerText;
+}

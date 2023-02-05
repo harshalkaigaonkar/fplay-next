@@ -33,7 +33,7 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
   return (
     <div className='m-0 p-0'>
       <Head>
-        <title>Fplay 🎵 | Room - {room_id}</title>
+        <title>Fplay 🎵 | Room - {room_id.toLowerCase()}</title>
         <meta name="description" content="Connect and Jam with friends on the go, one song at a time." />
         <link rel="icon" href="/favicon.ico" />
       </Head>

@@ -1,7 +1,7 @@
 import { ArrowUpIcon, ChevronLeftIcon, ChevronRightIcon, HeartIcon, PauseIcon, PlayIcon } from '@heroicons/react/20/solid';
 import { HeartIcon as OutlineHeartIcon } from '@heroicons/react/24/outline';
 import AddToPlaylistIcon from 'components/icon/addToPlaylist';
-import { secToMin } from 'helpers';
+import { decodeHTMLContent, secToMin } from 'helpers';
 import Image from 'next/image';
 import React, { FC, MutableRefObject, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -48,7 +48,7 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
         audioElement.current.currentTime = event.target.value;
     }
     
-  
+  console.log((currentTrack.name).toString())
     return (
         <div className='h-full mt-5 px-5 py-10 flex flex-col items-center gap-2 bg-gradient-to-r from-gray-800 via-gray-900 to-black rounded-[40px]'>
 
@@ -107,8 +107,8 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
                         />
                     </span>
                     <span className='w-96 px-12 my-2'>
-                        <h1 className='lg:w-full truncate oveflow-hidden font-bold text-center'>{currentTrack.name}</h1>
-                        <h5 className='lg:mt-2 lg:w-full truncate oveflow-hidden font-normal text-center'>{currentTrack.primaryArtists}{currentTrack.featuredArtists && ` ft. ${currentTrack.featuredArtists}`}</h5>
+                        <h1 className='lg:w-full truncate oveflow-hidden font-bold text-center'>{decodeHTMLContent(currentTrack.name)}</h1>
+                        <h5 className='lg:mt-2 lg:w-full truncate oveflow-hidden font-normal text-center'>{decodeHTMLContent(`${currentTrack.primaryArtists}${currentTrack.featuredArtists && ` ft. ${currentTrack.featuredArtists}`}`)}</h5>
                     </span>
         </div>
     );
