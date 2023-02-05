@@ -2,14 +2,13 @@ import { EllipsisVerticalIcon, PauseIcon, PlayIcon } from '@heroicons/react/20/s
 import AddToPlaylistIcon from 'components/icon/addToPlaylist';
 import SongPlaying from 'components/icon/playing';
 import { decodeHTMLContent } from 'helpers';
-import { fetchSongObj } from 'helpers/music/idToObj';
 import Image from 'next/image'
 import React, {useState, useEffect, MutableRefObject} from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { onAddSongIntoQueue, selectCurrentSongId, selectPaused, selectSongsQueue } from 'redux/slice/roomSlice';
 import { SaavnAlbumObjectTypes } from 'types';
 
-const PanelAlbumResult: React.FC<{data: any, key: number, audioElement?: MutableRefObject<HTMLAudioElement|null>}> = ({data, key, audioElement}) => {
+const PanelAlbumResult: React.FC<{data: any, key: number, audioElement?: MutableRefObject<HTMLAudioElement|null>, onClickHandler: (id: string) => void}> = ({data, key, audioElement, onClickHandler}) => {
 
   const songsQueue = useSelector(selectSongsQueue)
   const currentSongId = useSelector(selectCurrentSongId);
@@ -31,10 +30,11 @@ const PanelAlbumResult: React.FC<{data: any, key: number, audioElement?: Mutable
      key={key} 
      onMouseEnter={mouseEnterHandler} 
      onMouseLeave={mouseLeaveHandler} 
+     onClick={() => onClickHandler(data.id)}
      className="w-60 h-16 m-2 px-3 bg-[#121212] hover:bg-[#343434] flex flex-row justify-evenly items-center gap-3 overflow-hidden rounded-lg cursor-pointer transition duration-500"
     >
       <Image
-       src={data.image[1].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
+       src={data.image[1].link || data.image[0].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
        alt={data.title + "_cover"}
        className={`${mouseEnter ? "rotate-0": "rotate-[20deg]"}
        rounded-full transition duration-300 cursor-pointer`}

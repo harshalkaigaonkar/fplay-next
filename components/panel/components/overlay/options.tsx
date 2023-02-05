@@ -9,10 +9,13 @@ type MoreOptionsProps = {
   type?: "options|song"|"options|album"|"options|artist"|"album"|"artist"|null,
   results: any,
   backHandler: () => void,
-  audioElement?: MutableRefObject<HTMLAudioElement|null>
+  audioElement?: MutableRefObject<HTMLAudioElement|null>,
+  onArtistClickHandler: (id: string) => void,
+  onAlbumClickHandler: (id: string) => void,
 }
 
-const MoreOptions: FC<MoreOptionsProps> = ({type, results, backHandler, audioElement}) => {
+const MoreOptions: FC<MoreOptionsProps> = ({type, results, backHandler, audioElement, onAlbumClickHandler, onArtistClickHandler}) => {
+
   return (
     <InfoOverlay
       backHandler={backHandler}
@@ -33,7 +36,7 @@ const MoreOptions: FC<MoreOptionsProps> = ({type, results, backHandler, audioEle
           <>
             {
               results.map((item: any, index: number) => (
-                <PanelAlbumResult data={item} key={index} audioElement={audioElement} />
+                <PanelAlbumResult data={item} key={index} audioElement={audioElement} onClickHandler={onAlbumClickHandler} />
               ))
             }
           </>
@@ -42,7 +45,7 @@ const MoreOptions: FC<MoreOptionsProps> = ({type, results, backHandler, audioEle
           <>
             {
               results.map((item: any, index: number) => (
-                <PanelArtistResult data={item} key={index} audioElement={audioElement} />
+                <PanelArtistResult data={item} key={index} audioElement={audioElement} onClickHandler={onArtistClickHandler} />
               ))
             }
           </>

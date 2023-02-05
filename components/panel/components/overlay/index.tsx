@@ -26,12 +26,12 @@ const InfoOverlay: FC<InfoOverlayProps> = ({children, backHandler, error, overla
           <div>
             {overlayType === 'artist' ? (
               <>
-              <p className="font-normal text-md">Artist</p>
+              <p className="font-normal text-md">Artist Details</p>
               </>
             ) : 
             overlayType === 'album' ? (
               <>
-              <p className="font-normal text-md">Album</p>
+              <p className="font-normal text-md">Album Details</p>
               </>
             ) :
             overlayType?.includes("options") ? (

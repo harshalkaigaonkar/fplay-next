@@ -20,7 +20,7 @@ export const secToMin = (sec: number): string => {
       })}`
 }
 export const decodeHTMLContent = (htmlText: string) => {
-  var txt = document.createElement("span");
-  txt.innerHTML = htmlText;
-  return txt.innerText;
+    var txt = document.createElement("span");
+    txt.innerHTML = htmlText;
+    return txt.innerText;
 }

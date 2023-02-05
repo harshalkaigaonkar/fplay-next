@@ -91,7 +91,7 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                             </span>
                         )}
                         <Image
-                            src={song.image[1].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
+                            src={song.image[1].link || song.image[0].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
                             alt={`Song Icon ${song.image[1].quality}`}
                             width={45}
                             height={45}

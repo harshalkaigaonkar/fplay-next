@@ -48,7 +48,6 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
         audioElement.current.currentTime = event.target.value;
     }
     
-  console.log((currentTrack.name).toString())
     return (
         <div className='h-full mt-5 px-5 py-10 flex flex-col items-center gap-2 bg-gradient-to-r from-gray-800 via-gray-900 to-black rounded-[40px]'>
 
@@ -58,7 +57,7 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
                         </span>
                         <div className='flex-0 flex flex-row justify-center items-center gap-10 border-1 border-white/50 border-solid rounded-2xl shadow-2xl overflow-hidden group-hover:scale-105'>
                             <Image
-                                src={currentTrack.image[2].link}
+                                src={currentTrack.image[2].link || currentTrack.image[1].link || currentTrack.image[0].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
                                 alt="track_banner"
                                 height={250}
                                 width={250}

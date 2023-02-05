@@ -2,7 +2,7 @@ import { CheckIcon, PauseIcon, PlayIcon } from '@heroicons/react/20/solid';
 import AddToPlaylistIcon from 'components/icon/addToPlaylist';
 import SongPlaying from 'components/icon/playing';
 import { decodeHTMLContent } from 'helpers';
-import { fetchSongObj } from 'helpers/music/idToObj';
+import { fetchSongObj } from 'helpers/music/fetchSongs';
 import Image from 'next/image'
 import React, {useState, MutableRefObject} from 'react'
 import { useSelector, useDispatch } from 'react-redux';
@@ -57,7 +57,7 @@ const PanelSongResult: React.FC<{data: any, key: number, audioElement?: MutableR
      className="w-60 h-16 m-2 px-3 bg-[#121212] hover:bg-[#343434] flex flex-row justify-start items-center gap-3 overflow-hidden rounded-lg cursor-pointer transition duration-500"
     >
       <Image
-       src={data.image[1].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
+       src={data.image[1].link || data.image[0].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
        alt={data.title + "_cover"}
        className={`${mouseEnter ? "rotate-0": "rotate-[20deg]"}
        rounded-full transition duration-300 cursor-pointer`}

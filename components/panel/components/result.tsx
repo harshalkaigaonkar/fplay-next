@@ -12,10 +12,10 @@ import MoreOptions from './overlay/options';
 import { useDispatch } from 'react-redux';
 import { fetchSongsThroughSearchQuery } from 'helpers/music/fetchSongs';
 import { SaavnAlbumObjectTypes, SaavnArtistObjectTypes, SaavnSongObjectTypes } from 'types';
-import { fetchAlbumsThroughSearchQuery } from 'helpers/music/fetchAlbums';
-import { fetchArtistsThroughSearchQuery } from 'helpers/music/fetchArtists';
+import { fetchAlbumInfoThroughId, fetchAlbumsThroughSearchQuery } from 'helpers/music/fetchAlbums';
+import { fetchArtistInfoThroughId, fetchArtistSongsThroughId, fetchArtistsThroughSearchQuery } from 'helpers/music/fetchArtists';
 
-const PanelSearched: React.FC<{audioElement?: MutableRefObject<HTMLAudioElement|null>}> = ({audioElement}) => {
+const PanelSearched: React.FC<{audioElement: MutableRefObject<HTMLAudioElement|null>}> = ({audioElement}) => {
 
  const query = useSelector(selectQuery);
  const data = useSelector(selectResults);
@@ -30,10 +30,20 @@ const PanelSearched: React.FC<{audioElement?: MutableRefObject<HTMLAudioElement|
   // SaavnSongObjectTypes[]|SaavnArtistObjectTypes[]|SaavnAlbumObjectTypes[]|null
   any
   >(null);
+ const [overlayArtistResults, setOverlayArtistResults] = useState<
+  // SaavnSongObjectTypes[]|SaavnArtistObjectTypes[]|SaavnAlbumObjectTypes[]|null
+  any
+  >(null);
+ const [overlayAlbumResults, setOverlayAlbumResults] = useState<
+  // SaavnSongObjectTypes[]|SaavnArtistObjectTypes[]|SaavnAlbumObjectTypes[]|null
+  any
+  >(null);
+  const [overlayStack, setOverlayStack] = useState<("options|song"|"options|album"|"options|artist"|"album"|"artist"|null|undefined)[]>([]);
 
  const overlayBackHandler = () => {
   dispatch(onActiveSearch());
-  setOverlayType(null);
+  const poppedElement = overlayStack.length > 0 ? overlayStack.pop() : null;
+  setOverlayType(poppedElement);
  }
 
  const onViewMoreSongs = async () => {
@@ -42,6 +52,7 @@ const PanelSearched: React.FC<{audioElement?: MutableRefObject<HTMLAudioElement|
   const res = await fetchSongsThroughSearchQuery(query);
   if(res !== "Failed") {
     setOverlayResults(res.results);
+    setOverlayStack([...overlayStack, overlayType]);
     setOverlayType('options|song');
     dispatch(nullifyError());
   }
@@ -56,6 +67,7 @@ const PanelSearched: React.FC<{audioElement?: MutableRefObject<HTMLAudioElement|
   const res = await fetchAlbumsThroughSearchQuery(query);
   if(res !== "Failed") {
     setOverlayResults(res.results);
+    setOverlayStack([...overlayStack, overlayType]);
     setOverlayType('options|album');
     dispatch(nullifyError());
   }
@@ -63,7 +75,6 @@ const PanelSearched: React.FC<{audioElement?: MutableRefObject<HTMLAudioElement|
     setOverlayType(null);
     setFetchingError(`No Albums found for '${query}'`);
   }
-  // console.log(res.results)
  }
  const onViewMoreArtists = async () => {
   dispatch(onUnactiveSearch());
@@ -71,6 +82,7 @@ const PanelSearched: React.FC<{audioElement?: MutableRefObject<HTMLAudioElement|
   const res = await fetchArtistsThroughSearchQuery(query);
   if(res !== "Failed") {
     setOverlayResults(res.results);
+    setOverlayStack([...overlayStack, overlayType]);
     setOverlayType('options|artist');
     dispatch(nullifyError());
   }
@@ -79,7 +91,39 @@ const PanelSearched: React.FC<{audioElement?: MutableRefObject<HTMLAudioElement|
     setOverlayType(null);
     setFetchingError(`No Artists found for '${query}'`);
   }
-  // console.log(res.results)
+ }
+
+ const onAlbumClickHandler = async (id: string) => {
+  dispatch(onUnactiveSearch());
+  dispatch(startLoading());
+  const res = await fetchAlbumInfoThroughId(id);
+  if(res !== "Failed") {
+    setOverlayAlbumResults(res);
+    setOverlayStack([...overlayStack, overlayType]);
+    setOverlayType('album');
+    dispatch(nullifyError());
+  } else {
+    setOverlayType(null);
+    setFetchingError(`No Album found with id - ${id}`);
+  }
+ }
+
+ const onArtistClickHandler = async (id: string) => {
+  dispatch(onUnactiveSearch());
+  dispatch(startLoading());
+  const res = await fetchArtistInfoThroughId(id);
+  if(res !== "Failed") {
+   await setOverlayArtistResults({
+      ...res,
+      songs: await fetchArtistSongsThroughId(id),
+    })
+    setOverlayStack([...overlayStack, overlayType]);
+    setOverlayType('artist');
+    dispatch(nullifyError());
+  } else {
+    setOverlayType(null);
+    setFetchingError(`No Artist found with id - ${id}`);
+  }
  }
 
 
@@ -102,13 +146,23 @@ const PanelSearched: React.FC<{audioElement?: MutableRefObject<HTMLAudioElement|
         case "album": 
           return (
             <>
-              <AlbumOverlay />
+              <AlbumOverlay 
+                backHandler={overlayBackHandler} 
+                overlayType={overlayType} 
+                result={overlayAlbumResults} 
+                audioElement={audioElement} 
+              />
             </>
           )
         case 'artist': 
           return (
             <>
-              <ArtistOverlay />
+              <ArtistOverlay 
+                backHandler={overlayBackHandler} 
+                overlayType={overlayType} 
+                result={overlayArtistResults} 
+                audioElement={audioElement} 
+              />
             </>
           )
         case "options|song": 
@@ -116,13 +170,25 @@ const PanelSearched: React.FC<{audioElement?: MutableRefObject<HTMLAudioElement|
         case "options|artist": 
           return (
             <>
-              <MoreOptions backHandler={overlayBackHandler} type={overlayType} results={overlayResults} audioElement={audioElement}/>
+              <MoreOptions 
+                backHandler={overlayBackHandler} 
+                type={overlayType} 
+                results={overlayResults} 
+                audioElement={audioElement}
+                onAlbumClickHandler={onAlbumClickHandler}
+                onArtistClickHandler={onArtistClickHandler}
+              />
             </>
           )
         default: 
           return (
             <>
-              <InfoOverlay backHandler={overlayBackHandler} overlayType={overlayType} error={fetchingError} ><></></InfoOverlay>
+              <InfoOverlay
+                backHandler={overlayBackHandler} 
+                overlayType={overlayType} 
+                error={fetchingError} 
+              >
+              </InfoOverlay>
             </>
           )
       }
@@ -143,11 +209,11 @@ const PanelSearched: React.FC<{audioElement?: MutableRefObject<HTMLAudioElement|
                 )
               case 'artist':
                 return (
-                  <PanelArtistResult data={item} key={index} audioElement={audioElement} />
+                  <PanelArtistResult data={item} key={index} audioElement={audioElement} onClickHandler={onArtistClickHandler} />
                 )
               case 'album':
                 return (
-                  <PanelAlbumResult data={item} key={index} audioElement={audioElement} />
+                  <PanelAlbumResult data={item} key={index} audioElement={audioElement} onClickHandler={onArtistClickHandler} />
                 )
               default:
                 return(<></>);
@@ -188,7 +254,7 @@ const PanelSearched: React.FC<{audioElement?: MutableRefObject<HTMLAudioElement|
          {
           data.albums && data.albums.results.map((data: any, index: number) => (
            <>
-             <PanelAlbumResult data={data} key={index} audioElement={audioElement} />
+             <PanelAlbumResult data={data} key={index} audioElement={audioElement} onClickHandler={onAlbumClickHandler} />
            </>
           ))}
         </span>
@@ -209,7 +275,7 @@ const PanelSearched: React.FC<{audioElement?: MutableRefObject<HTMLAudioElement|
        <span className='mt-2 flex justify-between overflow-y-auto overflow-x-hidden'>
        {data.artists.results.map((data: any, index: number) => (
         <>
-          <PanelArtistResult data={data} key={index} audioElement={audioElement} />
+          <PanelArtistResult data={data} key={index} audioElement={audioElement} onClickHandler={onArtistClickHandler} />
         </>
        ))}
        </span>
