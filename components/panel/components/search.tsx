@@ -9,12 +9,14 @@ import { changeSearchQuery, onActiveSearch, onUnactiveSearch, selectQuery, selec
 import { resourceLimits } from 'worker_threads';
 import PanelSearched from './result';
 
-const PanelSearch: FC<{audioElement?: MutableRefObject<HTMLAudioElement|null>}> = ({audioElement}) => {
+const PanelSearch: FC<{audioElement: MutableRefObject<HTMLAudioElement|null>}> = ({audioElement}) => {
 
 		const query = useSelector(selectQuery);
 		const results = useSelector(selectResults);
 		const searchActive = useSelector(selectSearchActive);
 		const dispatch = useDispatch();
+
+		const timeout = useRef<ReturnType<typeof setTimeout>|null>(null);
 
 		const inputElement = useRef<HTMLInputElement|null>(null);
 
@@ -27,21 +29,29 @@ const PanelSearch: FC<{audioElement?: MutableRefObject<HTMLAudioElement|null>}> 
 			dispatch(onUnactiveSearch());
   }
 
-		const queryChangeHandler  = () => {
+		const queryChangeHandler  = async () => {
 			if(inputElement.current) {
 				const searchQuery = inputElement.current.value;
 				dispatch(changeSearchQuery(searchQuery))
 				dispatch(startLoading());
 				/**
 					* This can be optimized for no rate limit exceeding
+					* Update: Working till some extent, the query should be specific to some relevant info, otherwise shows loading forever.
 				 */
-				setTimeout(async () => {
-						const res = await fetchAllThroughSearchQuery(searchQuery);
-						if(typeof res !== 'string') 
-							dispatch(updateSearchResults(res));
-							else
-							dispatch(setError(`No Result found for '${query}'`))
-				}, 100);
+
+					if (timeout.current != null) {
+							clearTimeout(timeout.current); 
+							timeout.current = null;
+					}
+					else {
+							timeout.current = setTimeout(async () => {
+								const res = await fetchAllThroughSearchQuery(searchQuery);
+								if(typeof res !== 'string') 
+									dispatch(updateSearchResults(res));
+									else
+									dispatch(setError(`No Result found for '${query}'`))
+						}, 1000);
+					}
 			}
 		}
 

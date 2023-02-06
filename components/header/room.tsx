@@ -45,7 +45,7 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
     }
 
     const onBackHandler = () => {
-        window.location.href = "/";
+        window.location.replace("/");
     }
 
     const onOpenPanelHandler = () => {
@@ -54,7 +54,7 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
 
   return (
     <header className='sticky top-0 h-[72px] py-4 flex flex-row justify-between items-center bg-opacity-50 backdrop-blur backdrop-filter border-t-0 border-x-0 border-solid border-[#7A7A7A] z-30' >
-        <div className='lg:w-80 inline-flex items-center justify-around text-white'>
+        <div className='lg:w-80 md:w-1/3 inline-flex items-center justify-around text-white'>
             <span onClick={onBackHandler} className='p-4 rounded-full transition duration-300 bg-opacity-25 hover:bg-red-600 active:bg-red-500 cursor-pointer hover:-translate-x-1'>
                 <ArrowLeftIcon className='w-7 h-6' />
             </span>
@@ -86,7 +86,7 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
                 {!paused ? <SongPlaying type={5} /> : <SongPlaying type={0} />}
             </span>
         </div>
-        <div className='lg:w-80 inline-flex items-center justify-around text-white'>
+        <div className='lg:w-80 md:w-1/3 inline-flex items-center justify-around text-white'>
             {/* <span onClick={onOpenPanelHandler} className='p-4 rounded-full transition duration-300 hover:bg-[#434343] active:bg-[#343434] hover:cursor-pointer'>
                 <AddTrackPanelIcon className='w-8 h-7' />
             </span> */}

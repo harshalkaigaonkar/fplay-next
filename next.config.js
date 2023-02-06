@@ -6,6 +6,8 @@ const nextConfig = {
       "lh3.googleusercontent.com",
       "c.saavncdn.com",
       "www.jiosaavn.com",
+      "static.saavncdn.com",
+      "*"
     ]
   }
 }
