@@ -2,7 +2,7 @@ import { axiosGet } from "helpers";
 
 export const fetchAlbumsThroughSearchQuery = async (query: string, page : number = 1, entries: number = 20 ) => {
  try {
-   const res = await axiosGet(`${process.env.NEXT_PUBLIC_SONG_API}/search/albums?query=${query.replaceAll(" ", "+")}`);
+   const res = await axiosGet(`${process.env.NEXT_PUBLIC_MUSIC_BASEURL}/search/albums?query=${query.replaceAll(" ", "+")}`);
    if(res !== "Failed")
     return res.data;
    return "Failed";
@@ -14,7 +14,7 @@ export const fetchAlbumsThroughSearchQuery = async (query: string, page : number
 
 export const fetchAlbumInfoThroughId = async (id: string) => {
  try {
-   const res = await axiosGet(`${process.env.NEXT_PUBLIC_SONG_API}/albums?id=${id}`);
+   const res = await axiosGet(`${process.env.NEXT_PUBLIC_MUSIC_BASEURL}/albums?id=${id}`);
    if(res !== "Failed")
     return res.data;
    return "Failed";

@@ -43,15 +43,13 @@ const PanelSearch: FC<{audioElement: MutableRefObject<HTMLAudioElement|null>}> =
 							clearTimeout(timeout.current); 
 							timeout.current = null;
 					}
-					else {
-							timeout.current = setTimeout(async () => {
-								const res = await fetchAllThroughSearchQuery(searchQuery);
-								if(typeof res !== 'string') 
-									dispatch(updateSearchResults(res));
-									else
-									dispatch(setError(`No Result found for '${query}'`))
-						}, 1000);
-					}
+					timeout.current = setTimeout(async () => {
+						const res = await fetchAllThroughSearchQuery(searchQuery);
+						if(typeof res !== 'string') 
+							dispatch(updateSearchResults(res));
+							else
+							dispatch(setError(`No Result found for '${query}'`))
+					}, 1000);
 			}
 		}
 
