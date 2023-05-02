@@ -20,7 +20,7 @@ export const rooomSlice = createSlice({
   initialState,
   reducers: {  
     /**
-     * 
+     * @status ONLY ON FOR FRONTEND TESTING
      * @param state Refers to Current State
      * @returns current song queue
      */
@@ -46,6 +46,7 @@ export const rooomSlice = createSlice({
         return;
         const updatedSongsQueue = state.songsQueue.concat(action.payload);
         state.songsQueue = updatedSongsQueue;
+        if(!state.currentSongId) state.currentSongId = updatedSongsQueue[0].id
     },
     /**
      * 
