@@ -25,8 +25,8 @@ export const rooomSlice = createSlice({
      * @returns current song queue
      */
     onGetSongsQueue: (state): void => {
-        state.songsQueue = songs;
-        if(!state.currentSongId) state.currentSongId = songs[0].id
+        // state.songsQueue = songs;
+        // if(!state.currentSongId) state.currentSongId = songs[0].id
     },
     /**
      * 

@@ -14,6 +14,8 @@ import MusicPanelButton from 'components/track/button';
 import UsersConnectedRoom from 'components/room/conections';
 import { useRef, useState } from 'react';
 import MediaPanel from 'components/panel';
+import { useSelector } from 'react-redux';
+import { selectSongsQueue } from 'redux/slice/roomSlice';
 
 const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL}`)
 
@@ -29,6 +31,7 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
   const {data : session, status}: UseSession = useSession();
   
   const audioElement = useRef<HTMLAudioElement|null>(null);
+  const songsQueue = useSelector(selectSongsQueue);
 
   return (
     <div className='m-0 p-0'>
@@ -41,11 +44,15 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
       <RoomLayout session={session} room_id={room_id}>
         <section className='h-[38rem] flex flex-row gap-10'>
           <AudioProvider socket={socket} audioElement={audioElement}  />
-          <TrackQueue socket={socket} audioElement={audioElement} />
+          {
+            songsQueue.length > 0 && (
+              <TrackQueue socket={socket} audioElement={audioElement} />
+            )
+          }
         </section>
-        {/* <div className='w-full h-auto'>
+        <div className='w-full h-auto'>
           <UsersConnectedRoom session={session} />
-        </div> */}
+        </div>
       </RoomLayout>
       <MediaPanel audioElement={audioElement} />
     </div>

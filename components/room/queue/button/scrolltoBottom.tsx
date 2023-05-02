@@ -1,9 +1,9 @@
 import React from 'react'
-
+/**
+ * Not Used RN.
+ * @returns 
+ */
 const BottomScrollButton = () => {
- /**
-  * In NExt Commit
-  */
   return (
     <div>BottomScrollButton</div>
   )

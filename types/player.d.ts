@@ -1,4 +1,4 @@
 type AudioPlayerProps = {
-    currentTrack: SaavnSongObjectTypes, 
-    audioElement: MutableRefObject<HTMLAudioElement|null>
+    currentTrack?: SaavnSongObjectTypes, 
+    audioElement?: MutableRefObject<HTMLAudioElement|null>
 }

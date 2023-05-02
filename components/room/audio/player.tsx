@@ -1,4 +1,4 @@
-import { ArrowUpIcon, ChevronLeftIcon, ChevronRightIcon, HeartIcon, PauseIcon, PlayIcon } from '@heroicons/react/20/solid';
+import { ArrowUpIcon, ChevronLeftIcon, ChevronRightIcon, HeartIcon, MagnifyingGlassIcon, PauseIcon, PlayIcon } from '@heroicons/react/20/solid';
 import { HeartIcon as OutlineHeartIcon } from '@heroicons/react/24/outline';
 import AddToPlaylistIcon from 'components/icon/addToPlaylist';
 import { decodeHTMLContent, secToMin } from 'helpers';
@@ -6,7 +6,7 @@ import Image from 'next/image';
 import React, { FC, MutableRefObject, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { onChangeClickedSongFromQueue, onChangeNextSongFromQueue, onChangePrevSongFromQueue, onSetPause, onSetPlay, onUpdateTime, selectCurrentSongId, selectPaused, selectTime } from 'redux/slice/roomSlice';
+import { onChangeClickedSongFromQueue, onChangeNextSongFromQueue, onChangePrevSongFromQueue, onOpenPanel, onSetPause, onSetPlay, onUpdateTime, selectCurrentSongId, selectPaused, selectTime } from 'redux/slice/roomSlice';
 import { SaavnSongObjectTypes } from 'types';
 
 const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
@@ -49,9 +49,11 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
     }
     
     return (
-        <div className='h-full mt-5 px-5 py-10 flex flex-col items-center gap-2 bg-gradient-to-r from-gray-800 via-gray-900 to-black rounded-[40px]'>
+        <div className='h-full w-full mt-5 px-5 py-10 flex flex-col items-center gap-2 bg-gradient-to-r from-gray-800 via-gray-900 to-black rounded-[40px]'>
 
-                    <span className='w-full h-fit inline-flex flex-row items-center justify-evenly'>
+                    {currentTrack ? (
+                        <>
+                        <span className='w-full h-fit inline-flex flex-row items-center justify-evenly'>
                         <span onClick={onPrevTrack} className='p-2 inline-flex items-center h-fit text-white/70 rounded-full hover:-translate-x-1 hover:bg-white/5 cursor-pointer transition duration-500 active:bg-[#121212]'>
                             <ChevronLeftIcon className='w-20 h-20' />
                         </span>
@@ -109,6 +111,20 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
                         <h1 className='lg:w-full truncate oveflow-hidden font-bold text-center'>{decodeHTMLContent(currentTrack.name)}</h1>
                         <h5 className='lg:mt-2 lg:w-full truncate oveflow-hidden font-normal text-center'>{decodeHTMLContent(`${currentTrack.primaryArtists}${currentTrack.featuredArtists && ` ft. ${currentTrack.featuredArtists}`}`)}</h5>
                     </span>
+                        </>
+                    ) : (
+                        <>
+                        <span className='h-full flex flex-col items-center justify-center opacity-50'>
+                            <h2 className='font-medium'>Search your Favourite songs and push it into the list. 🔥</h2>
+                            <button 
+                                className='w-fit my-4 p-4 flex gap-2 items-center justify-center appearance-none min-w-60 text-inherit text-lg text-white font-bold rounded-md transition duration-300 bg-[#434343] border-none border-[#343434] hover:cursor-pointer hover:bg-[#343434] active:shadow active:bg-[#222222]'
+                                onClick={() => dispatch(onOpenPanel())}>
+                                <MagnifyingGlassIcon className='w-6 h-6' />
+                                Search Songs
+                            </button>
+                        </span>
+                        </>
+                    )}
         </div>
     );
 }

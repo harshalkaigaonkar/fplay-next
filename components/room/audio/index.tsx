@@ -61,7 +61,7 @@ const AudioProvider : FC<HomeProps> = ({socket, audioElement}) => {
   
     return (
       <div className='w-full h-full'>
-        {currentTrack && (
+        {currentTrack ? (
           <>
             <AudioPlayer 
               currentTrack={currentTrack} 
@@ -88,6 +88,8 @@ const AudioProvider : FC<HomeProps> = ({socket, audioElement}) => {
               ))} */}
             </audio>
           </>
+        ) : (
+          <AudioPlayer />
         )}
       </div>
     )
