@@ -76,6 +76,7 @@ interface MongooseRoomTypes extends Document {
  icon?: string,
  active: boolean,
  genres: Types.ObjectId[]|string[]|MongooseGenreTypes[],
+ room_slug: string,
  is_private: boolean,
 //  room_access_users: Types.ObjectId[]|string[],
  owned_by: Types.ObjectId|MongooseUserTypes|string,

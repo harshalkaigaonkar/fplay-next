@@ -47,7 +47,7 @@ export default async (
     
     const data = 
      await Room
-     .findById(room_id)
+     .findOne({room_slug: room_id});
 
      if(!data)
       throw new Error("No Room Found!!")

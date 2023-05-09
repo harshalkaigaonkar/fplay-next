@@ -16,6 +16,7 @@ import { useRef, useState } from 'react';
 import MediaPanel from 'components/panel';
 import { useSelector } from 'react-redux';
 import { selectSongsQueue } from 'redux/slice/roomSlice';
+import { axiosGet } from 'helpers';
 
 const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL}`)
 
@@ -66,11 +67,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   );
   
   const { room_id } = context.query;
+
   
   return {
     props: {
       session,
-      room_id
+      room_id,
     }
   }
 }

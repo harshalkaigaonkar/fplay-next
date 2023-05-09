@@ -1,3 +1,4 @@
+import { generateCustomUuid } from 'custom-uuid';
 import { ramdomEmojiText } from 'helpers';
 import mongoose, { Schema, model, models, Types } from 'mongoose';
 import { MongooseRoomTypes } from 'types';
@@ -20,6 +21,11 @@ const Room = new Schema<MongooseRoomTypes>({
   type: Boolean,
   required: true,
   default: true
+ },
+ room_slug: {
+    type: String,
+    required: true,
+    default: generateCustomUuid("1234567890-abcdefhijklmnopqrstuvwxyz", 6)
  },
  genres: [{
   type: Schema.Types.ObjectId,

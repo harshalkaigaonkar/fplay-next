@@ -98,6 +98,7 @@ export default async (
      upvotes: []
     });
     await newRoom.save();
+    await newRoom.populate("owned_by");
 
     return _res.status(201).json({
      type: "Success",

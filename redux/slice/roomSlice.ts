@@ -1,10 +1,12 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { axiosGet } from 'helpers';
 import { Session } from 'next-auth';
 import songs from 'songs.json';
 import { SaavnSongObjectTypes } from 'types';
 import { InitialRoomStateTypes, RootState } from 'types/redux';
 
 const initialState : InitialRoomStateTypes = {
+    roomInfo: {},
     songsQueue: [],
     currentSongId: null,
     paused: true,
@@ -18,6 +20,9 @@ const initialState : InitialRoomStateTypes = {
 export const rooomSlice = createSlice({ 
   name: 'room',
   initialState,
+  extraReducers: {
+
+  },
   reducers: {  
     /**
      * @status ONLY ON FOR FRONTEND TESTING
@@ -99,6 +104,9 @@ export const rooomSlice = createSlice({
         }
         state.currentSongId = state.songsQueue[index-1].id;
     },
+    onJoiningRoom: (state, action) => {
+        state.roomInfo = action.payload;
+    },
     onUpvote: (state) => {
         state.upvotes += 1;
     },
@@ -134,9 +142,11 @@ export const {
     onChangePrevSongFromQueue,
     onChangeClickedSongFromQueue,
     onClosePanel,
-    onOpenPanel
+    onOpenPanel,
+    onJoiningRoom
 } = rooomSlice.actions;
 
+export const selectRoomInfo = (state: RootState) => state.room.roomInfo;
 export const selectSongsQueue = (state: RootState) => state.room.songsQueue;
 export const selectCurrentSongId = (state: RootState) => state.room.currentSongId;
 export const selectPaused = (state: RootState) => state.room.paused;

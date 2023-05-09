@@ -1,11 +1,16 @@
 import { Transition } from '@headlessui/react';
 import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
+import { axiosGet } from 'helpers';
+import fetchRoom from 'helpers/fetchRoom';
 import { NextRouter, useRouter } from 'next/router';
 import React, { Fragment, useState } from 'react'
+import { useDispatch } from 'react-redux';
+import { onJoiningRoom } from 'redux/slice/roomSlice';
 
 const Hero = () => {
 
  const router : NextRouter = useRouter();
+ const dispatch = useDispatch();
 
  const [error, setError] = useState<{
   type: string,
@@ -15,10 +20,20 @@ const Hero = () => {
  // replaced by global state
  const [roomId, setRoomId] = useState("");
 
- const onRoomRedirect = (e: { preventDefault: () => void; }) => {
+ const onRoomRedirect = async (e: { preventDefault: () => void; }) => {
   e.preventDefault();
   if(roomId !== "" ) {
-    router.push(`/${roomId}`);
+    const data: string|any = await fetchRoom(roomId)
+    console.log(data)
+    // if(data === "Failed") 
+    //   setError({
+    //     type: "warning",
+    //     message: "Room Id is Not Valid!"
+    //   })
+    // else {
+    //   dispatch(onJoiningRoom(data));
+    //   router.push(`/${roomId}`);
+    // }
   }
   else
   setError({

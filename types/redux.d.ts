@@ -15,6 +15,7 @@ type InitialUserStateTypes = {
 }
 
 type InitialRoomStateTypes = {
+    roomInfo: MongooseRoomTypes|{},
     songsQueue: SaavnSongObjectTypes[]|any[],
     currentSongId: string|null,
     paused: boolean,

@@ -1517,6 +1517,11 @@ csstype@^3.0.2:
   resolved "https://registry.npmjs.org/csstype/-/csstype-3.1.1.tgz"
   integrity sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==
 
+custom-uuid@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/custom-uuid/-/custom-uuid-3.0.0.tgz#5352721b0b55b51a089d63e20f64349c4d8e7b5f"
+  integrity sha512-SUxQRnWY6jK9lrZBtTcrkH1Ct5Ym4qMKQ/53G1f7FMROyHupm3Z75bBuQqmZmbMt4BXg3kwKAnK8+mvEi+aJUA==
+
 damerau-levenshtein@^1.0.8:
   version "1.0.8"
   resolved "https://registry.npmjs.org/damerau-levenshtein/-/damerau-levenshtein-1.0.8.tgz"
