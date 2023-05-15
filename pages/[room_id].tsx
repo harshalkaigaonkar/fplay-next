@@ -4,7 +4,7 @@ import Image from 'next/image'
 import styles from 'styles/Home.module.css'
 import { io, Socket } from "socket.io-client";
 import axios, { Axios } from 'axios';
-import { AuthUserType, ClientToServerEvents, ServerToClientEvents, SocketClientType, UseSession } from 'types';
+import { APIResponse, AuthUserType, ClientToServerEvents, MongooseRoomTypes, MongooseUserTypes, ServerToClientEvents, SocketClientType, UseSession } from 'types';
 import { getSession, signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
 import RoomLayout from 'components/layout/room';
@@ -17,13 +17,17 @@ import MediaPanel from 'components/panel';
 import { useSelector } from 'react-redux';
 import { selectSongsQueue } from 'redux/slice/roomSlice';
 import { axiosGet } from 'helpers';
+import fetchUser from 'helpers/fetchUser';
+import fetchRoom from 'helpers/fetchRoom';
 
 const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL}`)
 
 export type HomeProps = {
   socket?: SocketClientType,
   session?: AuthUserType|any,
-  room_id: string
+  room_id: string,
+  room?: MongooseRoomTypes,
+  user?: MongooseUserTypes
 };
 
 
@@ -33,6 +37,7 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
   
   const audioElement = useRef<HTMLAudioElement|null>(null);
   const songsQueue = useSelector(selectSongsQueue);
+
 
   return (
     <div className='m-0 p-0'>
@@ -67,6 +72,36 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   );
   
   const { room_id } = context.query;
+
+  if(session&& session.user) {
+    const data = await fetchUser(session.user.email as string);
+    if(!data || data.type !== "Success")
+    {
+      return {
+        redirect: {
+          permanent: false,
+          destination: '/login'
+        }
+      }
+    }
+    else {
+      const roomData = await fetchRoom(room_id as string);
+      if(!roomData || roomData.type !== "Success")
+      return {
+        redirect: {
+          permanent: false,
+          destination: `/?redirect=not_available&room_id=${room_id}`
+        },
+      }
+      return {
+        props: {
+          session,
+          room_id,
+          user: data.data
+        }
+      }
+    }
+  }
 
   
   return {

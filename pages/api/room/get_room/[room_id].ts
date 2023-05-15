@@ -28,7 +28,6 @@ export default async (
 
  const session = await unstable_getServerSession(_req, _res, authOptions);
   //  console.log("Cookies: ", cookies)
-  if(!session) return _res.status(401).redirect("/login")
 
  switch(method) {
   // @route     GET api/room/get_room/:room_id
@@ -61,6 +60,7 @@ export default async (
      if(data.genres && data.genres.length > 0)
      populate_array.push("genres");
 
+    if(populate_array.length > 0)
     await data.populate(populate_array.join(" ")); // check this
     
 

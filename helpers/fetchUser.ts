@@ -2,10 +2,10 @@ import axios from 'axios';
 import { APIResponse, MongooseUserTypes } from 'types';
 
 export default async function(email: string) {
- const {data} = await axios.get<APIResponse<MongooseUserTypes>>(`/api/user?email=${email}`);
- if(data.type === "Success") {
-  return data.data;
- } else {
-  return data.error;
- }
+    try {
+        const {data} = await axios.get<APIResponse<MongooseUserTypes>>(`${process.env.NEXTAUTH_URL}/api/user?email=${email}`);
+        return data;
+    } catch (error: any) {
+        return error.response;
+    }
 }

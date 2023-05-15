@@ -1,5 +1,6 @@
 import { Transition } from '@headlessui/react';
 import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
+import HeadlessModal from 'components/modal/HeadlessModal';
 import { axiosGet } from 'helpers';
 import fetchRoom from 'helpers/fetchRoom';
 import { NextRouter, useRouter } from 'next/router';
@@ -18,22 +19,32 @@ const Hero = () => {
  }|null>(null);
 
  // replaced by global state
- const [roomId, setRoomId] = useState("");
+ const [roomId, setRoomId] = useState<string>("4-xdtb");
+ const [isOpen, setIsOpen] = useState<boolean>(false);
+ const [newRoomName, setNewRoomName] = useState<string>("");
+
+  function closeModal() {
+    setIsOpen(false)
+  }
+
+  function openModal(e: { preventDefault: () => void; }) {
+    e.preventDefault();
+    setIsOpen(true)
+  }
 
  const onRoomRedirect = async (e: { preventDefault: () => void; }) => {
   e.preventDefault();
   if(roomId !== "" ) {
     const data: string|any = await fetchRoom(roomId)
-    console.log(data)
-    // if(data === "Failed") 
-    //   setError({
-    //     type: "warning",
-    //     message: "Room Id is Not Valid!"
-    //   })
-    // else {
-    //   dispatch(onJoiningRoom(data));
-    //   router.push(`/${roomId}`);
-    // }
+    if(data.type === "Failure") 
+      setError({
+        type: "warning",
+        message: data.error
+      })
+    else {
+      dispatch(onJoiningRoom(data.data));
+      router.push(`/${roomId}`);
+    }
   }
   else
   setError({
@@ -45,8 +56,15 @@ const Hero = () => {
   }, 4000)
  }
 
+ const onRoomCreate = () => {
+  
+ }
+
  const onChangeRoomId = (e: { target: { value: React.SetStateAction<string>; }; }) => {
   setRoomId(e.target.value);
+ }
+ const onChangeNewRoomName = (e: { target: { value: React.SetStateAction<string>; }; }) => {
+  setNewRoomName(e.target.value);
  }
 
   return (
@@ -67,7 +85,6 @@ const Hero = () => {
         
         <form 
         className="w-full mx-3 my-6 flex flex-row justify-center gap-6 font-bold text-white"
-        onSubmit={onRoomRedirect}
         >
         <span className='w-1/3'>
           <input 
@@ -82,14 +99,16 @@ const Hero = () => {
             </p>
         </span>
 
-        <input 
-          type="submit" 
-          value="Join" 
+        <button 
+          onClick={onRoomRedirect}
           className="w-36 h-16 appearance-none min-w-60 text-inherit text-lg text-white font-bold rounded-md transition duration-300 bg-[#434343] border-none border-[#343434] hover:cursor-pointer hover:bg-[#343434] active:shadow active:bg-[#222222]" 
-          />
+          >
+            Join
+          </button>
         
         <button 
           className="w-36 h-16 appearance-none px-5 rounded-md inline-flex items-center shadow-xl border-[2px] border-solid border-white cursor-pointer bg-inherit transition duration-300 hover:bg-[#343434] hover:border-opacity-20 active:bg-[#222222]"
+          onClick={openModal}
           > 
 
           <p 
@@ -105,6 +124,16 @@ const Hero = () => {
 
       </div>
       
+      <HeadlessModal
+        openModal={openModal}
+        closeModal={closeModal}
+        title={"Create New Room"}
+        cta={"Create Room"}
+        cta_function={onRoomCreate}
+        isOpen={isOpen}
+      >
+        <input className='w-full my-4 appearance-none p-4 bg-inherit border-white text-white text-md placeholder-slate-300 rounded-lg focus:outline-none' type={"text"} placeholder={"Room Name"} onChange={onChangeNewRoomName} value={newRoomName} />
+      </HeadlessModal>
 
     </div>
   )

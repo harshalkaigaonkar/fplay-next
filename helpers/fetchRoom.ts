@@ -2,10 +2,10 @@ import axios from 'axios';
 import { APIResponse, MongooseRoomTypes } from 'types';
 
 export default async function(room_slug: string) {
- const {data} = await axios.get<APIResponse<MongooseRoomTypes>>(`/api/room/get_room/${room_slug}`);
- if(data.type === "Success") {
-  return data.data;
- } else {
-  return data.error;
- }
+    try {
+        const {data, status} = await axios.get<APIResponse<MongooseRoomTypes>>(`${process.env.NEXTAUTH_URL}/api/room/get_room/${room_slug}`);
+        return data
+    } catch(error:any) {
+        return error.response.data
+    }
 }
