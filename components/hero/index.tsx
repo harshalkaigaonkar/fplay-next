@@ -1,12 +1,15 @@
 import { Transition } from '@headlessui/react';
 import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
+import axios from 'axios';
 import HeadlessModal from 'components/modal/HeadlessModal';
 import { axiosGet } from 'helpers';
-import fetchRoom from 'helpers/fetchRoom';
+import createRoom from 'helpers/room/createRoom';
+import fetchRoom from 'helpers/room/fetchRoom';
 import { NextRouter, useRouter } from 'next/router';
 import React, { Fragment, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { onJoiningRoom } from 'redux/slice/roomSlice';
+import { APIResponse } from 'types';
 
 const Hero = () => {
 
@@ -56,8 +59,17 @@ const Hero = () => {
   }, 4000)
  }
 
- const onRoomCreate = () => {
-  
+ const onRoomCreate = async () => {
+  if(newRoomName.length < 6) return;
+  console.log(newRoomName)
+  try {
+    const data = await createRoom(newRoomName);
+    if(data.type === "Success") {
+      router.push(`/${data.data.room_slug}`);
+    }
+  } catch(err) {
+    router.push("/")
+  }
  }
 
  const onChangeRoomId = (e: { target: { value: React.SetStateAction<string>; }; }) => {
@@ -131,8 +143,10 @@ const Hero = () => {
         cta={"Create Room"}
         cta_function={onRoomCreate}
         isOpen={isOpen}
+        newRoomName={newRoomName}
       >
-        <input className='w-full my-4 appearance-none p-4 bg-inherit border-white text-white text-md placeholder-slate-300 rounded-lg focus:outline-none' type={"text"} placeholder={"Room Name"} onChange={onChangeNewRoomName} value={newRoomName} />
+        <input className='w-full mt-4 appearance-none p-4 bg-inherit border-white text-white text-md placeholder-slate-300 rounded-lg focus:outline-none' type={"text"} placeholder={"Room Name *"} onChange={onChangeNewRoomName} value={newRoomName} />
+        <p className='m-0 pl-2 py-1 text-xs opacity-50'>Min of 6 characters required.</p>
       </HeadlessModal>
 
     </div>

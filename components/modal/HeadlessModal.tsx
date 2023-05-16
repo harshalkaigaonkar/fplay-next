@@ -1,13 +1,14 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, ReactNode, useState } from 'react'
+import { Fragment, MouseEventHandler, ReactNode, useState } from 'react'
 
-export default function HeadlessModal({openModal, closeModal, isOpen, title, cta, cta_function, children} : {
+export default function HeadlessModal({openModal, closeModal, isOpen, title, cta, cta_function, newRoomName, children} : {
     openModal: (e: { preventDefault: () => void; }) => void,
     closeModal: () => void,
     isOpen: boolean,
     title: string,
     cta: string,
-    cta_function: (e: {target: {value: React.SetStateAction<string>;};}) => void,
+    cta_function: MouseEventHandler<HTMLButtonElement>,
+    newRoomName: string,
     children: ReactNode
 }) {
 
@@ -52,8 +53,10 @@ export default function HeadlessModal({openModal, closeModal, isOpen, title, cta
                   <div className="mt-4">
                     <button
                       type="button"
-                      className="w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white transition duration-300 bg-[#434343] border-none border-[#343434] hover:cursor-pointer hover:bg-[#343434] active:shadow active:bg-[#222222]"
-                      onClick={closeModal}
+                      disabled={newRoomName.length < 6}
+                      className={` ${newRoomName.length < 6 && "opacity-50"}
+                      w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white transition duration-300 bg-[#434343] border-none border-[#343434] hover:cursor-pointer hover:bg-[#343434] active:shadow active:bg-[#222222]`}
+                      onClick={cta_function}
                     >
                       {cta}
                     </button>

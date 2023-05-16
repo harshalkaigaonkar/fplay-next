@@ -3,15 +3,15 @@ import React, { FC, ReactNode, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { onGetSongsQueue, selectSongsQueue } from 'redux/slice/roomSlice'
-import { UseSession } from 'types'
+import { MongooseRoomTypes, UseSession } from 'types'
 
 interface RoomLayoutProps {
  session: UseSession,
- room_id: string,
+ room: MongooseRoomTypes,
  children: ReactNode,
 }
 
-const RoomLayout: FC<RoomLayoutProps> = ({session, children, room_id}) => {
+const RoomLayout: FC<RoomLayoutProps> = ({session, children, room}) => {
 
   const songsQueue = useSelector(selectSongsQueue);
   const dispatch = useDispatch();
@@ -22,7 +22,7 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room_id}) => {
 
   return (
     <div className='lg:mx-20 lg:px-20 lg:flex lg:flex-col min-h-screen md:m-0 md:p-0 select-none animate-enter-opacity'>
-      <RoomHeader session={session} room_id={room_id} />
+      <RoomHeader session={session} room={room} />
       <main>{children}</main>
     </div>
   )

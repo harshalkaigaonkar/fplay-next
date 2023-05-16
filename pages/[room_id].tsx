@@ -17,21 +17,20 @@ import MediaPanel from 'components/panel';
 import { useSelector } from 'react-redux';
 import { selectSongsQueue } from 'redux/slice/roomSlice';
 import { axiosGet } from 'helpers';
-import fetchUser from 'helpers/fetchUser';
-import fetchRoom from 'helpers/fetchRoom';
+import fetchUser from 'helpers/user/fetchUser';
+import fetchRoom from 'helpers/room/fetchRoom';
 
 const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL}`)
 
 export type HomeProps = {
   socket?: SocketClientType,
   session?: AuthUserType|any,
-  room_id: string,
-  room?: MongooseRoomTypes,
+  room: MongooseRoomTypes,
   user?: MongooseUserTypes
 };
 
 
-const Home: NextPage<HomeProps> = ({room_id}) => {
+const Home: NextPage<HomeProps> = ({room}) => {
 
   const {data : session, status}: UseSession = useSession();
   
@@ -42,12 +41,12 @@ const Home: NextPage<HomeProps> = ({room_id}) => {
   return (
     <div className='m-0 p-0'>
       <Head>
-        <title>Fplay 🎵 | Room - {room_id.toLowerCase()}</title>
+        <title>Fplay 🎵 | Room - {room?.room_slug.toLowerCase()}</title>
         <meta name="description" content="Connect and Jam with friends on the go, one song at a time." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <RoomLayout session={session} room_id={room_id}>
+      <RoomLayout session={session} room={room}>
         <section className='h-[38rem] flex flex-row gap-10'>
           <AudioProvider socket={socket} audioElement={audioElement}  />
           {
@@ -97,6 +96,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         props: {
           session,
           room_id,
+          room: roomData.data,
           user: data.data
         }
       }

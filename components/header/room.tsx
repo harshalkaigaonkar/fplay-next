@@ -9,7 +9,7 @@ import { HeaderProps } from 'types/header'
 
 const emoji = require('node-emoji')
 
-const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
+const RoomHeader: FC<HeaderProps> = ({session,room}) => {
 
     const songsQueue = useSelector(selectSongsQueue);
     const upvotes = useSelector(selectUpvotes);
@@ -69,14 +69,14 @@ const RoomHeader: FC<HeaderProps> = ({session,room_id}) => {
         </div>
         <div className='inline-flex flex-0 items-center justify-center gap-5'>
             <span className='inline-flex justify-center items-center w-14 h-14 text-2xl p-4'>
-                {emoji.get(":fire:")}
+                {emoji.get(room?.icon)}
             </span>
             <span className='inline-flex flex-col items-center'>
-                <h2 className='max-w-80 truncate'>
-                    Music Room
+                <h2 className='max-w-80 w-36 truncate text-center'>
+                    {room?.name}
                 </h2>
                 <h6 className='font-medium max-w-60 truncate'>
-                    {room_id?.toLowerCase()}
+                    {room?.room_slug?.toLowerCase()}
                 </h6>
             </span>
             <h4 className='px-3 py-2 rounded-full transition duration-500 bg-white text-black'>

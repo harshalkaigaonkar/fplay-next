@@ -1,6 +1,7 @@
 import axios from "axios"
 
 export const axiosGet = async (url: string) => {
+// majorly used for Saavn APIs
  const res = await axios.get(url);
  if(res.data)
  return res.data;
@@ -11,6 +12,19 @@ export const ramdomEmojiText = (): string => {
  const emojis: string[] = [":fire:", ":wave:"]
  const index = Math.floor(Math.random() * emojis.length);
  return emojis[index];
+}
+
+export const genrateCustomId = (): string => {
+    const characters = 'abcdefghijklmnopqrstuvwxyz-0123456789';
+    let uniqueString = '';
+
+    for (let i = 0; i < 6; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        uniqueString += characters[randomIndex];
+    }
+
+    return uniqueString;
+
 }
 
 export const secToMin = (sec: number): string => {
