@@ -12,15 +12,16 @@ import AudioProvider from 'components/room/audio';
 import TrackQueue from 'components/room/queue';
 import MusicPanelButton from 'components/track/button';
 import UsersConnectedRoom from 'components/room/conections';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MediaPanel from 'components/panel';
 import { useSelector } from 'react-redux';
 import { selectSongsQueue } from 'redux/slice/roomSlice';
 import { axiosGet } from 'helpers';
 import fetchUser from 'helpers/user/fetchUser';
 import fetchRoom from 'helpers/room/fetchRoom';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
-const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL}`)
+let socket : Socket<DefaultEventsMap, DefaultEventsMap> | undefined;
 
 export type HomeProps = {
   socket?: SocketClientType,
@@ -31,6 +32,15 @@ export type HomeProps = {
 
 
 const Home: NextPage<HomeProps> = ({room}) => {
+
+  useEffect(() => {
+    socketInitializer();
+  }, [socket])
+
+  const socketInitializer = async () => {
+    await fetch("/api/socket");
+    socket = await io();
+  }
 
   const {data : session, status}: UseSession = useSession();
   
