@@ -35,7 +35,11 @@ const Home: NextPage<HomeProps> = ({room}) => {
 
   useEffect(() => {
     socketInitializer();
-  }, [socket])
+    return () => {
+      if(socket)
+        socket.disconnect();
+    }
+  }, [])
 
   const socketInitializer = async () => {
     await fetch("/api/socket");
@@ -102,6 +106,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           destination: `/?redirect=not_available&room_id=${room_id}`
         },
       }
+      else if (roomData.data && !roomData.data.is_private) 
       return {
         props: {
           session,
