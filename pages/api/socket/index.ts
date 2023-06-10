@@ -20,13 +20,12 @@ export default async (
 
  switch(method) {
   // @route     GET api/socket
-  // @desc      Create a New Room for Session User
-  // @access    Private
-  // @status    Works Properly
+  // @desc      Create/ReInitialize Socket conenction with server to client
+  // @access    Public (want it to be private)
+  // @status    DEV
   case "GET": {
    try {
-    await redisManager();
-    await socketManager(_res);
+    await Promise.all([redisManager(), socketManager(_res)]);
     return _res.status(201).json({
      type: "Success",
      data: "Socket connected successfully."
