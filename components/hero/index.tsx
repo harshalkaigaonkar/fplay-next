@@ -22,7 +22,7 @@ const Hero = () => {
  }|null>(null);
 
  // replaced by global state
- const [roomId, setRoomId] = useState<string>("4-xdtb");
+ const [roomId, setRoomId] = useState<string>("0374jc");
  const [isOpen, setIsOpen] = useState<boolean>(false);
  const [newRoomName, setNewRoomName] = useState<string>("");
 

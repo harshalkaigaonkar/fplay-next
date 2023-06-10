@@ -40,7 +40,7 @@ export interface ServerToClientEvents {
  ser: (string) => void;
 }
 export type ClientToServerEvents = {
- 'connect-to-server' : (any) => void;
+ 'connect-to-join-room' : (any) => void;
  'ser': (any) => void;
  'create-room': (any) => void;
  'update-current-time': (any) => void;

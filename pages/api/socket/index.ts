@@ -5,7 +5,7 @@ import {
   ResponseDataType, 
 } from 'types';
 import socketManager from 'socket';
-import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import redisManager, { client } from 'cache';
 
 export default async (
   _req: NextApiRequest,
@@ -25,6 +25,7 @@ export default async (
   // @status    Works Properly
   case "GET": {
    try {
+    await redisManager();
     await socketManager(_res);
     return _res.status(201).json({
      type: "Success",

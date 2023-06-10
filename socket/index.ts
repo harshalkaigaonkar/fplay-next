@@ -1,12 +1,13 @@
 import { Server } from "socket.io"
 import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from "types"
-import { client } from 'cache'
+import redisManager, {client} from 'cache'
 
-const socketManager = (_res: any) => {
+const socketManager = async (_res: any) => {
   if(_res.socket.server.io) {
    console.log("Socket already initialised.");
    return;
   }
+  
   const _io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(
      _res.socket.server,
      {
@@ -20,9 +21,10 @@ const socketManager = (_res: any) => {
 
     _io.on('connection', (_socket) => {
       console.log("new Socket Client Connected", _socket.id)
-      // _socket.on('connect-to-server', (data) => {
-      //  console.log("aaya be", data)
-      // })
+      _socket.on('connect-to-join-room', async (data) => {
+        _socket.join(data.room_slug)
+        await client.json.set(`room:${data.room_slug}`, '$', data)
+      })
       
       // _socket.emit('ser', 'hello')
       

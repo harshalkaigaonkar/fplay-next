@@ -35,15 +35,18 @@ const Home: NextPage<HomeProps> = ({room}) => {
 
   useEffect(() => {
     socketInitializer();
-    return () => {
-      if(socket)
-        socket.disconnect();
-    }
-  }, [])
+    // return () => {
+    //   if(socket)
+    //     socket.disconnect();
+    // }
+  }, [socket])
 
   const socketInitializer = async () => {
     await fetch("/api/socket");
-    socket = await io();
+    socket = io();
+    socket.emit("connect-to-join-room", {
+      room_slug: room.room_slug
+    })
   }
 
   const {data : session, status}: UseSession = useSession();
