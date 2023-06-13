@@ -1,7 +1,7 @@
 import { createClient } from "redis"
 
 const isConnected : {
-    status?: boolean
+    connected?: boolean
 } = {
 };
 
@@ -10,9 +10,10 @@ export const client = createClient({
 })
 
 const redisManager = async () => {
-    if(!isConnected.status) 
+    if(!isConnected.connected) 
         try {
-            await client.connect().then(() => isConnected.status = true);
+            //ISSUE - as app is re-rendered, new client is getting connected to server. check on redisinsight
+            await client.connect().then(() => isConnected.connected = true);
             console.log('Redis Connected Successfully')
         } catch (error) {
             console.log("Error Connecting Redis\n", error);

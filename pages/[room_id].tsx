@@ -12,14 +12,15 @@ import AudioProvider from 'components/room/audio';
 import TrackQueue from 'components/room/queue';
 import MusicPanelButton from 'components/track/button';
 import UsersConnectedRoom from 'components/room/conections';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import MediaPanel from 'components/panel';
 import { useSelector } from 'react-redux';
-import { selectSongsQueue } from 'redux/slice/roomSlice';
+import { onJoiningRoom, selectRoom, selectRoomInfo, selectSongsQueue } from 'redux/slice/roomSlice';
 import { axiosGet } from 'helpers';
 import fetchUser from 'helpers/user/fetchUser';
 import fetchRoom from 'helpers/room/fetchRoom';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import { useDispatch } from 'react-redux';
 
 let socket : Socket<DefaultEventsMap, DefaultEventsMap> | undefined;
 
@@ -32,29 +33,34 @@ export type HomeProps = {
 
 
 const Home: NextPage<HomeProps> = ({room}) => {
+  const dispatch = useDispatch();
+  const {data : session, status}: UseSession = useSession();
+  const audioElement = useRef<HTMLAudioElement|null>(null);
+  const songsQueue = useSelector(selectSongsQueue);
+  const roomInfo = useSelector(selectRoomInfo);
 
   useEffect(() => {
+    if(Object.keys(roomInfo).length === 0)
+      dispatch(onJoiningRoom(room));
     socketInitializer();
-    // return () => {
-    //   if(socket)
-    //     socket.disconnect();
-    // }
-  }, [socket])
+    return () => {
+      socket?.disconnect();
+    }
+  }, [])
 
-  const socketInitializer = async () => {
+  const socketInitializer = useCallback(async () => {
     await fetch("/api/socket");
+    //ISSUE - There are a lot of client getting connected, have to resolve that.
     socket = io();
     socket.emit("connect-to-join-room", {
       room_slug: room.room_slug
     })
-  }
+    socket.on("joined-room", (data) => {
+      console.log("here i fill up the data based on redis")
+    })
+  }, [socket])
 
-  const {data : session, status}: UseSession = useSession();
   
-  const audioElement = useRef<HTMLAudioElement|null>(null);
-  const songsQueue = useSelector(selectSongsQueue);
-
-
   return (
     <div className='m-0 p-0'>
       <Head>

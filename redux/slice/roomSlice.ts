@@ -154,5 +154,6 @@ export const selectTime = (state: RootState) => state.room.time;
 export const selectUsers = (state: RootState) => state.room.users;
 export const selectUpvotes = (state: RootState) => state.room.upvotes;
 export const selectBottomSheet = (state: RootState) => state.room.bottomSheet;
+export const selectRoom = (state: RootState) => state.room;
 
 export default rooomSlice.reducer
