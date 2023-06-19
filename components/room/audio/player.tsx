@@ -6,7 +6,8 @@ import Image from 'next/image';
 import React, { FC, MutableRefObject, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { onChangeClickedSongFromQueue, onChangeNextSongFromQueue, onChangePrevSongFromQueue, onOpenPanel, onSetPause, onSetPlay, onUpdateTime, selectCurrentSongId, selectPaused, selectTime } from 'redux/slice/roomSlice';
+import { onChangeClickedSongFromQueue, onChangeNextSongFromQueue, onChangePrevSongFromQueue,  onSetPause, onSetPlay, onUpdateTime, selectCurrentSongId, selectPaused, selectTime } from 'redux/slice/playerSlice';
+import {onOpenPanel} from 'redux/slice/roomSlice'
 import { SaavnSongObjectTypes } from 'types';
 
 const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {

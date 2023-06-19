@@ -2,7 +2,7 @@ import RoomHeader from 'components/header/room'
 import React, { FC, ReactNode, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
-import { onGetSongsQueue, selectSongsQueue } from 'redux/slice/roomSlice'
+import { onGetSongsQueue, selectSongsQueue } from 'redux/slice/playerSlice'
 import { MongooseRoomTypes, UseSession } from 'types'
 
 interface RoomLayoutProps {
@@ -18,6 +18,7 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room}) => {
 
   useEffect(() => {
     dispatch(onGetSongsQueue());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

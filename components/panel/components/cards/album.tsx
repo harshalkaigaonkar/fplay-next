@@ -5,7 +5,7 @@ import { decodeHTMLContent } from 'helpers';
 import Image from 'next/image'
 import React, {useState, useEffect, MutableRefObject} from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { onAddSongIntoQueue, selectCurrentSongId, selectPaused, selectSongsQueue } from 'redux/slice/roomSlice';
+import { onAddSongIntoQueue, selectCurrentSongId, selectPaused, selectSongsQueue } from 'redux/slice/playerSlice';
 import { SaavnAlbumObjectTypes } from 'types';
 
 const PanelAlbumResult: React.FC<{data: any, key: number, audioElement?: MutableRefObject<HTMLAudioElement|null>, onClickHandler: (id: string) => void}> = ({data, key, audioElement, onClickHandler}) => {

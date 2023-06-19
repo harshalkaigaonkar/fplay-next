@@ -3,7 +3,7 @@ import { HomeProps } from 'types/home'
 import AudioPlayer from './player';
 import { secToMin } from 'helpers';
 import { useSelector } from 'react-redux';
-import { onChangeNextSongFromQueue, onSetPause, onSetPlay, onUpdateTime, selectCurrentSongId, selectPaused, selectSongsQueue } from 'redux/slice/roomSlice';
+import { onChangeNextSongFromQueue, onSetPause, onSetPlay, onUpdateTime, selectCurrentSongId, selectPaused, selectSongsQueue } from 'redux/slice/playerSlice';
 import { useDispatch } from 'react-redux';
 import { SaavnSongObjectTypes } from 'types';
 
@@ -26,9 +26,11 @@ const AudioProvider : FC<HomeProps> = ({socket, audioElement}) => {
 
     return () => {
       if(audioElement.current)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         audioElement.current.load();
     }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [audioElement, currentTrack, currentSongId])
 
   const loadedMetaDataHandler = (element: any) => {

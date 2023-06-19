@@ -15,7 +15,8 @@ import UsersConnectedRoom from 'components/room/conections';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import MediaPanel from 'components/panel';
 import { useSelector } from 'react-redux';
-import { onJoiningRoom, selectRoom, selectRoomInfo, selectSongsQueue } from 'redux/slice/roomSlice';
+import { onJoiningRoom, selectRoom, selectRoomInfo } from 'redux/slice/roomSlice';
+import { selectSongsQueue } from 'redux/slice/playerSlice'
 import { axiosGet } from 'helpers';
 import fetchUser from 'helpers/user/fetchUser';
 import fetchRoom from 'helpers/room/fetchRoom';
@@ -46,6 +47,7 @@ const Home: NextPage<HomeProps> = ({room}) => {
     return () => {
       socket?.disconnect();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const socketInitializer = useCallback(async () => {
@@ -58,6 +60,7 @@ const Home: NextPage<HomeProps> = ({room}) => {
     socket.on("joined-room", (data) => {
       console.log("here i fill up the data based on redis")
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket])
 
   

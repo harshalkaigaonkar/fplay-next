@@ -1,7 +1,7 @@
 import React, { FC, MutableRefObject } from 'react'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
-import { selectSongsQueue } from 'redux/slice/roomSlice'
+import { selectSongsQueue } from 'redux/slice/playerSlice'
 import DraggableList from 'components/room/queue/list'
 
 const PanelDraggableQueue: FC<{audioElement ?: MutableRefObject<HTMLAudioElement|null>}> = ({audioElement}) => {

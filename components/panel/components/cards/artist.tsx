@@ -6,7 +6,7 @@ import { fetchSongObj } from 'helpers/music/fetchSongs';
 import Image from 'next/image'
 import React, {useState, useEffect, MutableRefObject} from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { onAddSongIntoQueue, selectCurrentSongId, selectPaused, selectSongsQueue } from 'redux/slice/roomSlice';
+import { onAddSongIntoQueue, selectCurrentSongId, selectPaused, selectSongsQueue } from 'redux/slice/playerSlice';
 
 const PanelArtistResult: React.FC<{data: any, key: number, audioElement?: MutableRefObject<HTMLAudioElement|null>, onClickHandler: (id: string) => void}> = ({data, key, audioElement, onClickHandler}) => {
 

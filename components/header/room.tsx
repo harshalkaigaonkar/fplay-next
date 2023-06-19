@@ -4,7 +4,8 @@ import SongPlaying from 'components/icon/playing'
 import Image from 'next/image'
 import React, { FC, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { onDownvote, onUpvote,onOpenPanel, selectPaused, selectSongsQueue, selectUpvotes } from 'redux/slice/roomSlice'
+import { onDownvote, onUpvote,onOpenPanel, selectUpvotes } from 'redux/slice/roomSlice'
+import { selectPaused, selectSongsQueue, } from 'redux/slice/playerSlice'
 import { HeaderProps } from 'types/header'
 
 const emoji = require('node-emoji')

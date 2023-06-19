@@ -16,13 +16,16 @@ type InitialUserStateTypes = {
 
 type InitialRoomStateTypes = {
     roomInfo: MongooseRoomTypes|{},
+    users: AuthUserType.user[]|any[],
+    upvotes: number,
+    bottomSheet: booelan
+}
+
+type InitialPlayerStateTypes = {
     songsQueue: SaavnSongObjectTypes[]|any[],
     currentSongId: string|null,
     paused: boolean,
     time: number,
-    users: AuthUserType.user[]|any[],
-    upvotes: number,
-    bottomSheet: booelan
 }
 
 type InitialSearchStateTypes = {

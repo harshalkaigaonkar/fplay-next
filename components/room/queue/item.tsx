@@ -9,7 +9,7 @@ import React, { FC, useState } from 'react'
 import { Draggable } from 'react-beautiful-dnd'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
-import { onChangeClickedSongFromQueue, onRemoveSongFromQueue, onSetPause, onSetPlay, selectCurrentSongId, selectPaused } from 'redux/slice/roomSlice'
+import { onChangeClickedSongFromQueue, onRemoveSongFromQueue, onSetPause, onSetPlay, selectCurrentSongId, selectPaused } from 'redux/slice/playerSlice'
 import { DraggableListItemProps } from 'types/queue'
 
 
