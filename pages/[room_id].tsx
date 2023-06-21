@@ -16,12 +16,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import MediaPanel from 'components/panel';
 import { useSelector } from 'react-redux';
 import { onJoiningRoom, selectRoom, selectRoomInfo } from 'redux/slice/roomSlice';
-import { selectSongsQueue } from 'redux/slice/playerSlice'
+import { selectPlayer, selectSongsQueue } from 'redux/slice/playerSlice'
 import { axiosGet } from 'helpers';
 import fetchUser from 'helpers/user/fetchUser';
 import fetchRoom from 'helpers/room/fetchRoom';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
 
 let socket : Socket<DefaultEventsMap, DefaultEventsMap> | undefined;
 
@@ -29,16 +30,19 @@ export type HomeProps = {
   socket?: SocketClientType,
   session?: AuthUserType|any,
   room: MongooseRoomTypes,
-  user?: MongooseUserTypes
+  user: MongooseUserTypes
 };
 
 
-const Home: NextPage<HomeProps> = ({room}) => {
+const Home: NextPage<HomeProps> = ({room, user}) => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const {data : session, status}: UseSession = useSession();
   const audioElement = useRef<HTMLAudioElement|null>(null);
   const songsQueue = useSelector(selectSongsQueue);
   const roomInfo = useSelector(selectRoomInfo);
+  const player = useSelector(selectPlayer);
+  const roomRef = useRef<HTMLDivElement|null>(null);
 
   useEffect(() => {
     if(Object.keys(roomInfo).length === 0)
@@ -55,10 +59,11 @@ const Home: NextPage<HomeProps> = ({room}) => {
     //ISSUE - There are a lot of client getting connected, have to resolve that.
     socket = io();
     socket.emit("connect-to-join-room", {
-      room_slug: room.room_slug
-    })
-    socket.on("joined-room", (data) => {
-      console.log("here i fill up the data based on redis")
+      data: {
+        ...player,
+        ...Object.fromEntries(Object.entries(room).filter(([item]) => !["name", "desc", "icon", ,"createdAt", "updatedAt","__v"].includes(item))),
+      },
+      admin: user._id === room.owned_by._id
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket])
@@ -72,7 +77,7 @@ const Home: NextPage<HomeProps> = ({room}) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <RoomLayout session={session} room={room}>
+      <RoomLayout session={session} room={room} ref={roomRef}>
         <section className='h-[38rem] flex flex-row gap-10'>
           <AudioProvider socket={socket} audioElement={audioElement}  />
           {

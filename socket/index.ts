@@ -21,9 +21,15 @@ const socketManager = async (_res: any) => {
 
     _io.on('connection', (_socket) => {
       console.log("new Socket Client Connected", _socket.id)
-      _socket.on('connect-to-join-room', async (data) => {
-        _socket.join(data.room_slug)
-        await client.json.set(`room:${data.room_slug}`, '$', data)
+      _socket.on('connect-to-join-room', async (res) => {
+        const {data, admin} = res;
+        let roomCache = await client.json.get(`room:${data.room_slug}`);
+        if(!roomCache) 
+          if(admin) {
+            await client.json.set(`room:${data.room_slug}`, '$', data, )
+          }
+        _socket.join(`room:${data.room_slug}`);
+        
       })
       
       // _socket.emit('ser', 'hello')

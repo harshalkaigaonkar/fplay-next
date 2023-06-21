@@ -120,5 +120,6 @@ export const selectSongsQueue = (state: RootState) => state.player.songsQueue;
 export const selectCurrentSongId = (state: RootState) => state.player.currentSongId;
 export const selectPaused = (state: RootState) => state.player.paused;
 export const selectTime = (state: RootState) => state.player.time;
+export const selectPlayer = (state: RootState) => state.player
 
 export default playerSlice.reducer

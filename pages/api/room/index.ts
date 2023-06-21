@@ -46,7 +46,6 @@ export default async (
    const {
     name,
     desc,
-    active,
     genres,
     is_private,
     // Taken care from room's POV
@@ -87,7 +86,6 @@ export default async (
     const newRoom: HydratedDocument<MongooseRoomTypes> = new Room({
      name,
      desc: desc || "Join this Music Group!!",
-     active: active || false,
      genres: genres || [],
      is_private: is_private || false,
     //  room_access_users: room_access_users || [_id] ,

@@ -17,15 +17,9 @@ const Room = new Schema<MongooseRoomTypes>({
   type: String,
   default: ramdomEmojiText()
  },
- active: {
-  type: Boolean,
-  required: true,
-  default: true
- },
  room_slug: {
     type: String,
     required: true,
-    default: genrateCustomId()
  },
  genres: [{
   type: Schema.Types.ObjectId,

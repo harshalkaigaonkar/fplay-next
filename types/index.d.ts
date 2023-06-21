@@ -1,4 +1,4 @@
-import mongoose, {Date, DateExpression, Document, Types} from "mongoose";
+import mongoose, {Date, DateExpression, Document, ObjectId, Types} from "mongoose";
 
 // export interface ServerToClientEvents {
 //  noArg: () => void;
@@ -40,7 +40,7 @@ export interface ServerToClientEvents {
  ser: (string) => void;
 }
 export type ClientToServerEvents = {
- 'connect-to-join-room' : (any) => void;
+ 'connect-to-join-room' : (res: RedisCacheType<any>) => Promise<void>;
  'ser': (any) => void;
  'create-room': (any) => void;
  'update-current-time': (any) => void;
@@ -79,7 +79,7 @@ interface MongooseRoomTypes extends Document {
  room_slug: string,
  is_private: boolean,
 //  room_access_users: Types.ObjectId[]|string[],
- owned_by: Types.ObjectId|MongooseUserTypes|string,
+ owned_by: MongooseUserTypes,
 //  session_history: {
 //   on_date: DateExpression,
 //   songs: Types.ObjectId[]|string[],
