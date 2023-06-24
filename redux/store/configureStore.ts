@@ -9,6 +9,6 @@ export const store = configureStore({
     user: userSlice,
     room: rooomSlice,
     search: searchSlice,
-    player: playerSlice
+    player: playerSlice,
   }
 })

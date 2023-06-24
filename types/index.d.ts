@@ -34,16 +34,13 @@ ClientToServerEvents
 >
 // Socket Types
 export interface ServerToClientEvents {
- noArg: () => void;
- basicEmit: (a: number, b: string, c: Buffer) => void;
- withAck: (d: string, callback: (e: number) => void) => void;
- ser: (string) => void;
+  "sync-room-with-redis": (res: any) => void;
+  "disconnect-user": (res: any) => void;
+  "leaves-room": (res: any) => void;
 }
 export type ClientToServerEvents = {
- 'connect-to-join-room' : (res: RedisCacheType<any>) => Promise<void>;
- 'ser': (any) => void;
- 'create-room': (any) => void;
- 'update-current-time': (any) => void;
+  "connect-to-join-room": (res:any) => void;
+  "disconnect": () => void;
 }
 export interface InterServerEvents {
  ping: () => void;

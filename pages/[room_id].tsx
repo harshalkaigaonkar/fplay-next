@@ -7,12 +7,11 @@ import axios, { Axios } from 'axios';
 import { APIResponse, AuthUserType, ClientToServerEvents, MongooseRoomTypes, MongooseUserTypes, ServerToClientEvents, SocketClientType, UseSession } from 'types';
 import { getSession, signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
-import RoomLayout from 'components/layout/room';
 import AudioProvider from 'components/room/audio';
 import TrackQueue from 'components/room/queue';
 import MusicPanelButton from 'components/track/button';
 import UsersConnectedRoom from 'components/room/conections';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import MediaPanel from 'components/panel';
 import { useSelector } from 'react-redux';
 import { onJoiningRoom, selectRoom, selectRoomInfo } from 'redux/slice/roomSlice';
@@ -23,8 +22,13 @@ import fetchRoom from 'helpers/room/fetchRoom';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
+import { getSocketSession, selectSocket } from 'redux/slice/socketSlice';
+import dynamic from 'next/dynamic';
+import {useSocket} from 'hooks/useSocket';
 
-let socket : Socket<DefaultEventsMap, DefaultEventsMap> | undefined;
+const RoomLayout = dynamic(() => import('components/layout/room'), {
+  ssr: false,
+});
 
 export type HomeProps = {
   socket?: SocketClientType,
@@ -43,55 +47,51 @@ const Home: NextPage<HomeProps> = ({room, user}) => {
   const roomInfo = useSelector(selectRoomInfo);
   const player = useSelector(selectPlayer);
   const roomRef = useRef<HTMLDivElement|null>(null);
+  const socket = useSocket();
 
   useEffect(() => {
-    if(Object.keys(roomInfo).length === 0)
-      dispatch(onJoiningRoom(room));
-    socketInitializer();
+    const warningText =
+      'You are currently in a room - are you sure you wish to leave this page?';
+    const handleWindowClose = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      return (e.returnValue = warningText);
+    };
+    const handleBrowseAway = () => {
+      if (window.confirm(warningText)) return;
+      router.events.emit('routeChangeError');
+    };
+    window.addEventListener('beforeunload', handleWindowClose);
+    router.events.on('routeChangeStart', handleBrowseAway);
+    
     return () => {
-      socket?.disconnect();
+      window.removeEventListener('beforeunload', handleWindowClose);
+      router.events.off('routeChangeStart', handleBrowseAway);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const socketInitializer = useCallback(async () => {
-    await fetch("/api/socket");
-    //ISSUE - There are a lot of client getting connected, have to resolve that.
-    socket = io();
-    socket.emit("connect-to-join-room", {
-      data: {
-        ...player,
-        ...Object.fromEntries(Object.entries(room).filter(([item]) => !["name", "desc", "icon", ,"createdAt", "updatedAt","__v"].includes(item))),
-      },
-      admin: user._id === room.owned_by._id
-    })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socket])
-
+  }, [router.events]);
   
   return (
-    <div className='m-0 p-0'>
-      <Head>
-        <title>Fplay 🎵 | Room - {room?.room_slug.toLowerCase()}</title>
-        <meta name="description" content="Connect and Jam with friends on the go, one song at a time." />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <div className='m-0 p-0'>
+        <Head>
+          <title>Fplay 🎵 | Room - {room?.room_slug.toLowerCase()}</title>
+          <meta name="description" content="Connect and Jam with friends on the go, one song at a time." />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
 
-      <RoomLayout session={session} room={room} ref={roomRef}>
-        <section className='h-[38rem] flex flex-row gap-10'>
-          <AudioProvider socket={socket} audioElement={audioElement}  />
-          {
-            songsQueue.length > 0 && (
-              <TrackQueue socket={socket} audioElement={audioElement} />
-            )
-          }
-        </section>
-        <div className='w-full h-auto'>
-          <UsersConnectedRoom session={session} />
-        </div>
-      </RoomLayout>
-      <MediaPanel audioElement={audioElement} />
-    </div>
+        <RoomLayout session={session} room={room} ref={roomRef} user={user}>
+          <section className='h-[38rem] flex flex-row gap-10'>
+            <AudioProvider socket={socket} audioElement={audioElement}  />
+            {
+              songsQueue.length > 0 && (
+                <TrackQueue socket={socket} audioElement={audioElement} />
+              )
+            }
+          </section>
+          <div className='w-full h-auto'>
+            <UsersConnectedRoom session={session} />
+          </div>
+        </RoomLayout>
+        <MediaPanel audioElement={audioElement} />
+      </div>
   )
 }
 
@@ -124,12 +124,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
       }
       else if (roomData.data && !roomData.data.is_private) 
-      return {
-        props: {
-          session,
-          room_id,
-          room: roomData.data,
-          user: data.data
+      {
+        await axios.get(`${process.env.NEXTAUTH_URL ?? ""}/api/socket`);
+        return {
+          props: {
+            session,
+            room_id,
+            room: roomData.data,
+            user: data.data
+          }
         }
       }
     }
