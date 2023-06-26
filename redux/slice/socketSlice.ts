@@ -28,6 +28,8 @@ const getSocketSession = createAsyncThunk(
     }
 )
 
+// Not Using Anymore.
+
 export const socketSlice = createSlice({
   name: 'socket',
   initialState,

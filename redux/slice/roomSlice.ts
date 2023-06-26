@@ -20,6 +20,12 @@ export const rooomSlice = createSlice({
 
   },
   reducers: {  
+    onChangeUsers: (state, action) => {
+        state.users  = action.payload;
+    },
+    onLeaveUser: (state, action) => {
+        state.users = state.users.filter((item:any) => item.socket_id !== action.payload) 
+    },
     onJoiningRoom: (state, action) => {
         state.roomInfo = action.payload;
     },
@@ -43,7 +49,9 @@ export const {
     onUpvote ,
     onClosePanel,
     onOpenPanel,
-    onJoiningRoom
+    onJoiningRoom,
+    onChangeUsers,
+    onLeaveUser
 } = rooomSlice.actions;
 
 export const selectRoomInfo = (state: RootState) => state.room.roomInfo;

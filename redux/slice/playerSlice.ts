@@ -19,9 +19,27 @@ export const playerSlice = createSlice({
      * @param state Refers to Current State
      * @returns current song queue
      */
-    onGetSongsQueue: (state): void => {
-        // state.songsQueue = songs;
-        // if(!state.currentSongId) state.currentSongId = songs[0].id
+    // onGetSongsQueue: (state): void => {
+    // },
+    /**
+     * @param state refers to current state
+     * @param action gets player info straight from redis for joining any room
+     * @returns update/initialize player info
+     */
+    onSetupPlayer: (state, action): void => {
+        state = action.payload
+    },
+    /**
+     * @param state refers to current state
+     * @returns reinitialize palyer to its initial state
+     */
+    onRefreshPlayer: (state): void => {
+        state = {
+            songsQueue: [],
+            currentSongId: null,
+            paused: true,
+            time: 0,
+        }
     },
     /**
      * 
@@ -104,8 +122,9 @@ export const playerSlice = createSlice({
 })
 
 export const {
-    onAddSongIntoQueue, 
-    onGetSongsQueue,
+    onSetupPlayer,
+    onRefreshPlayer,
+    onAddSongIntoQueue,
     onRemoveSongFromQueue, 
     onReaarrangeSongQueue, 
     onSetPlay,

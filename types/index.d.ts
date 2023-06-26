@@ -34,7 +34,8 @@ ClientToServerEvents
 >
 // Socket Types
 export interface ServerToClientEvents {
-  "sync-room-with-redis": (res: any) => void;
+  "sync-player-with-redis": (res: any) => void;
+  "sync-room-users-with-redis": (res: any) => void;
   "disconnect-user": (res: any) => void;
   "leaves-room": (res: any) => void;
 }

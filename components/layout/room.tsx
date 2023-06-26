@@ -2,8 +2,8 @@ import RoomHeader from 'components/header/room'
 import { useSocket } from 'hooks/useSocket'
 import React, { FC, MutableRefObject, ReactNode, useCallback, useContext, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { onGetSongsQueue, selectPlayer, selectSongsQueue } from 'redux/slice/playerSlice'
-import { onJoiningRoom, selectRoomInfo } from 'redux/slice/roomSlice'
+import { onRefreshPlayer, onSetupPlayer, selectPlayer, selectSongsQueue } from 'redux/slice/playerSlice'
+import { onChangeUsers, onJoiningRoom, onLeaveUser, selectRoomInfo } from 'redux/slice/roomSlice'
 import { MongooseRoomTypes, MongooseUserTypes, UseSession } from 'types'
 
 interface RoomLayoutProps {
@@ -23,11 +23,10 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, ref, user}) =
   const player = useSelector(selectPlayer)
   
   useEffect(() => {
-    dispatch(onGetSongsQueue());
     if(Object.keys(roomInfo).length === 0)
       dispatch(onJoiningRoom(room));
     if(socket){
-        socketRoomInitializer();
+      socketRoomInitializer();
     }
     return () => {
       socket?.disconnect();
@@ -38,16 +37,40 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, ref, user}) =
   const socketRoomInitializer = useCallback(async () => {
     socket.emit("connect-to-join-room", {
       user,
-      player,
       room
     })
     socket.on("leaves-room", (res: any) => {
-      // dispatch(selectPlayer(res))
-      console.log("user left from room", res)
+      if(typeof res === 'string') {
+        console.log(`${res} socket_id left the room.`);
+        return;
+      }
+      dispatch(onLeaveUser(res.socket_id));
+      dispatch(onRefreshPlayer());
+      console.log("leaves-room", res)
     })
-    socket.on("sync-room-with-redis", (res: any) => {
-      // dispatch()
-      console.log(res)
+    socket.on("sync-player-with-redis", (res: any) => {
+      const {
+        songsQueue,
+        currentSongId,
+        paused,
+        time,
+    } = res;
+      dispatch(onSetupPlayer({
+        songsQueue,
+        currentSongId,
+        paused,
+        time
+      }));
+
+
+      console.log("sync-player-with-redis", res)
+    })
+
+    socket.on("sync-room-users-with-redis", (res: any) => {
+
+      dispatch(onChangeUsers(res));
+
+      console.log("sync-room-users-with-redis", res)
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket])

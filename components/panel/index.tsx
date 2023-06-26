@@ -3,7 +3,7 @@ import React, { FC, MutableRefObject } from 'react'
 import PanelDraggableQueue from './components/queue'
 import PanelSearch from './components/search'
 
-const MediaPanel: FC<{audioElement ?: MutableRefObject<HTMLAudioElement|null>}> = ({audioElement}) => {
+const MediaPanel: FC<{audioElement : MutableRefObject<HTMLAudioElement|null>}> = ({audioElement}) => {
 
   return (
     <>

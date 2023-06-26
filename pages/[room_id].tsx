@@ -52,19 +52,19 @@ const Home: NextPage<HomeProps> = ({room, user}) => {
   useEffect(() => {
     const warningText =
       'You are currently in a room - are you sure you wish to leave this page?';
-    const handleWindowClose = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      return (e.returnValue = warningText);
-    };
+    // const handleWindowClose = (e: BeforeUnloadEvent) => {
+    //   e.preventDefault();
+    //   return (e.returnValue = warningText);
+    // };
     const handleBrowseAway = () => {
       if (window.confirm(warningText)) return;
       router.events.emit('routeChangeError');
     };
-    window.addEventListener('beforeunload', handleWindowClose);
+    // window.addEventListener('beforeunload', handleWindowClose);
     router.events.on('routeChangeStart', handleBrowseAway);
     
     return () => {
-      window.removeEventListener('beforeunload', handleWindowClose);
+      // window.removeEventListener('beforeunload', handleWindowClose);
       router.events.off('routeChangeStart', handleBrowseAway);
     }
   }, [router.events]);
