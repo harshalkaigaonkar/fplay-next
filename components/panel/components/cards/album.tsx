@@ -34,7 +34,7 @@ const PanelAlbumResult: React.FC<{data: any, key: number, audioElement?: Mutable
      className="w-60 h-16 m-2 px-3 bg-[#121212] hover:bg-[#343434] flex flex-row justify-evenly items-center gap-3 overflow-hidden rounded-lg cursor-pointer transition duration-500"
     >
       <Image
-       src={data.image[1].link || data.image[0].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
+       src={data.image[1].link ?? data.image[0].link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
        alt={data.title + "_cover"}
        className={`${mouseEnter ? "rotate-0": "rotate-[20deg]"}
        rounded-full transition duration-300 cursor-pointer`}
@@ -43,8 +43,8 @@ const PanelAlbumResult: React.FC<{data: any, key: number, audioElement?: Mutable
        layout="fixed"
       />
      <span className={`w-2/3 h-fit content-center`}>
-      <p className='text-sm font-bold cursor-pointer truncate'>{decodeHTMLContent(data.title || data.name)}</p>
-      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{decodeHTMLContent(data.description || `${data.year} . ${data.language.charAt(0).toUpperCase() + data.language.slice(1, data.language.length)} album . ${data.primaryArtists[0].name}`)}</p>
+      <p className='text-sm font-bold cursor-pointer truncate'>{decodeHTMLContent(data.title ?? data.name)}</p>
+      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{decodeHTMLContent(data.description ?? `${data.year} . ${data.language.charAt(0).toUpperCase() + data.language.slice(1, data.language.length)} album . ${data.primaryArtists[0].name}`)}</p>
      </span>
      {/* {mouseEnter ? (
       <div className='mx-[1px] flex-1 flex flex-row items-center justify-evenly animate-enter-div-1'>

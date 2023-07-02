@@ -4,18 +4,22 @@ import DragIcon from 'components/icon/dragIcon'
 import SongPlaying from 'components/icon/playing'
 import ItemOptions from 'components/popover/item'
 import { decodeHTMLContent } from 'helpers'
+import { useSocket } from 'hooks/useSocket'
 import Image from 'next/image'
 import React, { FC, useState } from 'react'
 import { Draggable } from 'react-beautiful-dnd'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { onChangeClickedSongFromQueue, onRemoveSongFromQueue, onSetPause, onSetPlay, selectCurrentSongId, selectPaused } from 'redux/slice/playerSlice'
+import { selectRoomInfo } from 'redux/slice/roomSlice'
 import { DraggableListItemProps } from 'types/queue'
 
 
 const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElement, fromPanel}) => {
 
     const currentTrackId = useSelector(selectCurrentSongId);
+    const room = useSelector(selectRoomInfo);
+    const socket = useSocket();
     const paused = useSelector(selectPaused);
 
     const dispatch = useDispatch();
@@ -46,7 +50,10 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
             return;
         }
         dispatch(onRemoveSongFromQueue(song.id));
-        
+        socket.emit("on-remove-song-from-queue", {
+            song_id: song.id,
+            room_id: room.room_slug
+        })
     }
     
   return (
@@ -91,7 +98,7 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                             </span>
                         )}
                         <Image
-                            src={song.image[1].link || song.image[0].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
+                            src={song.image[1].link ?? song.image[0].link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
                             alt={`Song Icon ${song.image[1].quality}`}
                             width={45}
                             height={45}

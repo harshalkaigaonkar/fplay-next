@@ -68,6 +68,7 @@ const Home: NextPage<HomeProps> = ({room, user}) => {
       router.events.off('routeChangeStart', handleBrowseAway);
     }
   }, [router.events]);
+
   
   return (
       <div className='m-0 p-0'>

@@ -20,7 +20,7 @@ const ArtistOverlay: FC<{
       <section className='mt-5 px-3'>
         <div className=' flex justify-start gap-5'>
           <Image
-            src={result.image[2].link || result.image[1].link || result.image[0].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
+            src={result.image[2].link ?? result.image[1].link ?? result.image[0].link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
             alt={result.name + "_cover"}
             className="rounded-full transition duration-300 cursor-pointer"
             height={200}

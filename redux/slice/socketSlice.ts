@@ -1,3 +1,8 @@
+// Not Using Anymore, replaced by Hook - useSocket.
+
+
+
+
 import { AsyncThunk, createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import axios from 'axios';
 import { Session } from 'next-auth';
@@ -28,7 +33,6 @@ const getSocketSession = createAsyncThunk(
     }
 )
 
-// Not Using Anymore.
 
 export const socketSlice = createSlice({
   name: 'socket',

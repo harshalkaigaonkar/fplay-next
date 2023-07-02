@@ -38,9 +38,15 @@ export interface ServerToClientEvents {
   "sync-room-users-with-redis": (res: any) => void;
   "disconnect-user": (res: any) => void;
   "leaves-room": (res: any) => void;
+  "add-song-in-queue": (res: any) => void;
+  "remove-song-from-queue": (res: any) => void;
+  "replace-song-in-queue": (res: any) => void;
 }
 export type ClientToServerEvents = {
   "connect-to-join-room": (res:any) => void;
+  "on-add-song-in-queue": (res:any) => void;
+  "on-remove-song-from-queue": (res:any) => void;
+  "on-replace-song-in-queue": (res:any) => void;
   "disconnect": () => void;
 }
 export interface InterServerEvents {

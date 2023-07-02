@@ -1,8 +1,9 @@
 import RoomHeader from 'components/header/room'
 import { useSocket } from 'hooks/useSocket'
-import React, { FC, MutableRefObject, ReactNode, useCallback, useContext, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import React, { FC, MutableRefObject, ReactNode, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { onRefreshPlayer, onSetupPlayer, selectPlayer, selectSongsQueue } from 'redux/slice/playerSlice'
+import { onAddSongIntoQueue, onRemoveSongFromQueue, onRefreshPlayer, onSetupPlayer, selectPlayer, selectSongsQueue, onReaarrangeSongQueue } from 'redux/slice/playerSlice'
 import { onChangeUsers, onJoiningRoom, onLeaveUser, selectRoomInfo } from 'redux/slice/roomSlice'
 import { MongooseRoomTypes, MongooseUserTypes, UseSession } from 'types'
 
@@ -20,7 +21,8 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, ref, user}) =
   const dispatch = useDispatch();
   const roomInfo = useSelector(selectRoomInfo);
   const socket = useSocket();
-  const player = useSelector(selectPlayer)
+  const player = useSelector(selectPlayer);
+  const router = useRouter();
   
   useEffect(() => {
     if(Object.keys(roomInfo).length === 0)
@@ -30,9 +32,10 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, ref, user}) =
     }
     return () => {
       socket?.disconnect();
+      router?.back();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [router])
 
   const socketRoomInitializer = useCallback(async () => {
     socket.emit("connect-to-join-room", {
@@ -45,7 +48,8 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, ref, user}) =
         return;
       }
       dispatch(onLeaveUser(res.socket_id));
-      dispatch(onRefreshPlayer());
+      // will use for multiple users
+      // dispatch(onRefreshPlayer());
       console.log("leaves-room", res)
     })
     socket.on("sync-player-with-redis", (res: any) => {
@@ -55,13 +59,20 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, ref, user}) =
         paused,
         time,
     } = res;
-      dispatch(onSetupPlayer({
-        songsQueue,
-        currentSongId,
-        paused,
-        time
-      }));
 
+    console.log( "Sync Redis", {
+      songsQueue,
+      currentSongId,
+      paused,
+      time
+    })
+    
+    dispatch(onSetupPlayer({
+      songsQueue,
+      currentSongId,
+      paused,
+      time
+    }));
 
       console.log("sync-player-with-redis", res)
     })
@@ -71,6 +82,30 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, ref, user}) =
       dispatch(onChangeUsers(res));
 
       console.log("sync-room-users-with-redis", res)
+    })
+
+    socket.on("add-song-in-queue", (song: any) => {
+      dispatch(onAddSongIntoQueue([song]))
+    })
+
+    socket.on("remove-song-from-queue", (song: any) => {
+      console.log("id_to_remove", song)
+      try {
+        dispatch(onRemoveSongFromQueue(song))
+      } catch(err) {
+        console.log(err)
+      }
+    })
+
+    socket.on("replace-song-in-queue", (res: any) => {
+      const  {
+        replace_from,
+        to_replace,
+      } = res;
+      dispatch(onReaarrangeSongQueue({
+        indexReplacedFrom: replace_from, 
+        indexReplacedTo: to_replace
+      }))
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket])

@@ -36,6 +36,7 @@ const PanelSearch: FC<{audioElement: MutableRefObject<HTMLAudioElement|null>}> =
 				dispatch(startLoading());
 				/**
 					* This can be optimized for no rate limit exceeding
+					* Debouce Function
 					* Update: Working till some extent, the query should be specific to some relevant info, otherwise shows loading forever.
 				 */
 

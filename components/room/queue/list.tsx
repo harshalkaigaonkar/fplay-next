@@ -7,12 +7,16 @@ import { useSelector } from "react-redux";
 import { onReaarrangeSongQueue, selectSongsQueue } from "redux/slice/playerSlice";
 import { useDispatch } from "react-redux";
 import { TrackQueueProps } from "types/queue";
+import { selectRoomInfo } from "redux/slice/roomSlice";
+import { useSocket } from "hooks/useSocket";
 
 resetServerContext();
 
 const DraggableList : FC<TrackQueueProps> = ({audioElement, fromPanel}) => {
 
 	const songsQueue = useSelector(selectSongsQueue);
+	const room = useSelector(selectRoomInfo);
+	const socket = useSocket();
 
 	const dispatch = useDispatch();
 
@@ -20,11 +24,18 @@ const DraggableList : FC<TrackQueueProps> = ({audioElement, fromPanel}) => {
 		if (!result.destination) {
 			return;
 		}
-
-		dispatch(onReaarrangeSongQueue({
+		const indexes = {
 			indexReplacedFrom: result.source.index, 
 			indexReplacedTo: result.destination.index
-		}))
+		}
+
+		dispatch(onReaarrangeSongQueue(indexes));
+		socket.emit("on-replace-song-in-queue", {
+			replace_from: indexes.indexReplacedFrom,
+			to_replace: indexes.indexReplacedFrom,
+			room_id: room.room_slug,
+		})
+
     }
 
   return (

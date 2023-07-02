@@ -60,7 +60,7 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
                         </span>
                         <div className='flex-0 flex flex-row justify-center items-center gap-10 border-1 border-white/50 border-solid rounded-2xl shadow-2xl overflow-hidden group-hover:scale-105'>
                             <Image
-                                src={currentTrack.image[2].link || currentTrack.image[1].link || currentTrack.image[0].link || "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
+                                src={currentTrack.image[2].link ?? currentTrack.image[1].link ?? currentTrack.image[0].link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
                                 alt="track_banner"
                                 height={250}
                                 width={250}

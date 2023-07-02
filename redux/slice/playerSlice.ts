@@ -3,7 +3,7 @@ import { Session } from 'next-auth';
 import { SaavnSongObjectTypes } from 'types';
 import { InitialPlayerStateTypes, RootState } from 'types/redux';
 
-const initialState : InitialPlayerStateTypes = {
+let initialState : InitialPlayerStateTypes = {
     songsQueue: [],
     currentSongId: null,
     paused: true,
@@ -27,19 +27,28 @@ export const playerSlice = createSlice({
      * @returns update/initialize player info
      */
     onSetupPlayer: (state, action): void => {
-        state = action.payload
+        const {
+            songsQueue,
+            currentSongId,
+            paused,
+            time,
+        } = action.payload
+
+        state.songsQueue = songsQueue;
+        state.currentSongId = currentSongId;
+        state.paused = paused;
+        state.time = time;
     },
     /**
      * @param state refers to current state
      * @returns reinitialize palyer to its initial state
      */
     onRefreshPlayer: (state): void => {
-        state = {
-            songsQueue: [],
-            currentSongId: null,
-            paused: true,
-            time: 0,
-        }
+        console.log("refershed")
+        state.songsQueue = [];
+        state.currentSongId = null;
+        state.paused = true;
+        state.time = 0;
     },
     /**
      * 
@@ -69,13 +78,12 @@ export const playerSlice = createSlice({
      */
     onRemoveSongFromQueue: (state, action: PayloadAction<string>): SaavnSongObjectTypes[]|any => {
         if(!state.songsQueue.find((item: SaavnSongObjectTypes) => item.id === action.payload))
-            return {
+            console.log({
                 type: 'error',
                 error: "Id does not exist in Queue!!"
-            }
+            })
 
-        const updatedSongsQueue = state.songsQueue.filter((item: SaavnSongObjectTypes) => item.id !== action.payload);
-        state.songsQueue = updatedSongsQueue;
+        state.songsQueue = state.songsQueue.filter((item: SaavnSongObjectTypes) => item.id !== action.payload);
     },
     /**
      * 
