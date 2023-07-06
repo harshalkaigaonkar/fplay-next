@@ -12,7 +12,9 @@ import {
   ResponseDataType, 
   SortRoomsConditionType,
 } from 'types';
+import { genrateCustomId } from 'helpers';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default async (
   _req: NextApiRequest,
   _res: NextApiResponse<
@@ -26,8 +28,6 @@ export default async (
  const {
   method,
   body,
-  cookies,
-  query,
  } = _req;
 
  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
@@ -48,6 +48,7 @@ export default async (
     desc,
     genres,
     is_private,
+    room_slug,
     // Taken care from room's POV
     // room_access_users,
     // owned_by, // would be from session's User ID.
@@ -85,9 +86,10 @@ export default async (
 
     const newRoom: HydratedDocument<MongooseRoomTypes> = new Room({
      name,
-     desc: desc || "Join this Music Group!!",
-     genres: genres || [],
-     is_private: is_private || false,
+     desc: desc ?? "Join this Music Group!!",
+     genres: genres ?? [],
+     is_private: is_private ?? false,
+     room_slug: room_slug ?? genrateCustomId(),
     //  room_access_users: room_access_users || [_id] ,
      owned_by: _id,
     //  session_history: [],
@@ -105,7 +107,7 @@ export default async (
   } catch(error:any) {
     return _res.status(500).json({
      type:"Failure",
-     error:error.message.error || error.message,
+     error:error.message.error ?? error.message,
     })
    }
   }

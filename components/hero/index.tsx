@@ -60,7 +60,7 @@ const Hero = () => {
  }
 
  const onRoomCreate = async () => {
-  if(newRoomName.length < 6) return;
+  if(newRoomName.length < 6 && newRoomName.length > 15) return;
   console.log(newRoomName)
   try {
     const data = await createRoom(newRoomName);
@@ -68,6 +68,7 @@ const Hero = () => {
       router.push(`/${data.data.room_slug}`);
     }
   } catch(err) {
+    console.log(err)
     router.push("/")
   }
  }
@@ -146,7 +147,7 @@ const Hero = () => {
         newRoomName={newRoomName}
       >
         <input className='w-full mt-4 appearance-none p-4 bg-inherit border-white text-white text-md placeholder-slate-300 rounded-lg focus:outline-none' type={"text"} placeholder={"Room Name *"} onChange={onChangeNewRoomName} value={newRoomName} />
-        <p className='m-0 pl-2 py-1 text-xs opacity-50'>Min of 6 characters required.</p>
+        <p className='m-0 pl-2 py-1 text-xs opacity-50'>Min of 6 and Max of 15 characters required.</p>
       </HeadlessModal>
 
     </div>

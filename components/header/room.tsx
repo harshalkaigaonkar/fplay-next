@@ -73,10 +73,10 @@ const RoomHeader: FC<HeaderProps> = ({session,room}) => {
                 {emoji.get(room?.icon)}
             </span>
             <span className='inline-flex flex-col items-center'>
-                <h2 className='max-w-80 w-36 truncate text-center'>
+                <h2 className='max-w-[300px] min-w-60 truncate text-center'>
                     {room?.name}
                 </h2>
-                <h6 className='font-medium max-w-60 truncate'>
+                <h6 className='font-medium w-fit truncate text-center'>
                     {room?.room_slug?.toLowerCase()}
                 </h6>
             </span>
