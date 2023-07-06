@@ -34,15 +34,20 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
     }
 
     const onClickHandler = () => {
-        if(song.id !== currentTrackId)
+        if(song.id !== currentTrackId) {
             dispatch(onChangeClickedSongFromQueue(song.id));    
+            socket.emit("on-current-song-id-change", {
+                song_id: song.id,
+                room_id: room.room_slug
+            })
+        }
         if(!audioElement.current) return;
         if(audioElement.current.paused) {
             audioElement.current.play();
-            dispatch(onSetPlay());
         }
-        else
+        else {
             audioElement.current.pause();
+        }
     }
 
     const deleteHandler = () => {

@@ -78,12 +78,12 @@ const Home: NextPage<HomeProps> = ({room, user}) => {
           <link rel="icon" href="/favicon.ico" />
         </Head>
 
-        <RoomLayout session={session} room={room} ref={roomRef} user={user}>
+        <RoomLayout session={session} room={room} audioElementRef={audioElement} user={user}>
           <section className='h-[38rem] flex flex-row gap-10'>
-            <AudioProvider socket={socket} audioElement={audioElement}  />
+            <AudioProvider audioElement={audioElement}  />
             {
               songsQueue.length > 0 && (
-                <TrackQueue socket={socket} audioElement={audioElement} />
+                <TrackQueue audioElement={audioElement} />
               )
             }
           </section>

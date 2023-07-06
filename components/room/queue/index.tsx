@@ -3,7 +3,7 @@ import { TrackQueueProps } from 'types/queue';
 import BottomScrollButton from './button/scrolltoBottom';
 import DraggableList from './list';
 
-const TrackQueue: FC<TrackQueueProps> = ({socket, audioElement}) => {
+const TrackQueue: FC<TrackQueueProps> = ({audioElement}) => {
 
   const listRef = useRef<HTMLDivElement|null>(null);
 

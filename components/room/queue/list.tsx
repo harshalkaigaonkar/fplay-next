@@ -32,7 +32,7 @@ const DraggableList : FC<TrackQueueProps> = ({audioElement, fromPanel}) => {
 		dispatch(onReaarrangeSongQueue(indexes));
 		socket.emit("on-replace-song-in-queue", {
 			replace_from: indexes.indexReplacedFrom,
-			to_replace: indexes.indexReplacedFrom,
+			to_replace: indexes.indexReplacedTo,
 			room_id: room.room_slug,
 		})
 

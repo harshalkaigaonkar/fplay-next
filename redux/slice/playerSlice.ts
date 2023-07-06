@@ -67,8 +67,8 @@ export const playerSlice = createSlice({
         )
         return;
         const updatedSongsQueue = state.songsQueue.concat(action.payload);
+        if(state.songsQueue.length === 0 || !state.currentSongId) state.currentSongId = updatedSongsQueue[0].id
         state.songsQueue = updatedSongsQueue;
-        if(!state.currentSongId) state.currentSongId = updatedSongsQueue[0].id
     },
     /**
      * 

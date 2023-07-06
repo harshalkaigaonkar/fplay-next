@@ -76,6 +76,7 @@ const socketManager = async (_res: any) => {
         } = roomCache as any;
 
         // response emits to client
+        console.log(`socket id: ${_socket.id} connected to room id: ${room.room_slug}`)
         _socket.emit("sync-player-with-redis", {
           songsQueue,
           currentSongId,
@@ -93,14 +94,17 @@ const socketManager = async (_res: any) => {
           left_user = await client.json.arrPop(room, ".users_connected", users_connected.findIndex((item: ConnectedUser) => item.socket_id === _socket.id));
           if(users_connected.length === 1)
           await Promise.all([
-            client.json.set(room, ".songsQueue", []),
-            client.json.set(room, ".currentSongId", null),
+            /**
+             * persist data in the room even if all users leave room.
+             * */
+            // client.json.set(room, ".songsQueue", []),
+            // client.json.set(room, ".currentSongId", null),
             client.json.set(room, ".paused", true),
             client.json.set(room, ".time", 0),
           ])
           await client.json.del(`user:${_socket.id}`);
         }
-        console.log("left_user", left_user)
+        console.log(`user ${left_user.user_id} left from room id: ${room}`, left_user)
         _io.to(room).emit("leaves-room", left_user)
       })
 
@@ -115,7 +119,7 @@ const socketManager = async (_res: any) => {
         if(room?.songsQueue.length === 0)
           await client.json.set(`room:${room_id}`, ".currentSongId", song.id)
         await client.json.arrAppend(`room:${room_id}`, ".songsQueue", song);
-        _io.to(`room:${room_id}`).emit("add-song-in-queue", song);
+        _socket.broadcast.to(`room:${room_id}`).emit("add-song-in-queue", song);
       })
 
       _socket.on("on-remove-song-from-queue", async (res: any) => {
@@ -125,7 +129,7 @@ const socketManager = async (_res: any) => {
         } = res;
         const {songsQueue}: any = await client.json.get(`room:${room_id}`);
         await client.json.arrPop(`room:${room_id}`, ".songsQueue", songsQueue.findIndex((item: any) => item.id === song_id));
-        _io.to(`room:${room_id}`).emit("remove-song-from-queue", song_id);
+        _socket.broadcast.to(`room:${room_id}`).emit("remove-song-from-queue", song_id);
       })
 
       _socket.on("on-replace-song-in-queue", async (res: any) => {
@@ -134,14 +138,74 @@ const socketManager = async (_res: any) => {
           to_replace,
           room_id,
         } = res;
-        let [replacePart]: any = await client.json.arrPop(`room:${room_id}`, ".songsQueue", replace_from);
+        let replacePart: any = await client.json.arrPop(`room:${room_id}`, ".songsQueue", replace_from);
+        console.log("res", replacePart.id)
         await client.json.arrInsert(`room:${room_id}`, ".songsQueue", to_replace, replacePart);
-        _io.to(`room:${room_id}`).emit("replace-song-in-queue", {
+        _socket.broadcast.to(`room:${room_id}`).emit("replace-song-in-queue", {
           replace_from,
           to_replace,
         });
       })
+      
+      _socket.on("on-current-song-id-change", async (res : any) => {
+        const {
+          song_id,
+          room_id
+        } = res;
+        await client.json.set(`room:${room_id}`, ".currentSongId", song_id);
+        _socket.broadcast.to(`room:${room_id}`).emit("current-song-id-change", song_id);
+      })
+
+      _socket.on("on-current-song-change-next", async (res: any) => {
+        const {
+          room_id
+        } = res;
+        const {currentSongId, songsQueue} : any = await client.json.get(`room:${room_id}`);
+        let index = await songsQueue.findIndex((song : any) => song.id === currentSongId);
+        let nextSongId;
+        if(index+1 < songsQueue.length) {
+          nextSongId = songsQueue[index+1].id;
+        } else {
+          nextSongId = songsQueue[0].id;
+        }
+        await client.json.set(`room:${room_id}`, ".currentSongId", nextSongId);
+        _socket.broadcast.to(`room:${room_id}`).emit("current-song-change-next", nextSongId);
+      })
+
+      _socket.on("on-current-song-change-prev", async (res: any) => {
+        const {
+          room_id
+        } = res;
+        const {currentSongId, songsQueue} : any = await client.json.get(`room:${room_id}`);
+        let index = await songsQueue.findIndex((song : any) => song.id === currentSongId);
+        let prevSongId;
+        if(index-1 >= 0) {
+          prevSongId = songsQueue[index-1].id;
+        } else {
+          prevSongId = songsQueue[songsQueue.length-1].id;
+        }
+        await client.json.set(`room:${room_id}`, ".currentSongId", prevSongId);
+        _socket.broadcast.to(`room:${room_id}`).emit("current-song-change-prev", prevSongId);
+      })
+
+      _socket.on("on-play-current-song", async (res : any) => {
+        const {
+          room_id
+        } = res;
+        await client.json.set(`room:${room_id}`, ".paused", false);
+        _socket.broadcast.to(`room:${room_id}`).emit("play-current-song");
+      })
+      
+      _socket.on("on-pause-current-song", async (res : any) => {
+        const {
+          room_id
+        } = res;
+        await client.json.set(`room:${room_id}`, ".paused", true);
+        _socket.broadcast.to(`room:${room_id}`).emit("pause-current-song");
+      })
+
     })
+
 
 }
 

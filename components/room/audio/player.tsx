@@ -2,18 +2,21 @@ import { ArrowUpIcon, ChevronLeftIcon, ChevronRightIcon, HeartIcon, MagnifyingGl
 import { HeartIcon as OutlineHeartIcon } from '@heroicons/react/24/outline';
 import AddToPlaylistIcon from 'components/icon/addToPlaylist';
 import { decodeHTMLContent, secToMin } from 'helpers';
+import { useSocket } from 'hooks/useSocket';
 import Image from 'next/image';
 import React, { FC, MutableRefObject, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { onChangeClickedSongFromQueue, onChangeNextSongFromQueue, onChangePrevSongFromQueue,  onSetPause, onSetPlay, onUpdateTime, selectCurrentSongId, selectPaused, selectTime } from 'redux/slice/playerSlice';
-import {onOpenPanel} from 'redux/slice/roomSlice'
+import {onOpenPanel, selectRoomInfo} from 'redux/slice/roomSlice'
 import { SaavnSongObjectTypes } from 'types';
 
 const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
 
     const paused = useSelector(selectPaused);
     const currentTime = useSelector(selectTime);
+    const room = useSelector(selectRoomInfo);
+    const socket = useSocket();
 
 
     const dispatch = useDispatch()
@@ -33,8 +36,12 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
     }
 
     const onPrevTrack = () => {
-        if(currentTime <= 5)
+        if(currentTime <= 5) {
             dispatch(onChangePrevSongFromQueue());
+            socket.emit("on-current-song-change-prev", {
+                room_id: room.room_slug
+            }) 
+        }
         else {
             audioElement.current.load();
             audioElement.current.play();
@@ -43,6 +50,9 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
 
     const onNextTrack = () => {
         dispatch(onChangeNextSongFromQueue());
+        socket.emit("on-current-song-change-next", {
+            room_id: room.room_slug
+        })   
     }
 
     const updateTimeHandler = (event: any) => {

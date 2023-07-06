@@ -44,6 +44,10 @@ const PanelSongResult: React.FC<{data: any, key: number, audioElement?: MutableR
    }
    await addToQueueHandler();
    await dispatch(onChangeClickedSongFromQueue(data.id));
+   await socket.emit("on-current-song-id-change", {
+    song_id: data.id,
+    room_id: room.room_slug
+   })
    audioElement.current.load();
    audioElement.current.play();
   }

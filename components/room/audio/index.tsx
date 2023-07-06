@@ -6,12 +6,16 @@ import { useSelector } from 'react-redux';
 import { onChangeNextSongFromQueue, onSetPause, onSetPlay, onUpdateTime, selectCurrentSongId, selectPaused, selectSongsQueue } from 'redux/slice/playerSlice';
 import { useDispatch } from 'react-redux';
 import { SaavnSongObjectTypes } from 'types';
+import { selectRoomInfo } from 'redux/slice/roomSlice';
+import { useSocket } from 'hooks/useSocket';
 
-const AudioProvider : FC<HomeProps> = ({socket, audioElement}) => {
+const AudioProvider : FC<HomeProps> = ({audioElement}) => {
 
   const songsQueue = useSelector(selectSongsQueue);
   const currentSongId = useSelector(selectCurrentSongId);
   const paused = useSelector(selectPaused);
+  const room = useSelector(selectRoomInfo);
+  const socket = useSocket();
 
   const dispatch = useDispatch();
 
@@ -36,10 +40,7 @@ const AudioProvider : FC<HomeProps> = ({socket, audioElement}) => {
   const loadedMetaDataHandler = (element: any) => {
     // const audio : HTMLMediaElement | HTMLElement | any = document.getElementById('audio');
     dispatch(onUpdateTime(element.target.currentTime));
-    socket.emit("create-room", {
-      trackURL: element.target.src,
-      currentTime: element.target.currentTime, 
-    })
+
   }
   const seekedHandler = (element: any) => {
     console.log(element.target.currentTime, "seeked Hndler")
@@ -47,14 +48,23 @@ const AudioProvider : FC<HomeProps> = ({socket, audioElement}) => {
   }
   const playingHandler = () => {
     dispatch(onSetPlay());
-
+    socket.emit("on-play-current-song", {
+        room_id: room.room_slug
+    })
   }
   const pauseHandler = (element: any) => {
-    if(element.target.currentTime !== element.target.duration)
-    dispatch(onSetPause());
+    if(element.target.currentTime !== element.target.duration) {
+      dispatch(onSetPause());
+      socket.emit("on-pause-current-song", {
+          room_id: room.room_slug
+      })
+    }
   }
   const endedHandler = () => {
     dispatch(onChangeNextSongFromQueue());
+    socket.emit("on-current-song-change-next", {
+      room_id: room.room_slug
+    })
   }
   const timeUpdateHandler = (element: any) => {
     // shows realtime currentTime for the Audio used for redis

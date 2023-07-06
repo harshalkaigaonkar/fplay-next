@@ -1,7 +1,6 @@
 import { SaavnSongObjectTypes } from "types"
 
 type TrackQueueProps = {
-    socket?: any,
     audioElement: MutableRefObject<HTMLAudioElement|null>
     fromPanel?: boolean
 }

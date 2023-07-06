@@ -41,12 +41,22 @@ export interface ServerToClientEvents {
   "add-song-in-queue": (res: any) => void;
   "remove-song-from-queue": (res: any) => void;
   "replace-song-in-queue": (res: any) => void;
+  "current-song-id-change": (res: any) => void;
+  "current-song-change-next": (res: any) => void;
+  "current-song-change-prev": (res: any) => void;
+  "play-current-song": () => void;
+  "pause-current-song": () => void;
 }
 export type ClientToServerEvents = {
   "connect-to-join-room": (res:any) => void;
   "on-add-song-in-queue": (res:any) => void;
   "on-remove-song-from-queue": (res:any) => void;
   "on-replace-song-in-queue": (res:any) => void;
+  "on-current-song-id-change": (res:any) => void;
+  "on-current-song-change-next": (res:any) => void;
+  "on-current-song-change-prev": (res:any) => void;
+  "on-play-current-song": (res:any) => void;
+  "on-pause-current-song": (res:any) => void;
   "disconnect": () => void;
 }
 export interface InterServerEvents {

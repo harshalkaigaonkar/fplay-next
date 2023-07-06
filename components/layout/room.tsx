@@ -3,7 +3,7 @@ import { useSocket } from 'hooks/useSocket'
 import { useRouter } from 'next/router'
 import React, { FC, MutableRefObject, ReactNode, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { onAddSongIntoQueue, onRemoveSongFromQueue, onRefreshPlayer, onSetupPlayer, selectPlayer, selectSongsQueue, onReaarrangeSongQueue } from 'redux/slice/playerSlice'
+import { onAddSongIntoQueue, onRemoveSongFromQueue, onRefreshPlayer, onSetupPlayer, selectPlayer, selectSongsQueue, onReaarrangeSongQueue, onChangeClickedSongFromQueue, onChangeNextSongFromQueue, onChangePrevSongFromQueue, onSetPlay } from 'redux/slice/playerSlice'
 import { onChangeUsers, onJoiningRoom, onLeaveUser, selectRoomInfo } from 'redux/slice/roomSlice'
 import { MongooseRoomTypes, MongooseUserTypes, UseSession } from 'types'
 
@@ -11,11 +11,11 @@ interface RoomLayoutProps {
  session: UseSession,
  room: MongooseRoomTypes,
  children: ReactNode,
- ref: MutableRefObject<HTMLDivElement|null>,
+ audioElementRef: MutableRefObject<HTMLAudioElement|null>,
  user: MongooseUserTypes
 }
 
-const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, ref, user}) => {
+const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, audioElementRef, user}) => {
 
   const songsQueue = useSelector(selectSongsQueue);
   const dispatch = useDispatch();
@@ -102,17 +102,45 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, ref, user}) =
         replace_from,
         to_replace,
       } = res;
+      console.log("Came here", res)
       dispatch(onReaarrangeSongQueue({
         indexReplacedFrom: replace_from, 
         indexReplacedTo: to_replace
       }))
     })
+
+    socket.on("current-song-id-change", (song_id: any) => {
+      console.log("Current Song Id Change", song_id);
+      dispatch(onChangeClickedSongFromQueue(song_id));
+    })
+
+    socket.on("current-song-change-next", (song_id: any) => {
+      console.log("Current next song id:", song_id)
+      dispatch(onChangeNextSongFromQueue());
+    })
+
+    socket.on("current-song-change-prev", (song_id: any) => {
+      console.log("Current prev song id:", song_id)
+      dispatch(onChangePrevSongFromQueue());
+    })
+
+    socket.on("play-current-song", () => {
+      console.log("Current Song Playing")
+      audioElementRef.current?.play();
+    })
+
+    socket.on("pause-current-song", () => {
+      console.log("Current Song Paused")
+      audioElementRef.current?.pause();
+    })
+
+    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket])
 
 
   return (
-    <div ref={ref} className='lg:mx-20 lg:px-20 lg:flex lg:flex-col min-h-screen md:m-0 md:p-0 select-none animate-enter-opacity'>
+    <div className='lg:mx-20 lg:px-20 lg:flex lg:flex-col min-h-screen md:m-0 md:p-0 select-none animate-enter-opacity'>
       <RoomHeader session={session} room={room} />
       <main>{children}</main>
     </div>
