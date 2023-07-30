@@ -46,6 +46,7 @@ export interface ServerToClientEvents {
   "current-song-change-prev": (res: any) => void;
   "play-current-song": () => void;
   "pause-current-song": () => void;
+  "seek-current-song": () => void;
 }
 export type ClientToServerEvents = {
   "connect-to-join-room": (res:any) => void;
@@ -57,6 +58,7 @@ export type ClientToServerEvents = {
   "on-current-song-change-prev": (res:any) => void;
   "on-play-current-song": (res:any) => void;
   "on-pause-current-song": (res:any) => void;
+  "on-seek-current-song": (res: any) => void;
   "disconnect": () => void;
 }
 export interface InterServerEvents {

@@ -3,7 +3,7 @@ import { HomeProps } from 'types/home'
 import AudioPlayer from './player';
 import { secToMin } from 'helpers';
 import { useSelector } from 'react-redux';
-import { onChangeNextSongFromQueue, onSetPause, onSetPlay, onUpdateTime, selectCurrentSongId, selectPaused, selectSongsQueue } from 'redux/slice/playerSlice';
+import { onChangeNextSongFromQueue, onSetPause, onSetPlay, onUpdateTime, selectCurrentSongId, selectPaused, selectSongsQueue, selectTime } from 'redux/slice/playerSlice';
 import { useDispatch } from 'react-redux';
 import { SaavnSongObjectTypes } from 'types';
 import { selectRoomInfo } from 'redux/slice/roomSlice';
@@ -15,6 +15,7 @@ const AudioProvider : FC<HomeProps> = ({audioElement}) => {
   const currentSongId = useSelector(selectCurrentSongId);
   const paused = useSelector(selectPaused);
   const room = useSelector(selectRoomInfo);
+  const time = useSelector(selectTime);
   const socket = useSocket();
 
   const dispatch = useDispatch();
@@ -39,7 +40,9 @@ const AudioProvider : FC<HomeProps> = ({audioElement}) => {
 
   const loadedMetaDataHandler = (element: any) => {
     // const audio : HTMLMediaElement | HTMLElement | any = document.getElementById('audio');
-    dispatch(onUpdateTime(element.target.currentTime));
+    // dispatch(onUpdateTime(element.target.currentTime));
+    // element.target.currentTime = time;
+    console.log("loggedd here too", time)
 
   }
   const seekedHandler = (element: any) => {
@@ -68,7 +71,12 @@ const AudioProvider : FC<HomeProps> = ({audioElement}) => {
   }
   const timeUpdateHandler = (element: any) => {
     // shows realtime currentTime for the Audio used for redis
-    dispatch(onUpdateTime(Math.floor(element.target.currentTime)));
+    //TODO: Ye bacha he for time sync
+      dispatch(onUpdateTime(Math.floor(element.target.currentTime)));
+      socket.emit("on-seek-current-song", {
+        room_id : room.room_slug,
+        time: element.target.currentTime
+      })
   }
   
     return (

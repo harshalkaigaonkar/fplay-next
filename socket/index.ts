@@ -204,9 +204,16 @@ const socketManager = async (_res: any) => {
         _socket.broadcast.to(`room:${room_id}`).emit("pause-current-song");
       })
 
+      _socket.on("on-seek-current-song", async (res: any) => {
+        const {
+          room_id,
+          time
+        } = res;
+        await client.json.set(`room:${room_id}`, ".time", time);
+        _socket.broadcast.to(`room:${room_id}`).emit("seek-current-song");
+      })
+
     })
-
-
 }
 
 export default socketManager 

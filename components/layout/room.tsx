@@ -3,7 +3,7 @@ import { useSocket } from 'hooks/useSocket'
 import { useRouter } from 'next/router'
 import React, { FC, MutableRefObject, ReactNode, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { onAddSongIntoQueue, onRemoveSongFromQueue, onRefreshPlayer, onSetupPlayer, selectPlayer, selectSongsQueue, onReaarrangeSongQueue, onChangeClickedSongFromQueue, onChangeNextSongFromQueue, onChangePrevSongFromQueue, onSetPlay } from 'redux/slice/playerSlice'
+import { onAddSongIntoQueue, onRemoveSongFromQueue, onRefreshPlayer, onSetupPlayer, selectPlayer, selectSongsQueue, onReaarrangeSongQueue, onChangeClickedSongFromQueue, onChangeNextSongFromQueue, onChangePrevSongFromQueue, onSetPlay, selectTime } from 'redux/slice/playerSlice'
 import { onChangeUsers, onJoiningRoom, onLeaveUser, selectRoomInfo } from 'redux/slice/roomSlice'
 import { MongooseRoomTypes, MongooseUserTypes, UseSession } from 'types'
 
@@ -22,6 +22,7 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, audioElementR
   const roomInfo = useSelector(selectRoomInfo);
   const socket = useSocket();
   const player = useSelector(selectPlayer);
+  const time = useSelector(selectTime);
   const router = useRouter();
   
   useEffect(() => {
