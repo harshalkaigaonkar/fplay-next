@@ -56,7 +56,7 @@ const DraggableList : FC<TrackQueueProps> = ({audioElement, fromPanel}) => {
 						) 
 						:
 						(
-							songsQueue.map(
+							!!songsQueue && songsQueue?.map(
 								(song: any, index: number): JSX.Element => (
 									<DraggableListItem key={index} song={song} index={index} audioElement={audioElement} fromPanel={fromPanel} />
 								)

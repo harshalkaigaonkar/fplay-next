@@ -69,8 +69,8 @@ const PanelSongResult: React.FC<{data: any, key: number, audioElement?: MutableR
      className="w-60 h-16 m-2 px-3 bg-[#121212] hover:bg-[#343434] flex flex-row justify-start items-center gap-3 overflow-hidden rounded-lg cursor-pointer transition duration-500"
     >
       <Image
-       src={data.image[1].link ?? data.image[0].link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
-       alt={data.title + "_cover"}
+       src={data?.image?.[1]?.link ?? data?.image?.[0]?.link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
+       alt={data?.title + "_cover"}
        className={`${mouseEnter ? "rotate-0": "rotate-[20deg]"}
        rounded-full transition duration-300 cursor-pointer`}
        height={50}
@@ -78,8 +78,8 @@ const PanelSongResult: React.FC<{data: any, key: number, audioElement?: MutableR
        layout="fixed"
       />
      <span className={`${mouseEnter || currentSongId === data.id && !paused ? "w-3/12 ": "w-2/3"} h-fit content-center`}>
-      <p className='text-sm font-bold cursor-pointer truncate'>{decodeHTMLContent(data.title ?? data.name)}</p>
-      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{decodeHTMLContent(data.description ?? `${data.primaryArtists} ${data.featuredArtists && `ft. ${data.featuredArtists}`}`)}</p>
+      <p className='text-sm font-bold cursor-pointer truncate'>{decodeHTMLContent(data?.title ?? data.name)}</p>
+      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{decodeHTMLContent(data?.description ?? `${data.primaryArtists} ${data.featuredArtists && `ft. ${data.featuredArtists}`}`)}</p>
      </span>
      {mouseEnter ? (
       <div className='mx-[1px] flex-1 flex flex-row items-center justify-evenly animate-enter-div-1'>
@@ -101,7 +101,7 @@ const PanelSongResult: React.FC<{data: any, key: number, audioElement?: MutableR
           )
         }
         {
-          !songsQueue.find((song: SaavnSongObjectTypes) => song.id === data.id) ? (
+          !songsQueue?.find((song: SaavnSongObjectTypes) => song.id === data.id) ? (
             <button 
               className='p-2 h-fit rounded-full bg-black inline-flex items-center cursor-pointer hover:bg-black/30 active:bg-black/60'
               onClick={addToQueueHandler}  

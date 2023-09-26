@@ -62,7 +62,7 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
     return (
         <div className='h-full w-full mt-5 px-5 py-10 flex flex-col items-center gap-2 bg-gradient-to-r from-gray-800 via-gray-900 to-black rounded-[40px]'>
 
-                    {currentTrack ? (
+                    {!!currentTrack ? (
                         <>
                         <span className='w-full h-fit inline-flex flex-row items-center justify-evenly'>
                         <span onClick={onPrevTrack} className='p-2 inline-flex items-center h-fit text-white/70 rounded-full hover:-translate-x-1 hover:bg-white/5 cursor-pointer transition duration-500 active:bg-[#121212]'>
@@ -70,7 +70,7 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
                         </span>
                         <div className='flex-0 flex flex-row justify-center items-center gap-10 border-1 border-white/50 border-solid rounded-2xl shadow-2xl overflow-hidden group-hover:scale-105'>
                             <Image
-                                src={currentTrack.image[2].link ?? currentTrack.image[1].link ?? currentTrack.image[0].link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
+                                src={currentTrack?.image?.[2]?.link ?? currentTrack?.image?.[1]?.link ?? currentTrack?.image?.[0]?.link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
                                 alt="track_banner"
                                 height={250}
                                 width={250}
@@ -88,10 +88,10 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
                             <AddToPlaylistIcon className='lg:w-10 lg:h-10 md:w-8' />
                         </span>
                         <button
-                            onClick={paused || (audioElement.current && audioElement.current.paused) ? onPlayHandler : onPauseHandler}
+                            onClick={paused || (!!audioElement?.current && audioElement.current.paused) ? onPlayHandler : onPauseHandler}
                             className='bg-inherit outline-none border-none inline-flex justify-center items-center lg:p-4 md:p-1 sm:p-1 rounded-full text-white transition duration-700 hover:shadow-2xl hover:shadow-black hover:bg-[#7A7A7A]/10 cursor-pointer'
                         >
-                            {paused || (audioElement.current && audioElement.current.paused) ? 
+                            {paused || (!!audioElement?.current && audioElement.current.paused) ? 
                             <PlayIcon className='lg:w-16 lg:h-16 md:w-14 md:h-14' /> :
                             <PauseIcon className='lg:w-16 lg:h-16 md:w-14 md:h-14' />}
                         </button>

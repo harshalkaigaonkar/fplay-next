@@ -20,8 +20,8 @@ const ArtistOverlay: FC<{
       <section className='mt-5 px-3'>
         <div className=' flex justify-start gap-5'>
           <Image
-            src={result.image[2].link ?? result.image[1].link ?? result.image[0].link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
-            alt={result.name + "_cover"}
+            src={result?.image?.[2]?.link ?? result?.image?.[1]?.link ?? result?.image?.[0]?.link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
+            alt={result?.name + "_cover"}
             className="rounded-full transition duration-300 cursor-pointer"
             height={200}
             width={200}
@@ -35,7 +35,7 @@ const ArtistOverlay: FC<{
         <div className='mt-4 flex flex-col gap-5'>
           <p className='ml-3 px-5 text-sm bg-white/20 p-2 rounded-full w-fit'>Latest Songs</p>
           <span className='lg:h-[15rem] flex flex-row flex-wrap overflow-y-auto overflow-x-hidden'>
-            {result.songs.results ? result.songs.results.map((item: SaavnSongObjectTypes, index: number) => 
+            {!!result.songs.results ? result?.songs?.results?.map((item: SaavnSongObjectTypes, index: number) => 
               <PanelSongResult data={item} key={index} audioElement={audioElement} />  
             ) : (
               <span>

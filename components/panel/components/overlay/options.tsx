@@ -23,32 +23,32 @@ const MoreOptions: FC<MoreOptionsProps> = ({type, results, backHandler, audioEle
     >
       <div className='-mt-10 pt-10 pb-2 w-full flex justify-start items-center flex-wrap overflow-y-auto overflow-x-hidden'>
         {/* <span className='mt-20'></span> */}
-        {type?.includes('song') ? (
-          <>
+        {!!type?.includes('song') ? (
+          !!results && (<>
             {
-              results.map((item: SaavnSongObjectTypes, index: number) => (
+              results?.map((item: SaavnSongObjectTypes, index: number) => (
                 <PanelSongResult data={item} key={index} audioElement={audioElement} />
               ))
             }
-          </>
+          </>)
         ) : 
-        type?.includes('album') ? (
-          <>
+        !!type?.includes('album') ? (
+          !!results && (<>
             {
-              results.map((item: any, index: number) => (
+              results?.map((item: any, index: number) => (
                 <PanelAlbumResult data={item} key={index} audioElement={audioElement} onClickHandler={onAlbumClickHandler} />
               ))
             }
-          </>
+          </>)
         ) :
-        type?.includes('artist') ? (
-          <>
+        !!type?.includes('artist') ? (
+          !!results && (<>
             {
-              results.map((item: any, index: number) => (
+              results?.map((item: any, index: number) => (
                 <PanelArtistResult data={item} key={index} audioElement={audioElement} onClickHandler={onArtistClickHandler} />
               ))
             }
-          </>
+          </>)
         ) : (
           <>
             <p>No Results Found!!</p>

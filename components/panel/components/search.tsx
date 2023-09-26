@@ -30,7 +30,7 @@ const PanelSearch: FC<{audioElement: MutableRefObject<HTMLAudioElement|null>}> =
   }
 
 		const queryChangeHandler  = async () => {
-			if(inputElement.current) {
+			if(!!inputElement.current) {
 				const searchQuery = inputElement.current.value;
 				dispatch(changeSearchQuery(searchQuery))
 				dispatch(startLoading());
@@ -98,7 +98,7 @@ const PanelSearch: FC<{audioElement: MutableRefObject<HTMLAudioElement|null>}> =
 			</div> */}
         </header>
             {
-													query.length ? (
+													!!query.length ? (
 															<div className='px-5'>
 																<PanelSearched audioElement={audioElement} />
 															</div>

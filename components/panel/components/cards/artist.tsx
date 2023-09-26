@@ -53,8 +53,8 @@ const PanelArtistResult: React.FC<{data: any, key: number, audioElement?: Mutabl
      className="w-60 h-16 m-2 px-3 bg-[#121212] hover:bg-[#343434] flex flex-row justify-start items-center gap-3 overflow-hidden rounded-lg cursor-pointer transition duration-500"
     >
       <Image
-       src={data.image[1].link ?? data.image[0].link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
-       alt={data.title + "_cover"}
+       src={data?.image?.[1]?.link ?? data?.image?.[0]?.link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
+       alt={data?.title + "_cover"}
        className={`${mouseEnter ? "rotate-0": "rotate-[20deg]"}
        rounded-full transition duration-300 cursor-pointer`}
        height={50}
@@ -62,8 +62,8 @@ const PanelArtistResult: React.FC<{data: any, key: number, audioElement?: Mutabl
        layout="fixed"
       />
      <span className={`w-2/3 h-fit content-center`}>
-      <p className='text-sm font-bold cursor-pointer truncate'>{decodeHTMLContent(data.title ?? data.name)}</p>
-      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{decodeHTMLContent(data.description ?? data.role)}</p>
+      <p className='text-sm font-bold cursor-pointer truncate'>{decodeHTMLContent(data?.title ?? data.name)}</p>
+      <p className='mt-1 text-[10px] font-normal cursor-pointer truncate'>{decodeHTMLContent(data?.description ?? data.role)}</p>
      </span>
      {/* {mouseEnter ? (
       <div className='mx-[1px] flex-1 flex flex-row items-center justify-evenly animate-enter-div-1'>

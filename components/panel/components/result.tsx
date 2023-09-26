@@ -201,7 +201,7 @@ const PanelSearched: React.FC<{audioElement: MutableRefObject<HTMLAudioElement|n
           <h4 className='font-medium'>Top Results</h4>
         </span>
         <span className='mt-4 w-full flex justify-between overflow-y-auto overflow-x-hidden'>
-          {data.topQuery.results.map((item: any, index: number) => {
+          {!!data?.topQuery?.results && data?.topQuery?.results?.map((item: any, index: number) => {
             switch(item.type) {
               case 'song':
                 return (
@@ -222,7 +222,7 @@ const PanelSearched: React.FC<{audioElement: MutableRefObject<HTMLAudioElement|n
         </span>
       </div>
      )}
-     {data.songs.results.length > 0 && (
+     {!!data.songs.results && data.songs.results.length > 0 && (
       <div className='w-full flex flex-col'>
         <span className='px-5 inline-flex justify-between items-center w-full h-12 border-b-[0.1px] border-t-0 border-x-0 border-solid border-white'>
           <h4 className='font-medium'>Songs</h4>
@@ -233,14 +233,15 @@ const PanelSearched: React.FC<{audioElement: MutableRefObject<HTMLAudioElement|n
           </button>
         </span>
         <span className='mt-4 w-full flex justify-between overflow-y-auto overflow-x-hidden'>
-          {data.songs.results.map((item: any, index: number) => (
+          {!!data?.songs?.results && data?.songs?.results?.map((item: any, index: number) => (
             <PanelSongResult data={item} key={index} audioElement={audioElement} />
           ))}
         </span>
       </div>
      )}
      {
-      data.albums.results.length > 0 && (
+      !!data?.albums?.results &&
+      data?.albums?.results?.length > 0 && (
        <div className='w-full flex flex-col'>
         <span className='px-5 inline-flex justify-between items-center w-full h-12 border-b-[0.1px] border-t-0 border-x-0 border-solid border-white'>
          <h4 className='font-medium'>Albums</h4>
@@ -252,7 +253,7 @@ const PanelSearched: React.FC<{audioElement: MutableRefObject<HTMLAudioElement|n
         </span>
         <span className='mt-2 flex justify-between overflow-y-auto overflow-x-hidden'>
          {
-          data.albums && data.albums.results.map((data: any, index: number) => (
+          !!data?.albums && data?.albums?.results?.map((data: any, index: number) => (
            <>
              <PanelAlbumResult data={data} key={index} audioElement={audioElement} onClickHandler={onAlbumClickHandler} />
            </>
@@ -262,7 +263,8 @@ const PanelSearched: React.FC<{audioElement: MutableRefObject<HTMLAudioElement|n
       )
      }
      {
-      data.artists.results.length > 0 && (
+      !!data?.artists?.results &&
+      data?.artists?.results?.length > 0 && (
        <div className='w-full flex flex-col'>
         <span className='px-5 inline-flex justify-between items-center w-full h-12 border-b-[0.1px] border-t-0 border-x-0 border-solid border-white'>
          <h4 className='font-medium'>Artists</h4>
@@ -273,7 +275,7 @@ const PanelSearched: React.FC<{audioElement: MutableRefObject<HTMLAudioElement|n
          </button>
         </span>
        <span className='mt-2 flex justify-between overflow-y-auto overflow-x-hidden'>
-       {data.artists.results.map((data: any, index: number) => (
+       {!!data?.artists?.results && data?.artists?.results?.map((data: any, index: number) => (
         <>
           <PanelArtistResult data={data} key={index} audioElement={audioElement} onClickHandler={onArtistClickHandler} />
         </>

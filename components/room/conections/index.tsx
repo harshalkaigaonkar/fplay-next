@@ -14,12 +14,12 @@ const UsersConnectedRoom: FC<{session:UseSession}> = ({session}) => {
     <>
         <h3 className='mt-20 text-center'>Connected Users ({users.length})</h3>
         <div className='flex flex-row flex-wrap justify-center my-10'>
-            {users.map((item: any, index: number) => (
+            {!!users && users?.map((item: any, index: number) => (
                 <section key={index} className='w-40 py-5 flex flex-col justify-center items-center gap-3'>
                 <div className='inline-flex items-center rounded-full border-solid border-white'>
                     <Image
-                        src={item.profile_pic}
-                        alt={item.username}
+                        src={item?.profile_pic}
+                        alt={item?.username}
                         width={75}
                         height={75}
                         className='rounded-full'
