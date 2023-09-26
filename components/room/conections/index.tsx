@@ -23,6 +23,7 @@ const UsersConnectedRoom: FC<{session:UseSession}> = ({session}) => {
                         width={75}
                         height={75}
                         className='rounded-full'
+                        loading='lazy'
                     />
                 </div>
                 <span className='w-full'>

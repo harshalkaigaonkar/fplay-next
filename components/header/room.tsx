@@ -109,6 +109,7 @@ const RoomHeader: FC<HeaderProps> = ({session,room}) => {
                     height={25}
                     width={25}
                     className='rounded-full'
+                    loading='lazy'
                 />
             </span>
         </div>

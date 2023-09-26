@@ -26,6 +26,7 @@ const PopoverButton: React.FC<PopoverButtonProps> = ({session, onSignOut}) => {
               height={30}
               width={30}
               className='rounded-full'
+              loading='lazy'
             />
           <ChevronDownIcon
             className={`${open ? '' : 'text-opacity-70 rotate-180'}

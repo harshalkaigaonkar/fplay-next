@@ -108,6 +108,7 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                             height={45}
                             layout="fixed"
                             className="rounded-md overflow-hidden z-0"
+                            loading='lazy'
                         />
                     </span>
                     <span className='max-w-24 w-full inline-flex flex-col gap-2 truncate'>

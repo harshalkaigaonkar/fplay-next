@@ -74,9 +74,9 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
                                 alt="track_banner"
                                 height={250}
                                 width={250}
-                                priority
                                 objectFit='cover'
                                 className="object-cover rounded-2xl hover:scale-105 transition duration-700"
+                                loading='lazy'
                             />
                         </div>
                         <span onClick={onNextTrack} className='p-2 inline-flex items-center h-fit text-white/70 rounded-full hover:translate-x-1 hover:bg-white/5 cursor-pointer transition duration-500 active:bg-[#121212]'>

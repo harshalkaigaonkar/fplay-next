@@ -76,6 +76,7 @@ const PanelSongResult: React.FC<{data: any, key: number, audioElement?: MutableR
        height={50}
        width={50}
        layout="fixed"
+       loading='lazy'
       />
      <span className={`${mouseEnter || currentSongId === data.id && !paused ? "w-3/12 ": "w-2/3"} h-fit content-center`}>
       <p className='text-sm font-bold cursor-pointer truncate'>{decodeHTMLContent(data?.title ?? data.name)}</p>

@@ -26,6 +26,7 @@ const ArtistOverlay: FC<{
             height={200}
             width={200}
             layout="fixed"
+            loading='lazy'
           />
           <div className='w-auto flex-1 flex flex-col items justify-center'>
             <h1 className='text-3xl'>{decodeHTMLContent(result.name)}</h1>
