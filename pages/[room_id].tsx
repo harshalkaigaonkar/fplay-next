@@ -77,6 +77,11 @@ const Home: NextPage<HomeProps> = ({room, user}) => {
       dispatch(updateUser(user));
   }, [user])
 
+  useEffect(() => {
+    if(user)
+      updateUser(user); 
+  }, [user])
+
   
   return (
       <div className='m-0 p-0'>
