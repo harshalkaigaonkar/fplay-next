@@ -1,20 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Session } from 'next-auth';
 import { InitialUserStateTypes, RootState } from 'types/redux';
 
 const initialState : InitialUserStateTypes = {
+  user: null,
 }
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    updateUser: (state, action) => {
+      state.user = action.payload
+    }
   }
 })
 
-// export const {  } = userSlice.actions
+export const { updateUser } = userSlice.actions
 
-// export const userSession = (state: RootState) => state.session;
+export const selectUserInfo = (state: RootState) => state.user;
 // export const selectCategories = (state: RootState) => state.bills.categories;
 // export const selectBudget = (state: RootState) => state.bills.budget;
 

@@ -25,6 +25,7 @@ import { useRouter } from 'next/router';
 import { getSocketSession, selectSocket } from 'redux/slice/socketSlice';
 import dynamic from 'next/dynamic';
 import {useSocket} from 'hooks/useSocket';
+import { updateUser } from 'redux/slice/userSlice';
 
 const RoomLayout = dynamic(() => import('components/layout/room'), {
   ssr: false,
@@ -68,6 +69,11 @@ const Home: NextPage<HomeProps> = ({room, user}) => {
       router.events.off('routeChangeStart', handleBrowseAway);
     }
   }, [router.events]);
+
+  useEffect(() => {
+    if(user)
+      updateUser(user); 
+  }, [user])
 
   
   return (

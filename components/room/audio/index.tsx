@@ -74,6 +74,7 @@ const AudioProvider : FC<HomeProps> = ({audioElement}) => {
     //TODO: Ye bacha he for time sync
       dispatch(onUpdateTime(Math.floor(element.target.currentTime)));
       socket.emit("on-seek-current-song", {
+        user: {},
         room_id : room.room_slug,
         time: element.target.currentTime
       })

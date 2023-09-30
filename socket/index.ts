@@ -2,13 +2,15 @@ import { Server } from "socket.io"
 import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from "types"
 import redisManager, {client} from 'cache'
 
-type ConnectedUser = {
-  user_id: string, 
-  socket_id: string, 
-  name: string,
-  email: string, 
-  username: string, 
-  profile_pic: string
+interface ConnectedUser {
+  user_id: string; 
+  socket_id: string; 
+  name: string;
+  email: string; 
+  username: string; 
+  profile_pic: string;
+  role: 'admin'|'listener';
+  spotlight: boolean;
 }
 
 
@@ -40,7 +42,7 @@ const socketManager = async (_res: any) => {
         _socket.join(`room:${room.room_slug}`);
         // socketClient - roomId relation
         await client.json.set(`user:${_socket.id}`, "$", `room:${room.room_slug}`)
-        let roomCache = await client.json.get(`room:${room.room_slug}`);
+        let roomCache: any = await client.json.get(`room:${room.room_slug}`);
         let new_room_created: boolean = false;
         if(!roomCache) {
           // if no rrom exists, create one.
@@ -58,9 +60,12 @@ const socketManager = async (_res: any) => {
           })
           new_room_created = true;
         }
+
         const new_user_connection = {
           socket_id: _socket.id,
           user_id: user._id,
+          role: user._id === room.owned_by._id ? 'admin': 'listener',
+          spotlight: (user._id === room.owned_by._id ) && (roomCache.users_connected.length === 0) ? true: false,
           ...Object.fromEntries(Object.entries(user).filter(([item]) => !["_id", "createdAt", "updatedAt", "library", "__v"].includes(item)))
         };
         // append user's connection in the room.
@@ -209,8 +214,13 @@ const socketManager = async (_res: any) => {
           room_id,
           time
         } = res;
-        await client.json.set(`room:${room_id}`, ".time", time);
-        _socket.broadcast.to(`room:${room_id}`).emit("seek-current-song");
+        const roomCache: any = await client.json.get(`room:${room_id}`);
+        const hasSpotlight = !!roomCache.users_connected && roomCache.users_connected.find(
+          (user: ConnectedUser) => user.spotlight && user.socket_id === _socket.id)
+        if(!!hasSpotlight) {
+          await client.json.set(`room:${room_id}`, ".time", time);
+          _socket.broadcast.to(`room:${room_id}`).emit("seek-current-song", time as number);
+        }
       })
 
     })

@@ -1,7 +1,7 @@
 // Root State Types
 
 import { Session } from "next-auth"
-import { AuthUserType, SaavnSongObjectTypes } from "types"
+import { AuthUserType, MongooseUserTypes, SaavnSongObjectTypes } from "types"
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>
@@ -11,7 +11,7 @@ export type AppDispatch = typeof store.dispatch
 // User State types
 
 type InitialUserStateTypes = {
-    
+    user: MongooseUserTypes | null
 }
 
 type InitialRoomStateTypes = {

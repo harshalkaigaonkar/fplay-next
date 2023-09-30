@@ -135,6 +135,12 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, audioElementR
       audioElementRef.current?.pause();
     })
 
+    socket.on("seek-current-song", (time: number) => {
+      console.log("audio seeking log");
+      if(!!audioElementRef.current)
+        audioElementRef.current.currentTime = time
+    })
+ 
     
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket])
