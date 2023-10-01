@@ -28,10 +28,6 @@ import {useSocket} from 'hooks/useSocket';
 import { updateUser } from 'redux/slice/userSlice';
 import RoomLayout from 'components/layout/room';
 
-// const RoomLayout = dynamic(() => import('components/layout/room'), {
-//   ssr: false,
-// });
-
 export type HomeProps = {
   socket?: SocketClientType,
   session?: AuthUserType|any,
