@@ -113,10 +113,7 @@ const socketManager = async (_res: any) => {
         let left_user: string|ConnectedUser|any = _socket.id;
         if(!!room_redis_id) {
           const room: any = await client.json.get(room_redis_id);
-          let user_to_leave_index = room?.users_connected?.findIndex((item: ConnectedUser) => item.socket_id === _socket.id)
-          if(!!user_to_leave_index) {
-            left_user = await client.json.arrPop(room, ".users_connected", user_to_leave_index);
-          }
+            left_user = await client.json.arrPop(room_redis_id, ".users_connected", room?.users_connected?.findIndex((item: ConnectedUser) => item.socket_id === _socket.id));
           if(!!room?.users_connected && room.users_connected.length === 1) {
             await Promise.all([
               /**
@@ -124,8 +121,8 @@ const socketManager = async (_res: any) => {
                * */
               // client.json.set(room, ".songsQueue", []),
               // client.json.set(room, ".currentSongId", null),
-              client.json.set(room, ".paused", true),
-              client.json.set(room, ".time", 0),
+              client.json.set(room_redis_id, ".paused", true),
+              client.json.set(room_redis_id, ".time", 0),
             ])
           }
           await client.json.del(`user:${_socket.id}`);
@@ -133,11 +130,11 @@ const socketManager = async (_res: any) => {
             const room: any = await client.json.get(room_redis_id);
             let new_spotlight_user = room?.users_connected?.find((user: ConnectedUser) => user.role === 'admin');
             if(!!new_spotlight_user) {
-              await client.json.set(room, '.spotlight', new_spotlight_user.socket_id);
+              await client.json.set(room_redis_id, '.spotlight', new_spotlight_user.socket_id);
               _io.to(new_spotlight_user.socket_id).emit("get-spotlight");
             } else {
-              await client.json.set(room, '.spotlight', null);
-              _socket.broadcast.to(room).emit("error-joining-room", {
+              await client.json.set(room_redis_id, '.spotlight', null);
+              _socket.broadcast.to(room_redis_id).emit("error-joining-room", {
                 message: "room is inactive, as no admin's there to ",
                 title: "Room is Inactive!!"
               })
