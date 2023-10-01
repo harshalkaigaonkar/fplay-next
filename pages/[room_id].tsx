@@ -25,10 +25,7 @@ import { useRouter } from 'next/router';
 import { getSocketSession, selectSocket } from 'redux/slice/socketSlice';
 import dynamic from 'next/dynamic';
 import {useSocket} from 'hooks/useSocket';
-
-const RoomLayout = dynamic(() => import('components/layout/room'), {
-  ssr: false,
-});
+import RoomLayout from 'components/layout/room';
 
 export type HomeProps = {
   socket?: SocketClientType,
