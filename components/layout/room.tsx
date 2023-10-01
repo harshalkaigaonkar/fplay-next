@@ -1,7 +1,8 @@
 import RoomHeader from 'components/header/room'
+import HeadlessModal from 'components/modal/HeadlessModal'
 import { useSocket } from 'hooks/useSocket'
 import { useRouter } from 'next/router'
-import React, { FC, MutableRefObject, ReactNode, useCallback, useEffect } from 'react'
+import React, { FC, MutableRefObject, ReactNode, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { onAddSongIntoQueue, onRemoveSongFromQueue, onRefreshPlayer, onSetupPlayer, selectPlayer, selectSongsQueue, onReaarrangeSongQueue, onChangeClickedSongFromQueue, onChangeNextSongFromQueue, onChangePrevSongFromQueue, onSetPlay, selectTime } from 'redux/slice/playerSlice'
 import { onChangeUsers, onJoiningRoom, onLeaveUser, selectRoomInfo } from 'redux/slice/roomSlice'
@@ -16,6 +17,8 @@ interface RoomLayoutProps {
 }
 
 const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, audioElementRef, user}) => {
+
+  const [error, setError] = useState<false|{title: string, message: string}>(false);
 
   const songsQueue = useSelector(selectSongsQueue);
   const dispatch = useDispatch();
@@ -38,11 +41,25 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, audioElementR
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router])
 
+  const onCloseUserExistsModal = () => {
+    setError(false);
+    router.push('/');
+  }
+
   const socketRoomInitializer = useCallback(async () => {
     socket.emit("connect-to-join-room", {
       user,
       room
     })
+
+    socket.on('error-joining-room', (res: false|{title: string, message: string}) => {
+      setError(res);
+    })
+
+    socket.on('get-spotlight', () => {
+      console.log("You've got the spotlight")
+    })
+
     socket.on("leaves-room", (res: any) => {
       if(typeof res === 'string') {
         console.log(`${res} socket_id left the room.`);
@@ -150,6 +167,13 @@ const RoomLayout: FC<RoomLayoutProps> = ({session, children, room, audioElementR
     <div className='lg:mx-20 lg:px-20 lg:flex lg:flex-col min-h-screen md:m-0 md:p-0 select-none animate-enter-opacity'>
       <RoomHeader session={session} room={room} />
       <main>{children}</main>
+      {error && 
+       (<HeadlessModal isOpen={!!error} title={"You're Already in the Room"} cta={"disconnect"} cta_function={onCloseUserExistsModal} >
+        <>
+          <p className='text-xs'>{!!error && error.message}</p>
+        </>
+      </HeadlessModal>)
+      }
     </div>
   )
 }

@@ -1,21 +1,20 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, MouseEventHandler, ReactNode, useState } from 'react'
 
-export default function HeadlessModal({openModal, closeModal, isOpen, title, cta, cta_function, newRoomName, children} : {
-    openModal: (e: { preventDefault: () => void; }) => void,
-    closeModal: () => void,
+export default function HeadlessModal({ onClose = (bool: boolean) => {}, isOpen, title, cta, cta_function, cta_disabled = false, children} : {
+    onClose?: (bool: boolean) => void ,
     isOpen: boolean,
     title: string,
     cta: string,
     cta_function: MouseEventHandler<HTMLButtonElement>,
-    newRoomName: string,
-    children: ReactNode
+    cta_disabled?: boolean,
+    children?: ReactNode
 }) {
 
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+        <Dialog as="div" className="relative z-10" onClose={onClose}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -47,14 +46,14 @@ export default function HeadlessModal({openModal, closeModal, isOpen, title, cta
                     {title}
                   </Dialog.Title>
                   <div className="mt-2">
-                    {children}
+                    {!!children && children}
                   </div>
 
                   <div className="mt-4">
                     <button
                       type="button"
-                      disabled={newRoomName.length < 6}
-                      className={` ${newRoomName.length < 6 && "opacity-50"}
+                      disabled={cta_disabled}
+                      className={` ${cta_disabled && "opacity-50"}
                       w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white transition duration-300 bg-[#434343] border-none border-[#343434] hover:cursor-pointer hover:bg-[#343434] active:shadow active:bg-[#222222]`}
                       onClick={cta_function}
                     >

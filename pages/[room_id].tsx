@@ -26,10 +26,11 @@ import { getSocketSession, selectSocket } from 'redux/slice/socketSlice';
 import dynamic from 'next/dynamic';
 import {useSocket} from 'hooks/useSocket';
 import { updateUser } from 'redux/slice/userSlice';
+import RoomLayout from 'components/layout/room';
 
-const RoomLayout = dynamic(() => import('components/layout/room'), {
-  ssr: false,
-});
+// const RoomLayout = dynamic(() => import('components/layout/room'), {
+//   ssr: false,
+// });
 
 export type HomeProps = {
   socket?: SocketClientType,
@@ -50,29 +51,30 @@ const Home: NextPage<HomeProps> = ({room, user}) => {
   const roomRef = useRef<HTMLDivElement|null>(null);
   const socket = useSocket();
 
-  useEffect(() => {
-    const warningText =
-      'You are currently in a room - are you sure you wish to leave this page?';
-    // const handleWindowClose = (e: BeforeUnloadEvent) => {
-    //   e.preventDefault();
-    //   return (e.returnValue = warningText);
-    // };
-    const handleBrowseAway = () => {
-      if (window.confirm(warningText)) return;
-      router.events.emit('routeChangeError');
-    };
-    // window.addEventListener('beforeunload', handleWindowClose);
-    router.events.on('routeChangeStart', handleBrowseAway);
+  // useEffect(() => {
+  //   const warningText =
+  //     'You are currently in a room - are you sure you wish to leave this page?';
+  //   // const handleWindowClose = (e: BeforeUnloadEvent) => {
+  //   //   e.preventDefault();
+  //   //   return (e.returnValue = warningText);
+  //   // };
+  //   const handleBrowseAway = () => {
+  //     if (window.confirm(warningText)) return;
+  //     router.events.emit('routeChangeError');
+  //   };
+  //   // window.addEventListener('beforeunload', handleWindowClose);
+  //   router.events.on('routeChangeStart', handleBrowseAway);
     
-    return () => {
-      // window.removeEventListener('beforeunload', handleWindowClose);
-      router.events.off('routeChangeStart', handleBrowseAway);
-    }
-  }, [router.events]);
+  //   return () => {
+  //     // window.removeEventListener('beforeunload', handleWindowClose);
+  //     router.events.off('routeChangeStart', handleBrowseAway);
+  //   }
+  // }, [router.events]);
 
   useEffect(() => {
+    console.log("user", user)
     if(user)
-      updateUser(user); 
+      dispatch(updateUser(user));
   }, [user])
 
   

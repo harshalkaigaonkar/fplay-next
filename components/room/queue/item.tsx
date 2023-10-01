@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { onChangeClickedSongFromQueue, onRemoveSongFromQueue, onSetPause, onSetPlay, selectCurrentSongId, selectPaused } from 'redux/slice/playerSlice'
 import { selectRoomInfo } from 'redux/slice/roomSlice'
+import { selectUserInfo } from 'redux/slice/userSlice'
 import { DraggableListItemProps } from 'types/queue'
 
 
@@ -21,6 +22,7 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
     const room = useSelector(selectRoomInfo);
     const socket = useSocket();
     const paused = useSelector(selectPaused);
+    const user = useSelector(selectUserInfo);
 
     const dispatch = useDispatch();
     
@@ -37,6 +39,7 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
         if(song.id !== currentTrackId) {
             dispatch(onChangeClickedSongFromQueue(song.id));    
             socket.emit("on-current-song-id-change", {
+                user,
                 song_id: song.id,
                 room_id: room.room_slug
             })
@@ -56,6 +59,7 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
         }
         dispatch(onRemoveSongFromQueue(song.id));
         socket.emit("on-remove-song-from-queue", {
+            user,
             song_id: song.id,
             room_id: room.room_slug
         })
@@ -102,8 +106,8 @@ const DraggableListItem: FC<DraggableListItemProps> = ({song, index, audioElemen
                             </span>
                         )}
                         <Image
-                            src={song?.image[1]?.link ?? song?.image[0]?.link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
-                            alt={`Song Icon ${song?.image[1].quality}`}
+                            src={song?.image?.[1]?.link ?? song?.image?.[0]?.link ?? "https://www.jiosaavn.com/_i/3.0/artist-default-music.png"}
+                            alt={`Song Icon ${song?.image?.[1]?.quality}`}
                             width={45}
                             height={45}
                             layout="fixed"

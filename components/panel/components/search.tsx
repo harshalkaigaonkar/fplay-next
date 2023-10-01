@@ -5,6 +5,7 @@ import { fetchAllThroughSearchQuery } from 'helpers/music/fetchAll';
 import React, {useState, useRef, FC, MutableRefObject} from 'react'
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
+import { useDebounce } from 'react-use';
 import { changeSearchQuery, onActiveSearch, onUnactiveSearch, selectQuery, selectResults, selectSearchActive, setError, startLoading, updateSearchResults } from 'redux/slice/searchSlice';
 import { resourceLimits } from 'worker_threads';
 import PanelSearched from './result';
@@ -19,6 +20,13 @@ const PanelSearch: FC<{audioElement: MutableRefObject<HTMLAudioElement|null>}> =
 		const timeout = useRef<ReturnType<typeof setTimeout>|null>(null);
 
 		const inputElement = useRef<HTMLInputElement|null>(null);
+		useDebounce(async () => {
+			const res = await fetchAllThroughSearchQuery(query);
+			if(typeof res !== 'string') 
+				dispatch(updateSearchResults(res));
+				else
+				dispatch(setError(`No Result found for '${query}'`))
+		}, 1000, [query]);
 
   const openSearchHandler = () => {
 			dispatch(onActiveSearch());
@@ -40,17 +48,7 @@ const PanelSearch: FC<{audioElement: MutableRefObject<HTMLAudioElement|null>}> =
 					* Update: Working till some extent, the query should be specific to some relevant info, otherwise shows loading forever.
 				 */
 
-					if (timeout.current != null) {
-							clearTimeout(timeout.current); 
-							timeout.current = null;
-					}
-					timeout.current = setTimeout(async () => {
-						const res = await fetchAllThroughSearchQuery(searchQuery);
-						if(typeof res !== 'string') 
-							dispatch(updateSearchResults(res));
-							else
-							dispatch(setError(`No Result found for '${query}'`))
-					}, 1000);
+					
 			}
 		}
 

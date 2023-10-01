@@ -138,13 +138,12 @@ const Hero = () => {
       </div>
       
       <HeadlessModal
-        openModal={openModal}
-        closeModal={closeModal}
+        isOpen={isOpen}
+        onClose={closeModal}
         title={"Create New Room"}
         cta={"Create Room"}
         cta_function={onRoomCreate}
-        isOpen={isOpen}
-        newRoomName={newRoomName}
+        cta_disabled={newRoomName.length < 6}
       >
         <input className='w-full mt-4 appearance-none p-4 bg-inherit border-white text-white text-md placeholder-slate-300 rounded-lg focus:outline-none' type={"text"} placeholder={"Room Name *"} onChange={onChangeNewRoomName} value={newRoomName} />
         <p className='m-0 pl-2 py-1 text-xs opacity-50'>Min of 6 and Max of 15 characters required.</p>

@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { onChangeClickedSongFromQueue, onChangeNextSongFromQueue, onChangePrevSongFromQueue,  onSetPause, onSetPlay, onUpdateTime, selectCurrentSongId, selectPaused, selectTime } from 'redux/slice/playerSlice';
 import {onOpenPanel, selectRoomInfo} from 'redux/slice/roomSlice'
+import { selectUserInfo } from 'redux/slice/userSlice';
 import { SaavnSongObjectTypes } from 'types';
 
 const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
@@ -16,6 +17,7 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
     const paused = useSelector(selectPaused);
     const currentTime = useSelector(selectTime);
     const room = useSelector(selectRoomInfo);
+    const user = useSelector(selectUserInfo);
     const socket = useSocket();
 
 
@@ -39,6 +41,7 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
         if(currentTime <= 5) {
             dispatch(onChangePrevSongFromQueue());
             socket.emit("on-current-song-change-prev", {
+                user,
                 room_id: room.room_slug
             }) 
         }
@@ -51,6 +54,7 @@ const AudioPlayer : FC<AudioPlayerProps>  = ({currentTrack, audioElement}) => {
     const onNextTrack = () => {
         dispatch(onChangeNextSongFromQueue());
         socket.emit("on-current-song-change-next", {
+            user,
             room_id: room.room_slug
         })   
     }

@@ -8,6 +8,9 @@ import { useDispatch } from 'react-redux';
 import { SaavnSongObjectTypes } from 'types';
 import { selectRoomInfo } from 'redux/slice/roomSlice';
 import { useSocket } from 'hooks/useSocket';
+import { selectUserInfo } from 'redux/slice/userSlice';
+import { Socket } from 'socket.io-client';
+import { useDebounce } from 'react-use';
 
 const AudioProvider : FC<HomeProps> = ({audioElement}) => {
 
@@ -16,7 +19,40 @@ const AudioProvider : FC<HomeProps> = ({audioElement}) => {
   const paused = useSelector(selectPaused);
   const room = useSelector(selectRoomInfo);
   const time = useSelector(selectTime);
+  const user = useSelector(selectUserInfo);
   const socket = useSocket();
+
+  useDebounce(() => {
+    if(!!user && !!room && room.owned_by._id === user._id)
+    {
+      socket.emit("on-seek-current-song", {
+        user,
+        room_id : room.room_slug,
+        time: audioElement.current?.currentTime ?? time,
+      })
+    }
+  }, 1000, [user, audioElement, room.room_slug, time]);
+
+  useDebounce(() => {
+    if(!!user && !!room && room.owned_by._id === user._id)
+    {
+    socket.emit("on-play-current-song", {
+        user,
+        room_id: room.room_slug
+      })
+    }
+  }, 1000, [user, audioElement, room.room_slug, paused]);
+
+  useDebounce(() => {
+    if(!!user && !!room && room.owned_by._id === user._id)
+    {
+    socket.emit("on-pause-current-song", {
+      user,
+      room_id: room.room_slug
+    })
+  }
+  }, 1000, [user, audioElement, room.room_slug, paused]);
+
 
   const dispatch = useDispatch();
 
@@ -47,25 +83,26 @@ const AudioProvider : FC<HomeProps> = ({audioElement}) => {
   }
   const seekedHandler = (element: any) => {
     console.log(element.target.currentTime, "seeked Hndler")
-    socket.emit("update-current-time", element.target.currentTime)
+    // socket.emit("update-current-time", element.target.currentTime)
+    // if(typeof seekDebounceFn === 'function')
+    
+    
   }
   const playingHandler = () => {
     dispatch(onSetPlay());
-    socket.emit("on-play-current-song", {
-        room_id: room.room_slug
-    })
+    // if(typeof playDebounceFn === 'function')
+      // playDebounceFn();
+      
   }
   const pauseHandler = (element: any) => {
     if(element.target.currentTime !== element.target.duration) {
       dispatch(onSetPause());
-      socket.emit("on-pause-current-song", {
-          room_id: room.room_slug
-      })
     }
   }
   const endedHandler = () => {
     dispatch(onChangeNextSongFromQueue());
     socket.emit("on-current-song-change-next", {
+      user,
       room_id: room.room_slug
     })
   }
@@ -73,11 +110,6 @@ const AudioProvider : FC<HomeProps> = ({audioElement}) => {
     // shows realtime currentTime for the Audio used for redis
     //TODO: Ye bacha he for time sync
       dispatch(onUpdateTime(Math.floor(element.target.currentTime)));
-      socket.emit("on-seek-current-song", {
-        user: {},
-        room_id : room.room_slug,
-        time: element.target.currentTime
-      })
   }
   
     return (
@@ -94,7 +126,7 @@ const AudioProvider : FC<HomeProps> = ({audioElement}) => {
               controls
               autoPlay={!paused}
               onLoadedMetadata={loadedMetaDataHandler} 
-              // onSeeked={seekedHandler} 
+              onSeeked={seekedHandler} 
               onPlaying={playingHandler}
               onPause={pauseHandler}
               onEnded={endedHandler}

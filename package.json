@@ -25,6 +25,7 @@
     "react-dom": "18.2.0",
     "react-redux": "^8.0.5",
     "react-spring-bottom-sheet": "^3.4.1",
+    "react-use": "^17.4.0",
     "redis": "^4.5.1",
     "socket.io": "^4.5.2",
     "socket.io-client": "^4.5.2"

@@ -9,6 +9,7 @@ import React, {useState, useEffect, MutableRefObject} from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { onAddSongIntoQueue, selectCurrentSongId, selectPaused, selectSongsQueue } from 'redux/slice/playerSlice';
 import { selectRoomInfo } from 'redux/slice/roomSlice';
+import { selectUserInfo } from 'redux/slice/userSlice';
 
 const PanelArtistResult: React.FC<{data: any, key: number, audioElement?: MutableRefObject<HTMLAudioElement|null>, onClickHandler: (id: string) => void}> = ({data, key, audioElement, onClickHandler}) => {
 
@@ -16,6 +17,7 @@ const PanelArtistResult: React.FC<{data: any, key: number, audioElement?: Mutabl
   const currentSongId = useSelector(selectCurrentSongId);
   const paused = useSelector(selectPaused);
   const room = useSelector(selectRoomInfo);
+  const user = useSelector(selectUserInfo)
   const socket = useSocket();
   const dispatch = useDispatch();
 
@@ -39,6 +41,7 @@ const PanelArtistResult: React.FC<{data: any, key: number, audioElement?: Mutabl
   const songObj = await fetchSongObj(data.id);
   dispatch(onAddSongIntoQueue([songObj]));
   socket.emit("on-add-song-in-queue", {
+    user,
     songObj,
     room_id: room.room_slug
    })
