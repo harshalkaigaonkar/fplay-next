@@ -48,7 +48,6 @@ export interface ServerToClientEvents {
   "pause-current-song": () => void;
   "seek-current-song": (res: number) => void;
   "error-joining-room": (res: any) => void;
-  "get-spotlight": () =>void;
 }
 export type ClientToServerEvents = {
   "connect-to-join-room": (res:any) => void;
