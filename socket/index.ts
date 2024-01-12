@@ -1,7 +1,6 @@
 import { Server } from "socket.io"
 import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from "types"
 import redisManager, {client} from 'cache'
-import { createAdapter } from "@socket.io/redis-adapter"
 
 type ConnectedUser = {
   user_id: string, 
@@ -18,22 +17,17 @@ const socketManager = async (_res: any) => {
    console.log("Socket already initialised.");
    return;
   }
-
-  const publisherClient = client;
-  const subscriberClient = client.duplicate();
-
+  
   const _io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(
      _res.socket.server,
      {
       cors:{
         origin: `${process.env.NODE_ENV === 'production' ? `/` : `http://localhost:3000`}`,
-      },
-      pingTimeout: 60000 * 720, // 0.5 day
-      adapter: createAdapter(publisherClient, subscriberClient)
+      }
      }
    );
   
-    _res.socket.server.io = _io;
+    _res.socket.server.io = _io
 
     _io.on('connection', (_socket) => {
       console.log("new Socket Client Connected", _socket.id)
@@ -92,7 +86,7 @@ const socketManager = async (_res: any) => {
         _io.to(`room:${room.room_slug}`).emit("sync-room-users-with-redis", users_connected)
       }) 
 
-      _socket.on("disconnect", async (reason) => {
+      _socket.on("disconnect", async () => {
         const room: string|null|any = await client.json.get(`user:${_socket.id}`);
         let left_user: string|ConnectedUser|any = _socket.id;
         if(room) {
@@ -110,7 +104,7 @@ const socketManager = async (_res: any) => {
           ])
           await client.json.del(`user:${_socket.id}`);
         }
-        console.log(`user ${left_user.user_id} left from room id: ${room}`, left_user, `due to this reason : ${reason}`)
+        console.log(`user ${left_user.user_id} left from room id: ${room}`, left_user)
         _io.to(room).emit("leaves-room", left_user)
       })
 
@@ -196,46 +190,27 @@ const socketManager = async (_res: any) => {
 
       _socket.on("on-play-current-song", async (res : any) => {
         const {
-          room_id,
-          user_id
+          room_id
         } = res;
-        const { room } : any = await client.json.get(`room:${room_id}`);
-        const  {owned_by} = room ?? {};
-        if(owned_by === user_id) {
-          await client.json.set(`room:${room_id}`, ".paused", false);
-          _socket.broadcast.to(`room:${room_id}`).emit("play-current-song");
-        }
+        await client.json.set(`room:${room_id}`, ".paused", false);
+        _socket.broadcast.to(`room:${room_id}`).emit("play-current-song");
       })
       
       _socket.on("on-pause-current-song", async (res : any) => {
         const {
-          room_id,
-          user_id
+          room_id
         } = res;
-        const {room} : any = await client.json.get(`room:${room_id}`);
-        const {owned_by} = room ?? {};
-        if(owned_by === user_id) {
-          await client.json.set(`room:${room_id}`, ".paused", true);
-          _socket.broadcast.to(`room:${room_id}`).emit("pause-current-song");
-        }
-        
+        await client.json.set(`room:${room_id}`, ".paused", true);
+        _socket.broadcast.to(`room:${room_id}`).emit("pause-current-song");
       })
 
       _socket.on("on-seek-current-song", async (res: any) => {
         const {
           room_id,
-          time,
-          user_id,
-          broadcast
+          time
         } = res;
-        const {room} : any = await client.json.get(`room:${room_id}`);
-        const  {owned_by} = room ?? {};
-        if(owned_by === user_id) {
-            await client.json.set(`room:${room_id}`, ".time", time);
-            
-            if(!!broadcast)
-              _socket.broadcast.to(`room:${room_id}`).emit("seek-current-song");
-        }
+        await client.json.set(`room:${room_id}`, ".time", time);
+        _socket.broadcast.to(`room:${room_id}`).emit("seek-current-song");
       })
 
     })

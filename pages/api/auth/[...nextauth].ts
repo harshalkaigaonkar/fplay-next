@@ -17,7 +17,7 @@ export const authOptions: NextAuthOptions = {
   debug: false,
   callbacks: {
     async signIn({ profile, ...rest } : any) {
-    const {data} = await axios.post(`${process.env.NODE_ENV === 'production' ? `/` : process.env.NEXTAUTH_URL ?? 'http://localhost:3000'}/api/user`, {
+    const {data} = await axios.post(`${process.env.NEXTAUTH_URL}/api/user`, {
         profile
       })
     if(data.data) return true
