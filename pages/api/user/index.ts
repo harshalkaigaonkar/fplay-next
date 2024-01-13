@@ -82,7 +82,7 @@ export default async (
       throw new Error("Not an Success OAuth Callback!!")
 
     const user = await User.findOne({
-      email: profile.email
+      email
     });
 
     if(user)
