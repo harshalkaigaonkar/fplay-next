@@ -1,6 +1,6 @@
-import { MongooseRoomTypes, UseSession } from "types";
+import { MongooseRoomTypes, UseSession } from 'types';
 
 interface HeaderProps {
-    session: UseSession,
-    room?: MongooseRoomTypes,
-   }
+	session: UseSession | null;
+	room?: MongooseRoomTypes;
+}
