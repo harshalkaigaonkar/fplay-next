@@ -1,13 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next';
 // import { Session, unstable_getServerSession } from 'next-auth';
 // import  "utils/connect-db"
 // import Room from 'models/Room';
 // import User from 'models/User';
 // import { authOptions } from 'pages/api/auth/[...nextauth]';
 // import {
-//   MongooseRoomTypes, 
-//   MongooseUserTypes, 
+//   MongooseRoomTypes,
+//   MongooseUserTypes,
 //   ResponseDataType,
 // } from 'types';
 // import { Types } from 'mongoose';
@@ -16,7 +16,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 //   _req: NextApiRequest,
 //   _res: NextApiResponse<
 //     ResponseDataType<
-//       MongooseRoomTypes, 
+//       MongooseRoomTypes,
 //       unknown
 //     >
 //   >
@@ -31,8 +31,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 //  const {
 //   type
-//  } : Partial<{ 
-//   type: "add"|"remove" 
+//  } : Partial<{
+//   type: "add"|"remove"
 //  }> = query;
 
 //  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
@@ -43,7 +43,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 //  switch(method) {
 //   // @route     POST api/room/user?type="add"/"remove"
-//   // @desc      Manipulate User to Add/Remove w.r.t Room 
+//   // @desc      Manipulate User to Add/Remove w.r.t Room
 //   // @access    Private
 //   // @status    Works Properly(Test it, check on never type for user._id)
 //   case "POST": {
@@ -60,8 +60,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 //     const room: (MongooseRoomTypes & {
 //       _id: Types.ObjectId
 //     })|null = await Room.findById(room_id);
-    
-//     if(!room) 
+
+//     if(!room)
 //      throw new Error("Room Not Found!!");
 
 //     const session_user = await User.findOne({email: session.user?.email});
@@ -71,7 +71,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 //     if(session_user._id !== room.owned_by)
 //       throw new Error("Session User Not Allowed to Add/Remove Anyone!!")
-
 
 //     const user = await User.findById(user_id);
 
@@ -132,7 +131,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 //    _res.setHeader("Allow", ["POST"]);
 // 			return _res
 // 				.status(405)
-// 				.json({ 
+// 				.json({
 //      type: "Failure",
 //      error: {
 //       message: `Method ${method} is Not Allowed for this API.`

@@ -1,4 +1,4 @@
-import {Schema, model, models} from 'mongoose';
+import { Schema, model, models } from 'mongoose';
 
 // const Song = new Schema<MongooseSongTypes>({
 //  saavn_id: {

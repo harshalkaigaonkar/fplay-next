@@ -1,12 +1,10 @@
-import React from 'react'
+import React from 'react';
 /**
  * Not Used RN.
- * @returns 
+ * @returns
  */
 const BottomScrollButton = () => {
-  return (
-    <div>BottomScrollButton</div>
-  )
-}
+	return <div>BottomScrollButton</div>;
+};
 
-export default BottomScrollButton
+export default BottomScrollButton;

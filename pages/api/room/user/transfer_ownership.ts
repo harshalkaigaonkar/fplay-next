@@ -6,8 +6,8 @@ import { HydratedDocument, SortOrder } from 'mongoose';
 // import Room from 'models/Room';
 // import User from 'models/User';
 // import {
-//   MongooseRoomTypes, 
-//   MongooseUserTypes, 
+//   MongooseRoomTypes,
+//   MongooseUserTypes,
 //   ResponseDataType,
 // } from 'types';
 // import { authOptions } from 'pages/api/auth/[...nextauth]';
@@ -17,7 +17,7 @@ import { HydratedDocument, SortOrder } from 'mongoose';
 //   _req: NextApiRequest,
 //   _res: NextApiResponse<
 //     ResponseDataType<
-//       MongooseRoomTypes, 
+//       MongooseRoomTypes,
 //       unknown
 //     >
 //   >
@@ -52,21 +52,21 @@ import { HydratedDocument, SortOrder } from 'mongoose';
 
 //    try {
 
-//     const room = 
+//     const room =
 //     await Room
 //      .findById(room_id)
 //      .populate('owned_by');
-    
-//     if(!room) 
+
+//     if(!room)
 //      throw new Error("Room Not Found!!");
 
-//     const user: MongooseUserTypes|null = 
+//     const user: MongooseUserTypes|null =
 //     await User
 //      .findById(user_id);
 
 //     if(!user)
 //      throw new Error('No User Found For Tranfering OwnerShip!!');
-    
+
 //     const {
 //       owned_by
 //     } = room;
@@ -96,7 +96,7 @@ import { HydratedDocument, SortOrder } from 'mongoose';
 //    _res.setHeader("Allow", ["PUT"]);
 // 			return _res
 // 				.status(405)
-// 				.json({ 
+// 				.json({
 //      type: "Failure",
 //      error: {
 //       message: `Method ${method} is Not Allowed for this API.`

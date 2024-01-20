@@ -1,133 +1,120 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import  "utils/connect-db";
+import 'utils/connect-db';
 import Playlist from 'models/Playlist';
-import { 
-  FindRoomsCondition as FindPlaylistCondition, 
-  GetParamsMoreThanOne, 
-  MongoosePlaylistTypes, 
-  MongooseRoomTypes, 
-  ResponseDataType, 
-  SortRoomsConditionType, 
-  SuccessRoomsReponse 
+import {
+	FindRoomsCondition as FindPlaylistCondition,
+	GetParamsMoreThanOne,
+	MongoosePlaylistTypes,
+	MongooseRoomTypes,
+	ResponseDataType,
+	SortRoomsConditionType,
+	SuccessRoomsReponse,
 } from 'types';
 
-
- export default async (
-  _req: NextApiRequest,
-  _res: NextApiResponse<
-    ResponseDataType<
-      SuccessRoomsReponse<MongoosePlaylistTypes>, 
-      unknown
-      >
-    >
+export default async (
+	_req: NextApiRequest,
+	_res: NextApiResponse<
+		ResponseDataType<SuccessRoomsReponse<MongoosePlaylistTypes>, unknown>
+	>,
 ) => {
+	const { method, body, query } = _req;
 
- const {
-  method,
-  body,
-  query
- } = _req;
+	switch (method) {
+		// @route     GET api/playlist/public_playlists?
+		// @desc      Get All Public PLaylists According to various Filters
+		// @access    Public
+		// @status    Works Properly with limit
+		// @left      search Query, pagination, filters
+		case 'GET': {
+			const {
+				sort_by,
+				owned_by,
+				search_query,
+				page = 1,
+				limit = 10,
+			}: Partial<GetParamsMoreThanOne> = query;
 
- switch(method) {
-  // @route     GET api/playlist/public_playlists?
-  // @desc      Get All Public PLaylists According to various Filters
-  // @access    Public
-  // @status    Works Properly with limit
-  // @left      search Query, pagination, filters
-  case "GET": {
+			try {
+				const find_condition: FindPlaylistCondition = {
+					is_private: false,
+				};
 
-   const {
-    sort_by, 
-    owned_by,
-    search_query, 
-    page = 1, 
-    limit = 10
-  }: Partial<GetParamsMoreThanOne> = query;
-   
-   try {
+				const total_entries: number =
+					await Playlist.find<FindPlaylistCondition>(find_condition).count();
 
-   const find_condition: FindPlaylistCondition = {
-    is_private: false,
-   }
+				let skip_entries: number = 0;
 
-   const total_entries: number = await Playlist.find<FindPlaylistCondition>(find_condition).count();
-   
-   let skip_entries: number = 0;
+				if (
+					page > 1 &&
+					total_entries &&
+					Math.ceil(total_entries / limit) > page
+				) {
+					skip_entries = limit * (page - 1);
+				}
 
-   if (
-    page > 1 && 
-    total_entries && 
-    Math.ceil(total_entries/limit) > page
-  ) {
-    skip_entries = limit * (page-1);
-   }
-   
-   const sort_condition: SortRoomsConditionType = {};
-   
-   /**
-    * Sorting Filters
-    */
+				const sort_condition: SortRoomsConditionType = {};
 
-   switch(sort_by) {
-    case "date:asc": {
-     sort_condition.createdAt = 'asc';
-     break;
-    }
-    case "date:desc": {
-     sort_condition.createdAt = 'desc';
-     break;
-    }
-    // case "upvotes:asc": {
-    //  sort_condition.upvotes = 'asc';
-    //  break;
-    // }
-    // case "upvotes:desc": {
-    //  sort_condition.upvotes = 'desc';
-    //  break;
-    // }
-    default : {
-    }
-   }
+				/**
+				 * Sorting Filters
+				 */
 
-   if(owned_by)
-    find_condition.owned_by = owned_by;
-    
-    const playlists: MongoosePlaylistTypes[] = 
-     await Playlist
-     .find(find_condition)
-     .sort(sort_condition)
-     .skip(skip_entries)
-     .limit(limit);
+				switch (sort_by) {
+					case 'date:asc': {
+						sort_condition.createdAt = 'asc';
+						break;
+					}
+					case 'date:desc': {
+						sort_condition.createdAt = 'desc';
+						break;
+					}
+					// case "upvotes:asc": {
+					//  sort_condition.upvotes = 'asc';
+					//  break;
+					// }
+					// case "upvotes:desc": {
+					//  sort_condition.upvotes = 'desc';
+					//  break;
+					// }
+					default: {
+					}
+				}
 
-     const data: SuccessRoomsReponse<MongoosePlaylistTypes> = {
-      playlists,
-      limit,
-      total_entries,
-      page
-     };
+				if (owned_by) find_condition.owned_by = owned_by;
 
-    return _res.status(200).json({
-     type: "Success",
-     data
-    });
-   } catch(error) {
-    return _res.status(500).json({
-     type:"Failure",
-     error,
-    })
-   }
-  }
-  default: {
-   _res.setHeader("Allow", ["GET"]);
-			return _res
-				.status(405)
-				.json({ 
-          type: "Failure",
-          error: {
-            message: `Method ${method} is Not Allowed for this API.`
-          }
-        })
-  }
- }
-}
+				const playlists: MongoosePlaylistTypes[] = await Playlist.find(
+					find_condition,
+				)
+					.sort(sort_condition)
+					.skip(skip_entries)
+					.limit(limit);
+
+				const data: SuccessRoomsReponse<MongoosePlaylistTypes> = {
+					playlists,
+					limit,
+					total_entries,
+					page,
+				};
+
+				return _res.status(200).json({
+					type: 'Success',
+					data,
+				});
+			} catch (error) {
+				return _res.status(500).json({
+					type: 'Failure',
+					error,
+				});
+			}
+		}
+		default: {
+			_res.setHeader('Allow', ['GET']);
+			return _res.status(405).json({
+				type: 'Failure',
+				error: {
+					message: `Method ${method} is Not Allowed for this API.`,
+				},
+			});
+		}
+	}
+};

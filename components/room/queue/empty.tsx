@@ -1,12 +1,10 @@
-import React from 'react'
+import React from 'react';
 /**
  * Not Used RN.
- * @returns 
+ * @returns
  */
 const EmptyQueue = () => {
-  return (
-    <div>EmptyQueue</div>
-  )
-}
+	return <div>EmptyQueue</div>;
+};
 
-export default EmptyQueue
+export default EmptyQueue;
