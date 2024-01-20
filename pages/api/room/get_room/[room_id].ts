@@ -6,7 +6,7 @@ import Room from 'models/Room';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { MongooseRoomTypes, ResponseDataType } from 'types';
 
-export default async (
+const GetRoomAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<ResponseDataType<MongooseRoomTypes, unknown>>,
 ) => {
@@ -65,3 +65,5 @@ export default async (
 		}
 	}
 };
+
+export default GetRoomAPI

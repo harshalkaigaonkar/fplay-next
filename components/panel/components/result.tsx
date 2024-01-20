@@ -60,15 +60,16 @@ const PanelSearched: React.FC<{
 	const [fetchingError, setFetchingError] = useState<string | null | undefined>(
 		null,
 	);
-	const [overlayResults, setOverlayResults] =
-		useState<// SaavnSongObjectTypes[]|SaavnArtistObjectTypes[]|SaavnAlbumObjectTypes[]|null
-		any>(null);
-	const [overlayArtistResults, setOverlayArtistResults] =
-		useState<// SaavnSongObjectTypes[]|SaavnArtistObjectTypes[]|SaavnAlbumObjectTypes[]|null
-		any>(null);
-	const [overlayAlbumResults, setOverlayAlbumResults] =
-		useState<// SaavnSongObjectTypes[]|SaavnArtistObjectTypes[]|SaavnAlbumObjectTypes[]|null
-		any>(null);
+	const [overlayResults, setOverlayResults] = useState<any>(null);
+	const [overlayArtistResults, setOverlayArtistResults] = useState<any>(null);
+	const [overlayAlbumResults, setOverlayAlbumResults] = useState<any>(null);
+
+	/**
+	 * TODO: the above states have types as this earlier, rather than any.
+	 *
+	 * SaavnSongObjectTypes[]|SaavnArtistObjectTypes[]|SaavnAlbumObjectTypes[]|null
+	 */
+
 	const [overlayStack, setOverlayStack] = useState<
 		(
 			| 'options|song'
@@ -173,7 +174,7 @@ const PanelSearched: React.FC<{
 	if (error)
 		return (
 			<>
-				<p className=''>No Results found for '{query}'</p>
+				<p className=''>No Results found for &apos;{query}&apos;</p>
 			</>
 		);
 

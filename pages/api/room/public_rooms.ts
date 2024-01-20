@@ -11,7 +11,7 @@ import {
 	SuccessRoomsReponse,
 } from 'types';
 
-export default async (
+const PublicRoomAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<
 		ResponseDataType<SuccessRoomsReponse<MongooseRoomTypes>, unknown>
@@ -116,3 +116,5 @@ export default async (
 		}
 	}
 };
+
+export default PublicRoomAPI

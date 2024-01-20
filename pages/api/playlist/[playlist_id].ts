@@ -13,7 +13,7 @@ import { authOptions } from 'pages/api/auth/[...nextauth]';
 import Playlist from 'models/Playlist';
 import axios from 'axios';
 
-export default async (
+const PlaylistIdAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<ResponseDataType<MongoosePlaylistTypes, unknown>>,
 ) => {
@@ -130,3 +130,5 @@ export default async (
 		}
 	}
 };
+
+export default PlaylistIdAPI

@@ -5,7 +5,7 @@ import { ResponseDataType } from 'types';
 import socketManager from 'socket';
 import redisManager, { client } from 'cache';
 
-export default async (
+const SocketAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<ResponseDataType<any, any>>,
 ) => {
@@ -41,3 +41,5 @@ export default async (
 		}
 	}
 };
+
+export default SocketAPI

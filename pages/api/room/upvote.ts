@@ -17,7 +17,7 @@ import User from 'models/User';
 import { ObjectId, Types } from 'mongoose';
 import axios from 'axios';
 
-export default async (
+const RoomUpvoteAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<ResponseDataType<MongooseRoomTypes, unknown>>,
 ) => {
@@ -178,3 +178,5 @@ export default async (
 		}
 	}
 };
+
+export default RoomUpvoteAPI

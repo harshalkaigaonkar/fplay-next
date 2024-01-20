@@ -15,7 +15,7 @@ import {
 import { genrateCustomId } from 'helpers';
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default async (
+const RoomAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<ResponseDataType<MongooseRoomTypes, unknown>>,
 ) => {
@@ -112,3 +112,5 @@ export default async (
 		}
 	}
 };
+
+export default RoomAPI

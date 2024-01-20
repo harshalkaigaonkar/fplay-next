@@ -15,7 +15,7 @@ import User from 'models/User';
 import axios from 'axios';
 import { Types } from 'mongoose';
 
-export default async (
+const UserLibraryAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<ResponseDataType<MongooseRoomTypes, unknown>>,
 ) => {
@@ -236,3 +236,5 @@ export default async (
 		}
 	}
 };
+
+export default UserLibraryAPI

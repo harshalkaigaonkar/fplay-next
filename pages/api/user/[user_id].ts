@@ -6,7 +6,7 @@ import User from 'models/User';
 import { MongooseUserTypes, ResponseDataType } from 'types';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 
-export default async (
+const UserIdAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<ResponseDataType<MongooseUserTypes, unknown>>,
 ) => {
@@ -111,3 +111,5 @@ export default async (
 		}
 	}
 };
+
+export default UserIdAPI

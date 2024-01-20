@@ -17,7 +17,7 @@ interface UpdateRoomObject {
 	is_private?: boolean;
 }
 
-export default async (
+const UpdateRoomAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<ResponseDataType<MongooseRoomTypes, unknown>>,
 ) => {
@@ -111,3 +111,5 @@ export default async (
 		}
 	}
 };
+
+export default UpdateRoomAPI

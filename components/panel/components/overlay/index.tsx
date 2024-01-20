@@ -47,12 +47,13 @@ const InfoOverlay: FC<InfoOverlayProps> = ({
 					) : overlayType?.includes('options') ? (
 						<>
 							<p className='font-normal text-md'>
-								showing {overlayType?.split('|')[1]} results for "{query}"
+								showing {overlayType?.split('|')[1]} results for &quot;{query}
+								&quot;
 							</p>
 						</>
 					) : (
 						<>
-							<p className='font-normal text-md'>Error Occured</p>
+							<p className='font-normal text-md'>Error Occurred</p>
 						</>
 					)}
 				</div>

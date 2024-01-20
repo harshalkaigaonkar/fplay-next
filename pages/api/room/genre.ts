@@ -9,7 +9,7 @@ import { MongooseGenreTypes, MongooseRoomTypes, ResponseDataType } from 'types';
 import axios from 'axios';
 import { HydratedDocument, Types } from 'mongoose';
 
-export default async (
+const RoomGenreAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<ResponseDataType<MongooseRoomTypes, unknown>>,
 ) => {
@@ -129,3 +129,5 @@ export default async (
 		}
 	}
 };
+
+export default RoomGenreAPI

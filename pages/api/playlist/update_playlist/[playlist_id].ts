@@ -9,7 +9,7 @@ import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { ResponseDataType } from 'types';
 import Playlist from 'models/Playlist';
 
-export default async (
+const UpdatePlaylistAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<ResponseDataType<MongoosePlaylistTypes, unknown>>,
 ) => {
@@ -137,3 +137,5 @@ export default async (
 		}
 	}
 };
+
+export default UpdatePlaylistAPI

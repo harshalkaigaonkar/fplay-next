@@ -12,7 +12,7 @@ import {
 	SuccessRoomsReponse,
 } from 'types';
 
-export default async (
+const PublicPlaylistAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<
 		ResponseDataType<SuccessRoomsReponse<MongoosePlaylistTypes>, unknown>
@@ -118,3 +118,5 @@ export default async (
 		}
 	}
 };
+
+export default PublicPlaylistAPI

@@ -7,7 +7,7 @@ import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { HydratedDocument } from 'mongoose';
 import { MongooseGenreTypes, ResponseDataType } from 'types';
 
-export default async (
+const GenreAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<ResponseDataType<MongooseGenreTypes, unknown>>,
 ) => {
@@ -72,3 +72,5 @@ export default async (
 		}
 	}
 };
+
+export default GenreAPI
