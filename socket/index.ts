@@ -26,6 +26,12 @@ const socketManager = async (_res: any) => {
 	const publisherClient = client;
 	const subscriberClient = client.duplicate();
 
+	await subscriberClient.connect().then(() => {
+		console.log("Subscriber Connected")
+	}).catch((reason: string) => {
+		console.log("Subscriber shows connection error due to ", reason)
+	})
+
 	const _io = new Server<
 		ClientToServerEvents,
 		ServerToClientEvents,
