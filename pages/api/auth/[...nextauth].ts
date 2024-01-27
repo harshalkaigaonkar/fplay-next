@@ -23,8 +23,8 @@ export const authOptions: NextAuthOptions = {
 					profile,
 				},
 			);
-			if (data.data) return true;
-			return false;
+			// if (data.data) return true;
+			return true;
 		},
 		//  async redirect({ url, baseUrl } : any) {
 		//   console.log({url, baseUrl})
