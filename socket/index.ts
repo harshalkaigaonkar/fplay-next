@@ -39,7 +39,7 @@ const socketManager = async (_res: any) => {
 		SocketData
 	>(_res.socket.server, {
 		cors: {
-			origin: `${process.env.NODE_ENV === 'production' ? `/` : `http://localhost:3000`}`,
+			origin: `${process.env.NODE_ENV === 'production' ? process.env.NEXTAUTH_URL : `http://localhost:3000`}`,
 		},
 		pingTimeout: 60000 * 720, // 0.5 day
 		adapter: createAdapter(publisherClient, subscriberClient),
