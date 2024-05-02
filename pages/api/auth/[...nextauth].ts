@@ -14,7 +14,7 @@ export const authOptions: NextAuthOptions = {
 	session: {
 		maxAge: 30 * 24 * 60 * 60 * 100,
 	},
-	debug: false,
+	debug: true,
 	callbacks: {
 		async signIn({ profile, ...rest }: any) {
 			const { data } = await axios.post(
@@ -26,18 +26,19 @@ export const authOptions: NextAuthOptions = {
 			if (data.data) return true;
 			return false;
 		},
-		//  async redirect({ url, baseUrl } : any) {
-		//   console.log({url, baseUrl})
-		//   return baseUrl;
-		//  },
-		//  async session({ session, user, token } : any) {
-		//   console.log({ session, user, token })
-		//   return session
-		//  },
-		//  async jwt({ token, user, account, profile, isNewUser } : any) {
-		//   console.log({ token, user, account, profile, isNewUser })
-		//   return token
-		// }
+		
+		 async redirect({ url, baseUrl } : any) {
+		  console.log({url, baseUrl})
+		  return baseUrl;
+		 },
+		 async session({ session, user, token } : any) {
+		  console.log({ session, user, token })
+		  return session
+		 },
+		 async jwt({ token, user, account, profile, isNewUser } : any) {
+		  console.log({ token, user, account, profile, isNewUser })
+		  return token
+		}
 	},
 	pages: {
 		signIn: '/login',
