@@ -13,7 +13,8 @@ export const authOptions: NextAuthOptions = {
 				params: {
 				  prompt: "consent",
 				  access_type: "offline",
-				  response_type: "code"
+				  response_type: "code",
+				  redirect_uri: `${process.env.NODE_ENV === 'production' ? `/` : process.env.NEXTAUTH_URL ?? 'http://localhost:3000'}/api/auth/callback/google`
 				}
 			  }
 		}),
