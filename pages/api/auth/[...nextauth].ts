@@ -14,9 +14,10 @@ export const authOptions: NextAuthOptions = {
 	session: {
 		maxAge: 30 * 24 * 60 * 60 * 100,
 	},
-	debug: true,
+	// debug: true,
 	callbacks: {
 		async signIn({ profile, ...rest }: any) {
+			console.log({profile}, "------ from signIn ---")
 			const { data } = await axios.post(
 				`${process.env.NODE_ENV === 'production' ? `/` : process.env.NEXTAUTH_URL ?? 'http://localhost:3000'}/api/user`,
 				{
@@ -27,17 +28,17 @@ export const authOptions: NextAuthOptions = {
 			return false;
 		},
 		
-		 async redirect({ url, baseUrl } : any) {
-		  console.log({url, baseUrl})
-		  return baseUrl;
-		 },
-		 async session({ session, user, token } : any) {
-		  console.log({ session, user, token })
-		  return session
-		 },
-		 async jwt({ token, user, account, profile, isNewUser } : any) {
-		  console.log({ token, user, account, profile, isNewUser })
-		  return token
+		//  async redirect({ url, baseUrl } : any) {
+		//   console.log({url, baseUrl})
+		//   return baseUrl;
+		//  },
+		//  async session({ session, user, token } : any) {
+		//   console.log({ session, user, token })
+		//   return session
+		//  },
+		 async jwt(param : any) {
+		  console.log(param, "------ from jwt -----")
+		  return param.token
 		}
 	},
 	pages: {
