@@ -28,10 +28,10 @@ export const authOptions: NextAuthOptions = {
 			return false;
 		},
 		
-		//  async redirect({ url, baseUrl } : any) {
-		//   console.log({url, baseUrl})
-		//   return baseUrl;
-		//  },
+		 async redirect({ url, baseUrl } : any) {
+		  console.log({url, baseUrl})
+		  return baseUrl;
+		 },
 		//  async session({ session, user, token } : any) {
 		//   console.log({ session, user, token })
 		//   return session
