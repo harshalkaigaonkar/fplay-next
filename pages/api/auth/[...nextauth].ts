@@ -5,6 +5,7 @@ import GoogleProvider from 'next-auth/providers/google';
 export const authOptions: NextAuthOptions = {
 	// Configure one or more authentication providers
 	providers: [
+
 		GoogleProvider({
 			clientId: `${process.env.GOOGLE_CLIENT_ID}`,
 			clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`,
@@ -17,7 +18,7 @@ export const authOptions: NextAuthOptions = {
 			  }
 		}),
 	],
-	secret: process.env.NEXTAUTH_SECRET,
+	secret: 'secret',
 	// session: {
 	// 	maxAge: 30 * 24 * 60 * 60 * 100,
 	// },

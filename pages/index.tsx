@@ -24,7 +24,7 @@ import Room_id from './api/room/get_room/[room_id]';
 import { useState } from 'react';
 import { NextRouter, useRouter } from 'next/router';
 
-const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL}`);
+const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL ?? '/'}`);
 
 export type HomeProps = {
 	socket?: SocketClientType;
