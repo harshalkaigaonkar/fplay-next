@@ -1,23 +1,8 @@
-import axios from 'axios';
-import type { GetServerSideProps, NextPage } from 'next';
-import { Session, unstable_getServerSession } from 'next-auth';
-import {
-	OAuthProvider,
-	OAuthProviderType,
-	Provider,
-} from 'next-auth/providers';
-import { GoogleProfile } from 'next-auth/providers/google';
-import {
-	getProviders,
-	getSession,
-	signIn,
-	signOut,
-	useSession,
-} from 'next-auth/react';
+import type { NextPage } from 'next';
+import { Session } from 'next-auth';
+import { OAuthProviderType } from 'next-auth/providers';
+import { getProviders, getSession, signIn } from 'next-auth/react';
 import Head from 'next/head';
-import Link from 'next/link';
-import { UseSession } from 'types';
-import { authOptions } from './api/auth/[...nextauth]';
 
 export type LoginProps = {
 	provider?: OAuthProviderType;

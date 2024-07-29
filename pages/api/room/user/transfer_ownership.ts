@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { HydratedDocument, SortOrder } from 'mongoose';
 // import type { NextApiRequest, NextApiResponse } from 'next'
-// import { Session, unstable_getServerSession } from 'next-auth';
+// import { Session, getServerSession } from 'next-auth';
 // import  "utils/connect-db"
 // import Room from 'models/Room';
 // import User from 'models/User';
@@ -34,7 +34,7 @@ import { HydratedDocument, SortOrder } from 'mongoose';
 //   user_id
 //  } = query;
 
-//  const session: Session|null = await unstable_getServerSession(_req, _res, authOptions);
+//  const session: Session|null = await getServerSession(_req, _res, authOptions);
 
 //  //  console.log("Cookies: ", cookies)
 
