@@ -36,10 +36,10 @@ export const authOptions: NextAuthOptions = {
 		//   console.log({ session, user, token })
 		//   return session
 		//  },
-		 async jwt(param : any) {
-		  console.log(param, "------ from jwt -----")
-		  return param.token
-		}
+		//  async jwt(param : any) {
+		//   console.log(param, "------ from jwt -----")
+		//   return param.token
+		// }
 	},
 	pages: {
 		signIn: '/login',
