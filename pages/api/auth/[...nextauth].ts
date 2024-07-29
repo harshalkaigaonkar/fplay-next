@@ -8,14 +8,22 @@ export const authOptions: NextAuthOptions = {
 		GoogleProvider({
 			clientId: `${process.env.GOOGLE_CLIENT_ID}`,
 			clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`,
+			authorization: {
+				params: {
+				  prompt: "consent",
+				  access_type: "offline",
+				  response_type: "code"
+				}
+			  }
 		}),
 	],
 	secret: process.env.NEXTAUTH_SECRET,
-	session: {
-		maxAge: 30 * 24 * 60 * 60 * 100,
-	},
+	// session: {
+	// 	maxAge: 30 * 24 * 60 * 60 * 100,
+	// },
 	// debug: true,
 	callbacks: {
+
 		async signIn({ profile, ...rest }: any) {
 			console.log({profile}, "------ from signIn ---")
 			const { data } = await axios.post(
@@ -28,10 +36,10 @@ export const authOptions: NextAuthOptions = {
 			return false;
 		},
 		
-		 async redirect({ url, baseUrl } : any) {
-		  console.log({url, baseUrl})
-		  return baseUrl;
-		 },
+		//  async redirect({ url, baseUrl } : any) {
+		//   console.log({url, baseUrl})
+		//   return baseUrl;
+		//  },
 		//  async session({ session, user, token } : any) {
 		//   console.log({ session, user, token })
 		//   return session
