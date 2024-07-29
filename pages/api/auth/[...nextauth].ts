@@ -19,13 +19,15 @@ export const authOptions: NextAuthOptions = {
 		}),
 	],
 	secret: 'secret',
-	// session: {
-	// 	maxAge: 30 * 24 * 60 * 60 * 100,
-	// },
+	session: {
+		maxAge: 30 * 24 * 60 * 60 * 100,
+	},
 	// debug: true,
 	callbacks: {
-
+		
 		async signIn({ profile, ...rest }: any) {
+			// console.log({profile});
+			// return true
 			try {console.log({profile}, "------ from signIn ---")
 			const { data } = await axios.post(
 				`${process.env.NODE_ENV === 'production' ? `/` : process.env.NEXTAUTH_URL ?? 'http://localhost:3000'}/api/user`,
@@ -41,10 +43,15 @@ export const authOptions: NextAuthOptions = {
 			 }
 		},
 		
-		//  async redirect({ url, baseUrl } : any) {
-		//   console.log({url, baseUrl})
+		 redirect({ url, baseUrl } : any) {
+		  console.log({url, baseUrl})
 		//   return baseUrl;
-		//  },
+		// Allows relative callback URLs
+		if (url.startsWith("/")) return `${baseUrl}${url}`
+		// Allows callback URLs on the same origin
+		else if (new URL(url).origin === baseUrl) return url
+		return baseUrl
+		 },
 		//  async session({ session, user, token } : any) {
 		//   console.log({ session, user, token })
 		//   return session
@@ -56,7 +63,6 @@ export const authOptions: NextAuthOptions = {
 	},
 	pages: {
 		signIn: '/login',
-		error: '/'
 	},
 };
 
