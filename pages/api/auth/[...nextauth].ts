@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
 	callbacks: {
 
 		async signIn({ profile, ...rest }: any) {
-			console.log({profile}, "------ from signIn ---")
+			try {console.log({profile}, "------ from signIn ---")
 			const { data } = await axios.post(
 				`${process.env.NODE_ENV === 'production' ? `/` : process.env.NEXTAUTH_URL ?? 'http://localhost:3000'}/api/user`,
 				{
@@ -34,7 +34,11 @@ export const authOptions: NextAuthOptions = {
 				},
 			);
 			if (data.data) return true;
-			return false;
+			return false;}
+			 catch(error) {
+				console.log("error", error)
+				return false
+			 }
 		},
 		
 		//  async redirect({ url, baseUrl } : any) {
