@@ -2,7 +2,6 @@ import type { GetServerSideProps, GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from 'styles/Home.module.css';
-import { io, Socket } from 'socket.io-client';
 import axios, { Axios } from 'axios';
 import {
 	APIResponse,
@@ -13,7 +12,6 @@ import {
 	SocketClientType,
 	UseSession,
 } from 'types';
-// const Text = dynamic(import('components/text'), {ssr:false})
 import { getSession, signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
 import Layout from 'components/layout';
@@ -23,8 +21,6 @@ import fetchRoom from 'helpers/room/fetchRoom';
 import Room_id from './api/room/get_room/[room_id]';
 import { useState } from 'react';
 import { NextRouter, useRouter } from 'next/router';
-
-const socket = io(`${process.env.NEXT_PUBLIC_DEV_WS_URL ?? '/'}`);
 
 export type HomeProps = {
 	socket?: SocketClientType;
