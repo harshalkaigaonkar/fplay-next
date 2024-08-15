@@ -37,3 +37,7 @@ next-env.d.ts
 
 #vsc
 .vscode
+
+# mock data
+searchAll.json
+songs.json
