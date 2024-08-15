@@ -10,7 +10,6 @@ import {
 import { HeartIcon as OutlineHeartIcon } from '@heroicons/react/24/outline';
 import AddToPlaylistIcon from 'components/icon/addToPlaylist';
 import { decodeHTMLContent, secToMin } from 'helpers';
-import { useSocket } from 'hooks/useSocket';
 import Image from 'next/image';
 import React, { FC, MutableRefObject, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -35,7 +34,6 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ currentTrack, audioElement }) => {
 	const currentTime = useSelector(selectTime);
 	const room = useSelector(selectRoomInfo);
 	const user = useSelector(selectUserInfo);
-	const socket = useSocket();
 
 	const dispatch = useDispatch();
 
@@ -56,10 +54,10 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ currentTrack, audioElement }) => {
 	const onPrevTrack = () => {
 		if (currentTime <= 5) {
 			dispatch(onChangePrevSongFromQueue());
-			socket.emit('on-current-song-change-prev', {
-				user,
-				room_id: room.room_slug,
-			});
+			// socket.emit('on-current-song-change-prev', {
+			// 	user,
+			// 	room_id: room.room_slug,
+			// });
 		} else {
 			audioElement.current.load();
 			audioElement.current.play();
@@ -68,10 +66,10 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ currentTrack, audioElement }) => {
 
 	const onNextTrack = () => {
 		dispatch(onChangeNextSongFromQueue());
-		socket.emit('on-current-song-change-next', {
-			user,
-			room_id: room.room_slug,
-		});
+		// socket.emit('on-current-song-change-next', {
+		// 	user,
+		// 	room_id: room.room_slug,
+		// });
 	};
 
 	const updateTimeHandler = (event: any) => {
@@ -117,13 +115,15 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ currentTrack, audioElement }) => {
 						<button
 							onClick={
 								paused ||
-								(!!audioElement?.current && audioElement.current.paused)
+								(!!audioElement?.current &&
+									audioElement.current.paused)
 									? onPlayHandler
 									: onPauseHandler
 							}
 							className='bg-inherit outline-none border-none inline-flex justify-center items-center lg:p-4 md:p-1 sm:p-1 rounded-full text-white transition duration-700 hover:shadow-2xl hover:shadow-black hover:bg-[#7A7A7A]/10 cursor-pointer'>
 							{paused ||
-							(!!audioElement?.current && audioElement.current.paused) ? (
+							(!!audioElement?.current &&
+								audioElement.current.paused) ? (
 								<PlayIcon className='lg:w-16 lg:h-16 md:w-14 md:h-14' />
 							) : (
 								<PauseIcon className='lg:w-16 lg:h-16 md:w-14 md:h-14' />
@@ -168,7 +168,8 @@ const AudioPlayer: FC<AudioPlayerProps> = ({ currentTrack, audioElement }) => {
 				<>
 					<span className='h-full flex flex-col items-center justify-center opacity-50'>
 						<h2 className='font-medium'>
-							Search your Favourite songs and push it into the list. 🔥
+							Search your Favourite songs and push it into the
+							list. 🔥
 						</h2>
 						<button
 							className='w-fit my-4 p-4 flex gap-2 items-center justify-center appearance-none min-w-60 text-inherit text-lg text-white font-bold rounded-md transition duration-300 bg-[#434343] border-none border-[#343434] hover:cursor-pointer hover:bg-[#343434] active:shadow active:bg-[#222222]'

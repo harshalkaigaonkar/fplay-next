@@ -10,7 +10,6 @@ import DragIcon from 'components/icon/dragIcon';
 import SongPlaying from 'components/icon/playing';
 import ItemOptions from 'components/popover/item';
 import { decodeHTMLContent } from 'helpers';
-import { useSocket } from 'hooks/useSocket';
 import Image from 'next/image';
 import React, { FC, useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
@@ -36,7 +35,6 @@ const DraggableListItem: FC<DraggableListItemProps> = ({
 }) => {
 	const currentTrackId = useSelector(selectCurrentSongId);
 	const room = useSelector(selectRoomInfo);
-	const socket = useSocket();
 	const paused = useSelector(selectPaused);
 	const user = useSelector(selectUserInfo);
 
@@ -54,11 +52,11 @@ const DraggableListItem: FC<DraggableListItemProps> = ({
 	const onClickHandler = () => {
 		if (song.id !== currentTrackId) {
 			dispatch(onChangeClickedSongFromQueue(song.id));
-			socket.emit('on-current-song-id-change', {
-				user,
-				song_id: song.id,
-				room_id: room.room_slug,
-			});
+			// socket.emit('on-current-song-id-change', {
+			// 	user,
+			// 	song_id: song.id,
+			// 	room_id: room.room_slug,
+			// });
 		}
 		if (!audioElement.current) return;
 		if (audioElement.current.paused) {
@@ -73,11 +71,11 @@ const DraggableListItem: FC<DraggableListItemProps> = ({
 			return;
 		}
 		dispatch(onRemoveSongFromQueue(song.id));
-		socket.emit('on-remove-song-from-queue', {
-			user,
-			song_id: song.id,
-			room_id: room.room_slug,
-		});
+		// socket.emit('on-remove-song-from-queue', {
+		// 	user,
+		// 	song_id: song.id,
+		// 	room_id: room.room_slug,
+		// });
 	};
 	return (
 		<Draggable
@@ -152,11 +150,13 @@ const DraggableListItem: FC<DraggableListItemProps> = ({
 						{/* <span>
                         <TrashIcon className='w-6 h-6' />
                     </span> */}
-						{song.id === currentTrackId && !paused && !fromPanel && (
-							<span className='inline-flex items-center justify-center cursor-pointer bg-inherit animate-enter-div'>
-								<SongPlaying type={3} />
-							</span>
-						)}
+						{song.id === currentTrackId &&
+							!paused &&
+							!fromPanel && (
+								<span className='inline-flex items-center justify-center cursor-pointer bg-inherit animate-enter-div'>
+									<SongPlaying type={3} />
+								</span>
+							)}
 						{/* <span>
                         <HeartIcon className='w-6 h-6' />
                     </span> */}

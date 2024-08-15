@@ -7,7 +7,6 @@ import AddToPlaylistIcon from 'components/icon/addToPlaylist';
 import SongPlaying from 'components/icon/playing';
 import { decodeHTMLContent } from 'helpers';
 import { fetchSongObj } from 'helpers/music/fetchSongs';
-import { useSocket } from 'hooks/useSocket';
 import Image from 'next/image';
 import React, { useState, useEffect, MutableRefObject } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -31,7 +30,7 @@ const PanelArtistResult: React.FC<{
 	const paused = useSelector(selectPaused);
 	const room = useSelector(selectRoomInfo);
 	const user = useSelector(selectUserInfo);
-	const socket = useSocket();
+	// const socket = useSocket();
 	const dispatch = useDispatch();
 
 	const [mouseEnter, setMouseEnter] = useState<boolean>(false);
@@ -53,11 +52,11 @@ const PanelArtistResult: React.FC<{
 	const addToQueueHandler = async () => {
 		const songObj = await fetchSongObj(data.id);
 		dispatch(onAddSongIntoQueue([songObj]));
-		socket.emit('on-add-song-in-queue', {
-			user,
-			songObj,
-			room_id: room.room_slug,
-		});
+		// socket.emit('on-add-song-in-queue', {
+		// 	user,
+		// 	songObj,
+		// 	room_id: room.room_slug,
+		// });
 	};
 
 	return (
