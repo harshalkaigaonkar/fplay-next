@@ -29,7 +29,6 @@ import {
 	selectRoomInfo,
 } from 'redux/slice/roomSlice';
 import { selectPlayer, selectSongsQueue } from 'redux/slice/playerSlice';
-import { axiosGet } from 'helpers';
 import fetchUser from 'helpers/user/fetchUser';
 import fetchRoom from 'helpers/room/fetchRoom';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
@@ -37,7 +36,6 @@ import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import { getSocketSession, selectSocket } from 'redux/slice/socketSlice';
 import dynamic from 'next/dynamic';
-import { useSocket } from 'hooks/useSocket';
 import RoomLayout from 'components/layout/room';
 
 export type HomeProps = {
@@ -56,7 +54,6 @@ const Home: NextPage<HomeProps> = ({ room, user }) => {
 	const roomInfo = useSelector(selectRoomInfo);
 	const player = useSelector(selectPlayer);
 	const roomRef = useRef<HTMLDivElement | null>(null);
-	const socket = useSocket();
 
 	useEffect(() => {
 		const warningText =
@@ -102,7 +99,9 @@ const Home: NextPage<HomeProps> = ({ room, user }) => {
 						audioElement={audioElement}
 						user={user}
 					/>
-					{songsQueue.length > 0 && <TrackQueue audioElement={audioElement} />}
+					{songsQueue.length > 0 && (
+						<TrackQueue audioElement={audioElement} />
+					)}
 				</section>
 				<div className='w-full h-auto'>
 					<UsersConnectedRoom session={session} />

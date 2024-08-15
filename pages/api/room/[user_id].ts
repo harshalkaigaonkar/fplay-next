@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { HydratedDocument } from 'mongoose';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Session, unstable_getServerSession } from 'next-auth';
+import { Session, getServerSession } from 'next-auth';
 import 'utils/connect-db';
 import Room from 'models/Room';
 import User from 'models/User';
@@ -31,7 +31,7 @@ const RoomUserAPI = async (
 		room_id: string;
 	}> = query;
 
-	const session: Session | null = await unstable_getServerSession(
+	const session: Session | null = await getServerSession(
 		_req,
 		_res,
 		authOptions,

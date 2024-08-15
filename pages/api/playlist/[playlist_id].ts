@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Session, unstable_getServerSession } from 'next-auth';
+import { Session, getServerSession } from 'next-auth';
 import 'utils/connect-db';
 import User from 'models/User';
 import {
@@ -25,7 +25,7 @@ const PlaylistIdAPI = async (
 		playlist_id: string;
 	}> = query;
 
-	const session: Session | null = await unstable_getServerSession(
+	const session: Session | null = await getServerSession(
 		_req,
 		_res,
 		authOptions,

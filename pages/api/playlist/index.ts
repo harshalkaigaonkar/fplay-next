@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { HydratedDocument, Types } from 'mongoose';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Session, unstable_getServerSession } from 'next-auth';
+import { Session, getServerSession } from 'next-auth';
 import 'utils/connect-db';
 import User from 'models/User';
 import { MongoosePlaylistTypes } from 'types';
@@ -15,7 +15,7 @@ const PlaylistAPI = async (
 ) => {
 	const { method, body, cookies } = _req;
 
-	const session: Session | null = await unstable_getServerSession(
+	const session: Session | null = await getServerSession(
 		_req,
 		_res,
 		authOptions,

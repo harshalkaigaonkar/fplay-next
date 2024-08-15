@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { unstable_getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth';
 import 'utils/connect-db';
 import Room from 'models/Room';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
@@ -12,7 +12,7 @@ const GetRoomAPI = async (
 ) => {
 	const { method, body, cookies, query } = _req;
 
-	const session = await unstable_getServerSession(_req, _res, authOptions);
+	const session = await getServerSession(_req, _res, authOptions);
 	//  console.log("Cookies: ", cookies)
 
 	switch (method) {

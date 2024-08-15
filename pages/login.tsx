@@ -1,29 +1,23 @@
-import axios from 'axios';
-import type { GetServerSideProps, NextPage } from 'next';
-import { Session, unstable_getServerSession } from 'next-auth';
+import { NextPageContext } from 'next';
+import { Session } from 'next-auth';
+import { BuiltInProviderType } from 'next-auth/providers';
 import {
-	OAuthProvider,
-	OAuthProviderType,
-	Provider,
-} from 'next-auth/providers';
-import { GoogleProfile } from 'next-auth/providers/google';
-import {
+	ClientSafeProvider,
 	getProviders,
 	getSession,
+	LiteralUnion,
 	signIn,
-	signOut,
-	useSession,
 } from 'next-auth/react';
 import Head from 'next/head';
-import Link from 'next/link';
-import { UseSession } from 'types';
-import { authOptions } from './api/auth/[...nextauth]';
 
 export type LoginProps = {
-	provider?: OAuthProviderType;
+	provider: Record<
+		LiteralUnion<BuiltInProviderType, string>,
+		ClientSafeProvider
+	> | null;
 };
 
-const Login: NextPage<any> = ({ provider }) => {
+const Login = ({ provider }: LoginProps) => {
 	return (
 		<div>
 			<Head>
@@ -41,7 +35,7 @@ const Login: NextPage<any> = ({ provider }) => {
 			<main className='min-h-screen flex justify-center items-center'>
 				{provider && (
 					<button onClick={() => signIn(provider.google.id)}>
-						Signin with Google
+						Sign in with Google
 					</button>
 				)}
 			</main>
@@ -49,7 +43,7 @@ const Login: NextPage<any> = ({ provider }) => {
 	);
 };
 
-Login.getInitialProps = async (context) => {
+Login.getInitialProps = async (context: NextPageContext) => {
 	const { req, res } = context;
 	const session: Session | null = await getSession({ req });
 	if (session && res && session.user) {
