@@ -3,7 +3,6 @@ import {
 	Droppable,
 	resetServerContext,
 } from 'react-beautiful-dnd';
-import Songs from 'songs.json';
 import React, { FC, MutableRefObject, useState } from 'react';
 import DraggableListItem from './item';
 import EmptyQueue from './empty';
@@ -15,7 +14,6 @@ import {
 import { useDispatch } from 'react-redux';
 import { TrackQueueProps } from 'types/queue';
 import { selectRoomInfo } from 'redux/slice/roomSlice';
-import { useSocket } from 'hooks/useSocket';
 import { selectUserInfo } from 'redux/slice/userSlice';
 
 resetServerContext();
@@ -24,7 +22,6 @@ const DraggableList: FC<TrackQueueProps> = ({ audioElement, fromPanel }) => {
 	const songsQueue = useSelector(selectSongsQueue);
 	const room = useSelector(selectRoomInfo);
 	const user = useSelector(selectUserInfo);
-	const socket = useSocket();
 
 	const dispatch = useDispatch();
 
@@ -38,12 +35,12 @@ const DraggableList: FC<TrackQueueProps> = ({ audioElement, fromPanel }) => {
 		};
 
 		dispatch(onReaarrangeSongQueue(indexes));
-		socket.emit('on-replace-song-in-queue', {
-			user,
-			replace_from: indexes.indexReplacedFrom,
-			to_replace: indexes.indexReplacedTo,
-			room_id: room.room_slug,
-		});
+		// socket.emit('on-replace-song-in-queue', {
+		// 	user,
+		// 	replace_from: indexes.indexReplacedFrom,
+		// 	to_replace: indexes.indexReplacedTo,
+		// 	room_id: room.room_slug,
+		// });
 	};
 
 	return (

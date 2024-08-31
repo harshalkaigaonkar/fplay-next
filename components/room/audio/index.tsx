@@ -23,7 +23,6 @@ import {
 import { useDispatch } from 'react-redux';
 import { SaavnSongObjectTypes } from 'types';
 import { selectRoomInfo } from 'redux/slice/roomSlice';
-import { useSocket } from 'hooks/useSocket';
 import { debounce } from 'lodash';
 
 const AudioProvider: FC<HomeProps> = ({ audioElement, user }) => {
@@ -32,13 +31,11 @@ const AudioProvider: FC<HomeProps> = ({ audioElement, user }) => {
 	const paused = useSelector(selectPaused);
 	const room = useSelector(selectRoomInfo);
 	const time = useSelector(selectTime);
-	const socket = useSocket();
 
 	const dispatch = useDispatch();
 
-	const [currentTrack, setCurrentTrack] = useState<SaavnSongObjectTypes | null>(
-		null,
-	);
+	const [currentTrack, setCurrentTrack] =
+		useState<SaavnSongObjectTypes | null>(null);
 	const isSeeking = useRef<boolean>(false);
 
 	useEffect(() => {
@@ -70,9 +67,9 @@ const AudioProvider: FC<HomeProps> = ({ audioElement, user }) => {
 
 	const endedHandler = () => {
 		dispatch(onChangeNextSongFromQueue());
-		socket.emit('on-current-song-change-next', {
-			room_id: room.room_slug,
-		});
+		// socket.emit('on-current-song-change-next', {
+		// 	room_id: room.room_slug,
+		// });
 	};
 
 	const timeUpdateHandler = (element: any) => {
@@ -93,22 +90,22 @@ const AudioProvider: FC<HomeProps> = ({ audioElement, user }) => {
 
 	const debounceUpdateTime = useCallback(
 		debounce((time, broadcast = false) => {
-			socket.emit('on-seek-current-song', {
-				room_id: room.room_slug,
-				time,
-				user_id: user?._id ?? '',
-				broadcast,
-			});
+			// socket.emit('on-seek-current-song', {
+			// 	room_id: room.room_slug,
+			// 	time,
+			// 	user_id: user?._id ?? '',
+			// 	broadcast,
+			// });
 		}, 200),
 		[],
 	);
 
 	const playingHandler = useCallback(
 		debounce(() => {
-			socket.emit('on-play-current-song', {
-				room_id: room.room_slug,
-				user_id: user?._id ?? '',
-			});
+			// socket.emit('on-play-current-song', {
+			// 	room_id: room.room_slug,
+			// 	user_id: user?._id ?? '',
+			// });
 			dispatch(onSetPlay());
 		}, 300),
 		[],
@@ -118,10 +115,10 @@ const AudioProvider: FC<HomeProps> = ({ audioElement, user }) => {
 		debounce((element: any) => {
 			if (element.target.currentTime !== element.target.duration) {
 				dispatch(onSetPause());
-				socket.emit('on-pause-current-song', {
-					room_id: room.room_slug,
-					user_id: user?._id ?? '',
-				});
+				// socket.emit('on-pause-current-song', {
+				// 	room_id: room.room_slug,
+				// 	user_id: user?._id ?? '',
+				// });
 			}
 		}, 300),
 		[],

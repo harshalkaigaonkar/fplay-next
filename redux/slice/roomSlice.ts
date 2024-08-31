@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { axiosGet } from 'helpers';
 import { Session } from 'next-auth';
-import songs from 'songs.json';
 import { SaavnSongObjectTypes } from 'types';
 import { InitialRoomStateTypes, RootState } from 'types/redux';
 

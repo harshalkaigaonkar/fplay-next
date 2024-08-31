@@ -37,3 +37,6 @@ next-env.d.ts
 
 #vsc
 .vscode
+
+# mock data
+mock
