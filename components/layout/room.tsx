@@ -1,5 +1,7 @@
 import RoomHeader from 'components/header/room';
 import HeadlessModal from 'components/modal/HeadlessModal';
+import initialize_room_for_user from 'helpers/rtdb/initialize_room_for_user';
+import sync_room_when_user_leaves from 'helpers/rtdb/sync_room_when_user_leaves';
 import { useRouter } from 'next/router';
 import React, {
 	FC,
@@ -30,6 +32,7 @@ import {
 	onLeaveUser,
 	selectRoomInfo,
 } from 'redux/slice/roomSlice';
+import { rdbClient } from 'rt-functions';
 import { MongooseRoomTypes, MongooseUserTypes, UseSession } from 'types';
 
 interface RoomLayoutProps {
@@ -59,15 +62,65 @@ const RoomLayout: FC<RoomLayoutProps> = ({
 	const router = useRouter();
 
 	useEffect(() => {
+		const warningText =
+			'You are currently in a room - are you sure you wish to leave this page?';
+
+		const handleSyncUser = async () => {
+			console.log("console.log('called');");
+			// TODO: add the rtdb function for removing user
+			await sync_room_when_user_leaves({ userId: user._id });
+			console.log('user removed from session');
+		};
+
+		const handleRouteChangeStart = () => {
+			if (!window.confirm(warningText)) {
+				router.events.emit('routeChangeError');
+			}
+			// removing the user for both the cases of alert here
+
+			handleSyncUser();
+		};
+
+		const handleWindowClose = (e: any) => {
+			e.preventDefault();
+			window.addEventListener('unload', handleSyncUser);
+			e.returnValue = warningText;
+			return warningText;
+		};
+		window.addEventListener('beforeunload', handleWindowClose);
+		router.events.on('routeChangeStart', handleRouteChangeStart);
+
+		return () => {
+			window.removeEventListener('beforeunload', handleWindowClose);
+			window.removeEventListener('unload', handleSyncUser);
+			router.events.off('routeChangeStart', handleRouteChangeStart);
+		};
+	}, [router.events]);
+
+	const handle_initialize_room_for_user = async () => {
+		// const room_slug = room.room_slug;
+		// const { data: rtdb_sessionId } = await get_session_id_for_room({
+		// 	roomSlug: room_slug,
+		// });
+		// if (!rtdb_sessionId) {
+		await initialize_room_for_user({
+			roomInfo: room,
+			userInfo: user,
+		});
+	};
+	// };
+
+	useEffect(() => {
 		if (Object.keys(roomInfo).length === 0) dispatch(onJoiningRoom(room));
-		// if (socket) {
-		// 	socketRoomInitializer();
-		// }
+		// console.log({ room, user });
+		if (rdbClient) {
+			handle_initialize_room_for_user();
+			listenersInitializer();
+		}
 		return () => {
 			// socket?.disconnect();
-			router?.back();
+			// router?.back();
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router]);
 
 	const onCloseUserExistsModal = () => {
@@ -75,7 +128,7 @@ const RoomLayout: FC<RoomLayoutProps> = ({
 		router.push('/');
 	};
 
-	const socketRoomInitializer = useCallback(async () => {
+	const listenersInitializer = useCallback(async () => {
 		// socket.emit('connect-to-join-room', {
 		// 	user,
 		// 	room,

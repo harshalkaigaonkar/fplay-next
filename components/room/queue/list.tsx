@@ -3,7 +3,6 @@ import {
 	Droppable,
 	resetServerContext,
 } from 'react-beautiful-dnd';
-import Songs from 'songs.json';
 import React, { FC, MutableRefObject, useState } from 'react';
 import DraggableListItem from './item';
 import EmptyQueue from './empty';

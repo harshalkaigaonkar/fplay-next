@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { fetchSongsThroughSearchQuery } from 'helpers/music/fetchSongs';
 import { Session } from 'next-auth';
-import searchedSongs from 'searchAll.json';
 import { SaavnSongObjectTypes } from 'types';
 import { InitialSearchStateTypes, RootState } from 'types/redux';
 

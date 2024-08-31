@@ -46,34 +46,9 @@ export type HomeProps = {
 };
 
 const Home: NextPage<HomeProps> = ({ room, user }) => {
-	const dispatch = useDispatch();
-	const router = useRouter();
 	const { data: session, status }: UseSession = useSession();
 	const audioElement = useRef<HTMLAudioElement | null>(null);
 	const songsQueue = useSelector(selectSongsQueue);
-	const roomInfo = useSelector(selectRoomInfo);
-	const player = useSelector(selectPlayer);
-	const roomRef = useRef<HTMLDivElement | null>(null);
-
-	useEffect(() => {
-		const warningText =
-			'You are currently in a room - are you sure you wish to leave this page?';
-		// const handleWindowClose = (e: BeforeUnloadEvent) => {
-		//   e.preventDefault();
-		//   return (e.returnValue = warningText);
-		// };
-		const handleBrowseAway = () => {
-			if (window.confirm(warningText)) return;
-			router.events.emit('routeChangeError');
-		};
-		// window.addEventListener('beforeunload', handleWindowClose);
-		router.events.on('routeChangeStart', handleBrowseAway);
-
-		return () => {
-			// window.removeEventListener('beforeunload', handleWindowClose);
-			router.events.off('routeChangeStart', handleBrowseAway);
-		};
-	}, [router.events]);
 
 	return (
 		<div className='m-0 p-0'>
@@ -136,7 +111,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 					},
 				};
 			else if (roomData.data && !roomData.data.is_private) {
-				await axios.get(`${process.env.NEXTAUTH_URL ?? ''}/api/socket`);
 				return {
 					props: {
 						session,
