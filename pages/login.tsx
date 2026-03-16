@@ -1,6 +1,7 @@
-import { NextPageContext } from 'next';
-import { Session } from 'next-auth';
-import { BuiltInProviderType } from 'next-auth/providers';
+import { GetServerSideProps } from 'next';
+import {
+	BuiltInProviderType,
+} from 'next-auth/providers';
 import {
 	ClientSafeProvider,
 	getProviders,
@@ -43,18 +44,20 @@ const Login = ({ provider }: LoginProps) => {
 	);
 };
 
-Login.getInitialProps = async (context: NextPageContext) => {
-	const { req, res } = context;
-	const session: Session | null = await getSession({ req });
-	if (session && res && session.user) {
-		res.writeHead(302, {
-			Location: '/',
-		});
-		res.end();
-		return;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+	const session = await getSession(context);
+	if (session && session.user) {
+		return {
+			redirect: {
+				permanent: false,
+				destination: '/',
+			},
+		};
 	}
 	return {
-		provider: await getProviders(),
+		props: {
+			provider: await getProviders(),
+		},
 	};
 };
 

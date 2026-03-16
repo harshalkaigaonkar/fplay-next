@@ -15,7 +15,10 @@
 		"isolatedModules": true,
 		"jsx": "preserve",
 		"baseUrl": ".",
+		"paths": {
+			"redux/*": ["./redux/*"]
+		}
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/connect-db.ts"],
-	"exclude": ["node_modules"],
+	"exclude": ["node_modules"]
 }

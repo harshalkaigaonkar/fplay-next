@@ -1,8 +1,7 @@
 import {
 	DragDropContext,
 	Droppable,
-	resetServerContext,
-} from 'react-beautiful-dnd';
+} from '@hello-pangea/dnd';
 import Songs from 'songs.json';
 import React, { FC, MutableRefObject, useState } from 'react';
 import DraggableListItem from './item';
@@ -17,8 +16,6 @@ import { TrackQueueProps } from 'types/queue';
 import { selectRoomInfo } from 'redux/slice/roomSlice';
 import { useSocket } from 'hooks/useSocket';
 import { selectUserInfo } from 'redux/slice/userSlice';
-
-resetServerContext();
 
 const DraggableList: FC<TrackQueueProps> = ({ audioElement, fromPanel }) => {
 	const songsQueue = useSelector(selectSongsQueue);
