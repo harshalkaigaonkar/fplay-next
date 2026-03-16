@@ -1,13 +1,23 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	swcMinify: true,
 	images: {
-		domains: [
-			'lh3.googleusercontent.com',
-			'c.saavncdn.com',
-			'www.jiosaavn.com',
-			'static.saavncdn.com',
-			'*',
+		remotePatterns: [
+			{
+				protocol: 'https',
+				hostname: 'lh3.googleusercontent.com',
+			},
+			{
+				protocol: 'https',
+				hostname: 'c.saavncdn.com',
+			},
+			{
+				protocol: 'https',
+				hostname: 'www.jiosaavn.com',
+			},
+			{
+				protocol: 'https',
+				hostname: 'static.saavncdn.com',
+			},
 		],
 	},
 };

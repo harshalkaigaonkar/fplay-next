@@ -13,7 +13,7 @@ import { decodeHTMLContent } from 'helpers';
 import { useSocket } from 'hooks/useSocket';
 import Image from 'next/image';
 import React, { FC, useState } from 'react';
-import { Draggable } from 'react-beautiful-dnd';
+import { Draggable } from '@hello-pangea/dnd';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import {
@@ -131,7 +131,6 @@ const DraggableListItem: FC<DraggableListItemProps> = ({
 								alt={`Song Icon ${song?.image?.[1]?.quality}`}
 								width={45}
 								height={45}
-								layout='fixed'
 								className='rounded-md overflow-hidden z-0'
 								loading='lazy'
 							/>

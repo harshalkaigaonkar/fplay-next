@@ -36,7 +36,6 @@ const AlbumOverlay: FC<{
 						className='rounded-md transition duration-300 cursor-pointer'
 						height={200}
 						width={200}
-						layout='fixed'
 						loading='lazy'
 					/>
 					<div className='w-auto flex-1 flex flex-col items justify-center'>

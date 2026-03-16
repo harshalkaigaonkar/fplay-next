@@ -78,7 +78,6 @@ const PanelArtistResult: React.FC<{
        rounded-full transition duration-300 cursor-pointer`}
 				height={50}
 				width={50}
-				layout='fixed'
 				loading='lazy'
 			/>
 			<span className={`w-2/3 h-fit content-center`}>
