@@ -2,6 +2,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import 'utils/connect-db';
 import { ResponseDataType } from 'types';
+import socketManager from 'socket';
+import redisManager from 'cache';
 
 const SocketAPI = async (
 	_req: NextApiRequest,
@@ -16,6 +18,7 @@ const SocketAPI = async (
 		// @status    DEV
 		case 'GET': {
 			try {
+				await Promise.all([redisManager(), socketManager(_res)]);
 				return _res.status(201).json({
 					type: 'Success',
 					data: 'Socket connected successfully.',
@@ -23,7 +26,7 @@ const SocketAPI = async (
 			} catch (error: any) {
 				return _res.status(500).json({
 					type: 'Failure',
-					error: error.message.error || error.message,
+					error: error.message,
 				});
 			}
 		}

@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
 	],
 	secret: process.env.NEXTAUTH_SECRET,
 	session: {
-		maxAge: 30 * 24 * 60 * 60 * 100,
+		maxAge: 30 * 24 * 60 * 60,
 	},
 	callbacks: {
 		async signIn({ profile }: { profile?: Profile }) {

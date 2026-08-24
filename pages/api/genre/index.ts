@@ -57,7 +57,7 @@ const GenreAPI = async (
 			} catch (error: any) {
 				return _res.status(500).json({
 					type: 'Failure',
-					error: error.message.error ?? error.message,
+					error: error.message,
 				});
 			}
 		}

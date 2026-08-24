@@ -1,10 +1,8 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { HydratedDocument } from 'mongoose';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Session, getServerSession } from 'next-auth';
 import 'utils/connect-db';
 import Room from 'models/Room';
-import User from 'models/User';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import {
 	FindRoomsCondition,
@@ -62,7 +60,8 @@ const RoomUserAPI = async (
 					//  room_access_users: [`${user_id}`]
 				};
 
-				const total_entries: number = await Room.find(find_condition).count();
+				const total_entries: number =
+					await Room.find(find_condition).countDocuments();
 
 				let skip_entries: number = 0;
 
@@ -117,84 +116,13 @@ const RoomUserAPI = async (
 					type: 'Success',
 					data,
 				});
-			} catch (error) {
+			} catch (error: any) {
 				return _res.status(500).json({
 					type: 'Failure',
-					error,
+					error: error.message,
 				});
 			}
 		}
-		// // @route     POST api/room/:user_id
-		// // @desc      Create a New Room for Session User
-		// // @access    Private
-		// // @status    Works Properly
-		// case "POST": {
-		//  const {
-		//   room
-		//   } = body;
-		//  // room database object with options
-		//  const {
-		//   name,
-		//   desc,
-		//   active,
-		//   genres,
-		//   is_private,
-		//   // Taken care from room's POV
-		//   // room_access_users,
-		//   // owned_by, // would be from session's User ID.
-		//   // later use of owned_by is for Groups
-		//   // session_history, // would be empty initially
-		//   // Changed to Library
-		//   // pinned_playlists,
-		//   // pinned_songs,
-		//   // upvotes, // would be empty array initially
-		//  } = room;
-
-		//  try {
-
-		//   if(!name)
-		//     throw new Error("Name For Room is Required !!");
-
-		//   const user = await User.findById(user_id);
-
-		//   if(!user)
-		//    throw new Error("User Not Found!!");
-
-		//   const {
-		//     _id
-		//   } = user;
-
-		//   const room: MongooseRoomTypes|null = await Room.findOne({name});
-
-		//   if(room)
-		//     throw new Error("Room Already Exists!!");
-
-		//   const newRoom: HydratedDocument<MongooseRoomTypes> = new Room({
-		//    name,
-		//    desc: desc || "Join this Music Group!!",
-		//    active: active || false,
-		//    genres: genres || [],
-		//    is_private: is_private || false,
-		//   //  room_access_users: room_access_users || [_id] ,
-		//    owned_by: _id,
-		//    session_history: [],
-		//   //  pinned_playlists: pinned_playlists || [],
-		//   //  pinned_songs: pinned_songs || [],
-		//    upvotes: []
-		//   });
-		//   await newRoom.save();
-
-		//   return _res.status(201).json({
-		//    type: "Success",
-		//    data: newRoom
-		//   });
-		//  } catch(error) {
-		//   return _res.status(500).json({
-		//    type:"Failure",
-		//    error,
-		//   })
-		//  }
-		// }
 		default: {
 			_res.setHeader('Allow', ['GET']);
 			return _res.status(405).json({

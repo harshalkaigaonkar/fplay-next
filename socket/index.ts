@@ -1,4 +1,6 @@
 import { Server } from 'socket.io';
+import { getToken } from 'next-auth/jwt';
+import { parse as parseCookieHeader } from 'cookie';
 import {
 	ClientToServerEvents,
 	ServerToClientEvents,
@@ -7,6 +9,9 @@ import {
 } from 'types';
 import redisManager, { client } from 'cache';
 import { createAdapter } from '@socket.io/redis-adapter';
+import 'utils/connect-db';
+import User from 'models/User';
+import Room from 'models/Room';
 
 type ConnectedUser = {
 	user_id: string;
@@ -39,7 +44,10 @@ const socketManager = async (_res: any) => {
 		SocketData
 	>(_res.socket.server, {
 		cors: {
-			origin: `${process.env.NODE_ENV === 'production' ? `/` : `http://localhost:3000`}`,
+			origin:
+				process.env.NODE_ENV === 'production'
+					? process.env.NEXTAUTH_URL
+					: 'http://localhost:3000',
 		},
 		pingTimeout: 60000 * 720, // 0.5 day
 		adapter: createAdapter(publisherClient, subscriberClient),
@@ -47,13 +55,55 @@ const socketManager = async (_res: any) => {
 
 	_res.socket.server.io = _io;
 
+	_io.use(async (_socket, next) => {
+		try {
+			// getToken() reads req.cookies (a parsed map), but the raw handshake
+			// request only carries the unparsed Cookie header.
+			const cookies = parseCookieHeader(_socket.request.headers.cookie ?? '');
+
+			const token = await getToken({
+				req: { headers: _socket.request.headers, cookies } as any,
+				secret: process.env.NEXTAUTH_SECRET,
+			});
+
+			if (!token?.email) return next(new Error('Unauthorized'));
+
+			const user = await User.findOne({ email: token.email });
+
+			if (!user) return next(new Error('Unauthorized'));
+
+			_socket.data.user_id = user._id.toString();
+			_socket.data.name = user.name;
+			_socket.data.email = user.email;
+			_socket.data.username = user.username;
+			_socket.data.profile_pic = user.profile_pic ?? '';
+
+			next();
+		} catch (error) {
+			next(new Error('Unauthorized'));
+		}
+	});
+
 	_io.on('connection', (_socket) => {
 		console.log('new Socket Client Connected', _socket.id);
 
 		// connection and disconnnect socket event handlers
 
 		_socket.on('connect-to-join-room', async (res: any) => {
-			const { user, room } = res;
+			const { room } = res;
+
+			// re-fetch the room from the source of truth instead of trusting the
+			// client-supplied room object, so a spoofed owned_by can't grant ownership.
+			const dbRoom = await Room.findOne({ room_slug: room.room_slug });
+
+			if (!dbRoom) {
+				_socket.emit('error-joining-room', {
+					title: 'Room Not Found',
+					message: 'This room no longer exists.',
+				});
+				return;
+			}
+
 			// client joins the room.
 			_socket.join(`room:${room.room_slug}`);
 			// socketClient - roomId relation
@@ -74,27 +124,20 @@ const socketManager = async (_res: any) => {
 					time: 0,
 					users_connected: [],
 					room: {
-						...Object.fromEntries(
-							Object.entries(room).filter(([item]) =>
-								['_id', 'room_slug'].includes(item),
-							),
-						),
-						owned_by: room.owned_by._id,
+						_id: dbRoom._id.toString(),
+						room_slug: dbRoom.room_slug,
+						owned_by: dbRoom.owned_by.toString(),
 					},
 				});
 				new_room_created = true;
 			}
 			const new_user_connection = {
 				socket_id: _socket.id,
-				user_id: user._id,
-				...Object.fromEntries(
-					Object.entries(user).filter(
-						([item]) =>
-							!['_id', 'createdAt', 'updatedAt', 'library', '__v'].includes(
-								item,
-							),
-					),
-				),
+				user_id: _socket.data.user_id,
+				name: _socket.data.name,
+				email: _socket.data.email,
+				username: _socket.data.username,
+				profile_pic: _socket.data.profile_pic,
 			};
 			// append user's connection in the room.
 			await client.json.arrAppend(
@@ -249,30 +292,30 @@ const socketManager = async (_res: any) => {
 		});
 
 		_socket.on('on-play-current-song', async (res: any) => {
-			const { room_id, user_id } = res;
+			const { room_id } = res;
 			const { room }: any = await client.json.get(`room:${room_id}`);
 			const { owned_by } = room ?? {};
-			if (owned_by === user_id) {
+			if (owned_by === _socket.data.user_id) {
 				await client.json.set(`room:${room_id}`, '.paused', false);
 				_socket.broadcast.to(`room:${room_id}`).emit('play-current-song');
 			}
 		});
 
 		_socket.on('on-pause-current-song', async (res: any) => {
-			const { room_id, user_id } = res;
+			const { room_id } = res;
 			const { room }: any = await client.json.get(`room:${room_id}`);
 			const { owned_by } = room ?? {};
-			if (owned_by === user_id) {
+			if (owned_by === _socket.data.user_id) {
 				await client.json.set(`room:${room_id}`, '.paused', true);
 				_socket.broadcast.to(`room:${room_id}`).emit('pause-current-song');
 			}
 		});
 
 		_socket.on('on-seek-current-song', async (res: any) => {
-			const { room_id, time, user_id, broadcast } = res;
+			const { room_id, time, broadcast } = res;
 			const { room }: any = await client.json.get(`room:${room_id}`);
 			const { owned_by } = room ?? {};
-			if (owned_by === user_id) {
+			if (owned_by === _socket.data.user_id) {
 				await client.json.set(`room:${room_id}`, '.time', time);
 
 				if (!!broadcast)

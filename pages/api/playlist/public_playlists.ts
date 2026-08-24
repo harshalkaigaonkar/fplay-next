@@ -40,8 +40,9 @@ const PublicPlaylistAPI = async (
 					is_private: false,
 				};
 
-				const total_entries: number =
-					await Playlist.find<FindPlaylistCondition>(find_condition).count();
+				const total_entries: number = await Playlist.find<FindPlaylistCondition>(
+					find_condition,
+				).countDocuments();
 
 				let skip_entries: number = 0;
 
@@ -100,10 +101,10 @@ const PublicPlaylistAPI = async (
 					type: 'Success',
 					data,
 				});
-			} catch (error) {
+			} catch (error: any) {
 				return _res.status(500).json({
 					type: 'Failure',
-					error,
+					error: error.message,
 				});
 			}
 		}

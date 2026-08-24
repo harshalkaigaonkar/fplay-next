@@ -16,7 +16,6 @@ const redisManager = async () => {
 			console.log('Redis Connected Successfully');
 		} catch (error) {
 			console.log('Error Connecting Redis\n', error);
-			process.exit(1);
 		}
 	else console.log('Redis already Connected!!');
 };

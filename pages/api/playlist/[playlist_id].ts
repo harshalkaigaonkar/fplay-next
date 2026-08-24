@@ -64,10 +64,10 @@ const PlaylistIdAPI = async (
 					type: 'Success',
 					data: playlist,
 				});
-			} catch (error) {
+			} catch (error: any) {
 				return _res.status(500).json({
 					type: 'Failure',
-					error,
+					error: error.message,
 				});
 			}
 		}

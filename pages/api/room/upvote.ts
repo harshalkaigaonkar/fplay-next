@@ -3,25 +3,16 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { Session, getServerSession } from 'next-auth';
 import 'utils/connect-db';
 import Room from 'models/Room';
-import Playlist from 'models/Playlist';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
-import {
-	MongoosePlaylistTypes,
-	MongooseRoomTypes,
-	MongooseUserTypes,
-	ResponseDataType,
-	SaavnSongObjectTypes,
-	UserLibraryType,
-} from 'types';
+import { MongooseRoomTypes, ResponseDataType } from 'types';
 import User from 'models/User';
-import { ObjectId, Types } from 'mongoose';
-import axios from 'axios';
+import { Types } from 'mongoose';
 
 const RoomUpvoteAPI = async (
 	_req: NextApiRequest,
 	_res: NextApiResponse<ResponseDataType<MongooseRoomTypes, unknown>>,
 ) => {
-	const { method, body, cookies, query } = _req;
+	const { method, body, query } = _req;
 
 	const session: Session | null = await getServerSession(
 		_req,
@@ -29,68 +20,9 @@ const RoomUpvoteAPI = async (
 		authOptions,
 	);
 
-	//  console.log("Cookies: ", cookies)
-
 	if (!session) return _res.status(401).redirect('/login');
 
 	switch (method) {
-		// // @route     GET api/room/upvotes
-		// // @desc      Get User's Library
-		// // @access    Private
-		// // @status    Works Properly
-		// case "GET": {
-		//  try {
-
-		//   const user = await User
-		//     .findOne({
-		//       email: session.user?.email
-		//     })
-		//     .populate("library.playlist");
-
-		//     console.log("User: \n Check Once due to parsing of null p_ids", user)
-
-		//   if(!user)
-		//    throw new Error("User Not Found!!");
-
-		//    const song_ids: string = user
-		//    .library
-		//    .map((media: UserLibraryType) => {
-		//     if(media.type === "Song")
-		//       return media.song;
-		//    }).join(",");
-
-		//   const res = await axios
-		//   .get<{
-		//     type: string,
-		//     results: SaavnSongObjectTypes[]
-		//   }>(`${process.env.NEXT_PUBLIC_MUSIC_BASEURL}/songs?id=${song_ids}`);
-
-		//   if(!res.data)
-		//    throw new Error("Error While fetching Songs Info!!")
-
-		//   const {
-		//     results: songs
-		//   } = res.data;
-
-		//   user.library = user.library.map((media: UserLibraryType) => {
-		//     if(media.type === "Song") {
-		//       media.song = songs[0];
-		//       songs.splice(0, 1);
-		//       return media;
-		//     }
-		//   })
-
-		//   return _res.status(200).json({
-		//    type: "Success",
-		//    data: user.library,
-		//   });
-		//  } catch(error) {
-		//   return _res.status(500).json({
-		//    type:"Failure",
-		//    error,
-		//   })
-		//  }
-		// }
 		// @route     POST api/room/upvotes?type="add"|"remove"
 		// @desc      Add to/Remove From User's Library
 		// @access    Private
@@ -163,7 +95,7 @@ const RoomUpvoteAPI = async (
 			} catch (error: any) {
 				return _res.status(500).json({
 					type: 'Failure',
-					error: error.message.error || error.message,
+					error: error.message,
 				});
 			}
 		}

@@ -41,7 +41,7 @@ const PublicRoomAPI = async (
 
 				const total_entries: number = await Room.find<FindRoomsCondition | any>(
 					find_condition,
-				).count();
+				).countDocuments();
 
 				let skip_entries: number = 0;
 
@@ -101,7 +101,7 @@ const PublicRoomAPI = async (
 			} catch (error: any) {
 				return _res.status(500).json({
 					type: 'Failure',
-					error: error.message.error || error.message,
+					error: error.message,
 				});
 			}
 		}

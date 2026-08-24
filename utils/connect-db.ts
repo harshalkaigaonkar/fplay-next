@@ -14,6 +14,5 @@ const connection: {
 		console.log('MongoDB Connected');
 	} catch (error) {
 		console.log('MongoDB Error: ', error);
-		process.exit(1);
 	}
 })();

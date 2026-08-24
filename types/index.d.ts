@@ -72,8 +72,11 @@ export interface InterServerEvents {
 	ping: () => void;
 }
 export interface SocketData {
+	user_id: string;
 	name: string;
-	age: number;
+	email: string;
+	username: string;
+	profile_pic: string;
 }
 
 // Mongoose DB Types
