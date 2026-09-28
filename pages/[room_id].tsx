@@ -16,7 +16,7 @@ import {
 } from 'types';
 import { getSession, signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
-import AudioProvider from 'components/room/audio';
+import RoomPlayer from 'components/room/audio';
 import TrackQueue from 'components/room/queue';
 import MusicPanelButton from 'components/track/button';
 import UsersConnectedRoom from 'components/room/conections';
@@ -48,7 +48,6 @@ const Home: NextPage<HomeProps> = ({ room, user }) => {
 	const dispatch = useDispatch();
 	const router = useRouter();
 	const { data: session, status }: UseSession = useSession();
-	const audioElement = useRef<HTMLAudioElement | null>(null);
 	const songsQueue = useSelector(selectSongsQueue);
 	const roomInfo = useSelector(selectRoomInfo);
 	const player = useSelector(selectPlayer);
@@ -91,22 +90,16 @@ const Home: NextPage<HomeProps> = ({ room, user }) => {
 			<RoomLayout
 				session={session}
 				room={room}
-				audioElementRef={audioElement}
 				user={user}>
 				<section className='h-[38rem] flex flex-row gap-10'>
-					<AudioProvider
-						audioElement={audioElement}
-						user={user}
-					/>
-					{songsQueue.length > 0 && (
-						<TrackQueue audioElement={audioElement} />
-					)}
+					<RoomPlayer />
+					{songsQueue.length > 0 && <TrackQueue />}
 				</section>
 				<div className='w-full h-auto'>
 					<UsersConnectedRoom session={session} />
 				</div>
 			</RoomLayout>
-			<MediaPanel audioElement={audioElement} />
+			<MediaPanel />
 		</div>
 	);
 };

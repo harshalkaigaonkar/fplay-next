@@ -34,8 +34,7 @@ export const secToMin = (sec: number): string => {
 		},
 	)}`;
 };
-export const decodeHTMLContent = (htmlText: string) => {
-	var txt = document.createElement('span');
-	txt.innerHTML = htmlText;
-	return txt.innerText;
-};
+// DOMParser documents never run scripts or load images, unlike innerHTML on a live element.
+export const decodeHTMLContent = (htmlText: string) =>
+	new DOMParser().parseFromString(htmlText, 'text/html').body.textContent ??
+	'';

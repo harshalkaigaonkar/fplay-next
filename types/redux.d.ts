@@ -1,7 +1,12 @@
 // Root State Types
 
 import { Session } from 'next-auth';
-import { AuthUserType, MongooseUserTypes, SaavnSongObjectTypes } from 'types';
+import {
+	AuthUserType,
+	MongooseUserTypes,
+	PlaybackState,
+	QueueTrack,
+} from 'types';
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
@@ -18,19 +23,19 @@ type InitialRoomStateTypes = {
 	roomInfo: MongooseRoomTypes | {};
 	users: AuthUserType.user[] | any[];
 	upvotes: number;
-	bottomSheet: booelan;
+	bottomSheet: boolean;
+	isAdmin: boolean;
 };
 
 type InitialPlayerStateTypes = {
-	songsQueue: SaavnSongObjectTypes[] | any[];
-	currentSongId: string | null;
-	paused: boolean;
+	songsQueue: QueueTrack[];
+	playback: PlaybackState;
 	time: number;
 };
 
 type InitialSearchStateTypes = {
 	query: string;
-	results: any;
+	results: QueueTrack[] | null;
 	loading: boolean;
 	error: string | null;
 	overlayOpen: boolean;

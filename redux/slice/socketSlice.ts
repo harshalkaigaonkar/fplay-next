@@ -40,7 +40,7 @@ export const socketSlice = createSlice({
 	extraReducers: {
 		[getSocketSession.fulfilled as number | string | symbol | any]: (
 			state: RootState,
-			action: PayloadAction<SocketClientType>,
+			action: PayloadAction<{ socket: SocketClientType }>,
 		) => {
 			state.socketSession = action.payload.socket;
 		},

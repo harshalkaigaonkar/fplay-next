@@ -1,8 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { fetchSongsThroughSearchQuery } from 'helpers/music/fetchSongs';
 import { Session } from 'next-auth';
-import searchedSongs from 'searchAll.json';
-import { SaavnSongObjectTypes } from 'types';
+import { QueueTrack } from 'types';
 import { InitialSearchStateTypes, RootState } from 'types/redux';
 
 const initialState: InitialSearchStateTypes = {
@@ -32,7 +30,7 @@ export const searchSlice = createSlice({
 		 * @param result updated results
 		 * @returns nothing
 		 */
-		updateSearchResults: (state, action: PayloadAction<any>) => {
+		updateSearchResults: (state, action: PayloadAction<QueueTrack[]>) => {
 			state.results = action.payload;
 			state.loading = false;
 			if (state.error) state.error = null;

@@ -8,15 +8,7 @@ const nextConfig = {
 			},
 			{
 				protocol: 'https',
-				hostname: 'c.saavncdn.com',
-			},
-			{
-				protocol: 'https',
-				hostname: 'www.jiosaavn.com',
-			},
-			{
-				protocol: 'https',
-				hostname: 'static.saavncdn.com',
+				hostname: 'i.ytimg.com',
 			},
 		],
 	},

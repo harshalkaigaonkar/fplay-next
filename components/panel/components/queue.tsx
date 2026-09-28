@@ -1,12 +1,10 @@
-import React, { FC, MutableRefObject } from 'react';
+import React, { FC } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { selectSongsQueue } from 'redux/slice/playerSlice';
 import DraggableList from 'components/room/queue/list';
 
-const PanelDraggableQueue: FC<{
-	audioElement?: MutableRefObject<HTMLAudioElement | null>;
-}> = ({ audioElement }) => {
+const PanelDraggableQueue: FC = () => {
 	const songs = useSelector(selectSongsQueue);
 	const dispatch = useDispatch();
 
@@ -17,15 +15,14 @@ const PanelDraggableQueue: FC<{
 			</header>
 			{songs.length > 0 ? (
 				<>
-					<DraggableList
-						audioElement={audioElement}
-						fromPanel={true}
-					/>
+					<DraggableList fromPanel={true} />
 				</>
 			) : (
 				<>
 					<div className='flex-1 min-w-full inline-flex justify-center items-center'>
-						<p className='text-sm text-white/30'>No Songs in Queue</p>
+						<p className='text-sm text-white/30'>
+							No Songs in Queue
+						</p>
 					</div>
 				</>
 			)}

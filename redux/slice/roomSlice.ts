@@ -1,8 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { axiosGet } from 'helpers';
 import { Session } from 'next-auth';
-import songs from 'songs.json';
-import { SaavnSongObjectTypes } from 'types';
 import { InitialRoomStateTypes, RootState } from 'types/redux';
 
 const initialState: InitialRoomStateTypes = {
@@ -11,6 +9,7 @@ const initialState: InitialRoomStateTypes = {
 	upvotes: 0,
 	//helper state
 	bottomSheet: false,
+	isAdmin: false,
 };
 
 export const rooomSlice = createSlice({
@@ -41,6 +40,9 @@ export const rooomSlice = createSlice({
 		onOpenPanel: (state) => {
 			state.bottomSheet = true;
 		},
+		onSetAdmin: (state, action: PayloadAction<boolean>) => {
+			state.isAdmin = action.payload;
+		},
 	},
 });
 
@@ -52,12 +54,14 @@ export const {
 	onJoiningRoom,
 	onChangeUsers,
 	onLeaveUser,
+	onSetAdmin,
 } = rooomSlice.actions;
 
 export const selectRoomInfo = (state: RootState) => state.room.roomInfo;
 export const selectUsers = (state: RootState) => state.room.users;
 export const selectUpvotes = (state: RootState) => state.room.upvotes;
 export const selectBottomSheet = (state: RootState) => state.room.bottomSheet;
+export const selectIsAdmin = (state: RootState) => state.room.isAdmin;
 export const selectRoom = (state: RootState) => state.room;
 
 export default rooomSlice.reducer;

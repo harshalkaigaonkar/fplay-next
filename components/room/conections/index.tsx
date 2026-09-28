@@ -4,7 +4,6 @@ import React, { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { selectRoomInfo, selectUsers } from 'redux/slice/roomSlice';
 import { UseSession } from 'types';
-import { HomeProps } from 'types/home';
 
 const UsersConnectedRoom: FC<{ session: UseSession }> = ({ session }) => {
 	const users = useSelector(selectUsers);

@@ -1,34 +1,19 @@
 import RoomHeader from 'components/header/room';
 import HeadlessModal from 'components/modal/HeadlessModal';
+import { syncClock } from 'helpers/roomClock';
 import { useSocket } from 'hooks/useSocket';
 import { useRouter } from 'next/router';
-import React, {
-	FC,
-	MutableRefObject,
-	ReactNode,
-	useCallback,
-	useEffect,
-	useState,
-} from 'react';
+import React, { FC, ReactNode, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-	onAddSongIntoQueue,
-	onRemoveSongFromQueue,
-	onRefreshPlayer,
+	onPlaybackUpdated,
+	onQueueUpdated,
 	onSetupPlayer,
-	selectPlayer,
-	selectSongsQueue,
-	onReaarrangeSongQueue,
-	onChangeClickedSongFromQueue,
-	onChangeNextSongFromQueue,
-	onChangePrevSongFromQueue,
-	onSetPlay,
-	selectTime,
 } from 'redux/slice/playerSlice';
 import {
 	onChangeUsers,
 	onJoiningRoom,
-	onLeaveUser,
+	onSetAdmin,
 	selectRoomInfo,
 } from 'redux/slice/roomSlice';
 import { MongooseRoomTypes, MongooseUserTypes, UseSession } from 'types';
@@ -37,31 +22,29 @@ interface RoomLayoutProps {
 	session: UseSession;
 	room: MongooseRoomTypes;
 	children: ReactNode;
-	audioElementRef: MutableRefObject<HTMLAudioElement | null>;
 	user: MongooseUserTypes;
 }
 
-const RoomLayout: FC<RoomLayoutProps> = ({
-	session,
-	children,
-	room,
-	audioElementRef,
-	user,
-}) => {
+const RoomLayout: FC<RoomLayoutProps> = ({ session, children, room, user }) => {
 	const [error, setError] = useState<
 		false | { title: string; message: string }
 	>(false);
 
-	const songsQueue = useSelector(selectSongsQueue);
 	const dispatch = useDispatch();
 	const roomInfo = useSelector(selectRoomInfo);
 	const socket = useSocket();
-	const player = useSelector(selectPlayer);
-	const time = useSelector(selectTime);
 	const router = useRouter();
+	const [notice, setNotice] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (Object.keys(roomInfo).length === 0) dispatch(onJoiningRoom(room));
+		dispatch(
+			onSetAdmin(
+				!!user &&
+					!!room?.owned_by &&
+					`${room.owned_by._id}` === `${user._id}`,
+			),
+		);
 		if (socket) {
 			socketRoomInitializer();
 		}
@@ -78,113 +61,35 @@ const RoomLayout: FC<RoomLayoutProps> = ({
 	};
 
 	const socketRoomInitializer = useCallback(async () => {
-		socket.emit('connect-to-join-room', {
-			user,
-			room,
+		socket.on('error-joining-room', (res) => {
+			setError(res);
 		});
 
-		socket.on(
-			'error-joining-room',
-			(res: false | { title: string; message: string }) => {
-				setError(res);
-			},
-		);
-
-		socket.on('get-spotlight', () => {
-			console.log("You've got the spotlight");
+		socket.on('room-error', ({ message }) => {
+			setNotice(message);
+			setTimeout(() => setNotice(null), 4000);
 		});
 
-		socket.on('leaves-room', (res: any) => {
-			if (typeof res === 'string') {
-				console.log(`${res} socket_id left the room.`);
-				return;
-			}
-			dispatch(onLeaveUser(res.socket_id));
-			// will use for multiple users
-			// dispatch(onRefreshPlayer());
-			console.log('leaves-room', res);
-		});
-		socket.on('sync-player-with-redis', (res: any) => {
-			const { songsQueue, currentSongId, paused, time } = res;
-
-			console.log('Sync Redis', {
-				songsQueue,
-				currentSongId,
-				paused,
-				time,
-			});
-
-			dispatch(
-				onSetupPlayer({
-					songsQueue,
-					currentSongId,
-					paused,
-					time,
-				}),
-			);
-
-			console.log('sync-player-with-redis', res);
+		socket.on('sync-player-with-redis', (res) => {
+			dispatch(onSetupPlayer(res));
 		});
 
-		socket.on('sync-room-users-with-redis', (res: any) => {
+		socket.on('sync-room-users-with-redis', (res) => {
 			dispatch(onChangeUsers(res));
-
-			console.log('sync-room-users-with-redis', res);
 		});
 
-		socket.on('add-song-in-queue', (song: any) => {
-			dispatch(onAddSongIntoQueue([song]));
+		socket.on('queue-updated', (queue) => {
+			dispatch(onQueueUpdated(queue));
 		});
 
-		socket.on('remove-song-from-queue', (song: any) => {
-			console.log('id_to_remove', song);
-			try {
-				dispatch(onRemoveSongFromQueue(song));
-			} catch (err) {
-				console.log(err);
-			}
+		socket.on('playback-state', (playback) => {
+			dispatch(onPlaybackUpdated(playback));
 		});
 
-		socket.on('replace-song-in-queue', (res: any) => {
-			const { replace_from, to_replace } = res;
-			console.log('Came here', res);
-			dispatch(
-				onReaarrangeSongQueue({
-					indexReplacedFrom: replace_from,
-					indexReplacedTo: to_replace,
-				}),
-			);
-		});
-
-		socket.on('current-song-id-change', (song_id: any) => {
-			console.log('Current Song Id Change', song_id);
-			dispatch(onChangeClickedSongFromQueue(song_id));
-		});
-
-		socket.on('current-song-change-next', (song_id: any) => {
-			console.log('Current next song id:', song_id);
-			dispatch(onChangeNextSongFromQueue());
-		});
-
-		socket.on('current-song-change-prev', (song_id: any) => {
-			console.log('Current prev song id:', song_id);
-			dispatch(onChangePrevSongFromQueue());
-		});
-
-		socket.on('play-current-song', () => {
-			console.log('Current Song Playing');
-			audioElementRef.current?.play();
-		});
-
-		socket.on('pause-current-song', () => {
-			console.log('Current Song Paused');
-			audioElementRef.current?.pause();
-		});
-
-		socket.on('seek-current-song', (time: number) => {
-			console.log('audio seeking log');
-			if (!!audioElementRef.current) audioElementRef.current.currentTime = time;
-		});
+		// Measure the clock gap to the server before joining, so the first position is right.
+		await syncClock(socket);
+		if (room?.room_slug)
+			socket.emit('connect-to-join-room', { room_slug: room.room_slug });
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [socket]);
@@ -196,10 +101,17 @@ const RoomLayout: FC<RoomLayoutProps> = ({
 				room={room}
 			/>
 			<main>{children}</main>
+			{notice && (
+				<p
+					role='status'
+					className='fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-md bg-black/80 text-sm'>
+					{notice}
+				</p>
+			)}
 			{error && (
 				<HeadlessModal
 					isOpen={!!error}
-					title={"You're Already in the Room"}
+					title={error ? error.title : ''}
 					cta={'disconnect'}
 					cta_function={onCloseUserExistsModal}>
 					<>

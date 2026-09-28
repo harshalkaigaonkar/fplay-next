@@ -1,13 +1,14 @@
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { XCircleIcon } from '@heroicons/react/24/outline';
 import LoadingIcon from 'components/icon/loading';
-import { fetchAllThroughSearchQuery } from 'helpers/music/fetchAll';
-import React, { useState, useRef, FC, MutableRefObject } from 'react';
+import { searchTracks } from 'helpers/youtube/search';
+import React, { useRef, FC } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useDebounce } from 'react-use';
 import {
 	changeSearchQuery,
+	nullifyError,
 	onActiveSearch,
 	onUnactiveSearch,
 	selectQuery,
@@ -17,25 +18,31 @@ import {
 	startLoading,
 	updateSearchResults,
 } from 'redux/slice/searchSlice';
-import { resourceLimits } from 'worker_threads';
 import PanelSearched from './result';
 
-const PanelSearch: FC<{
-	audioElement: MutableRefObject<HTMLAudioElement | null>;
-}> = ({ audioElement }) => {
+const PanelSearch: FC = () => {
 	const query = useSelector(selectQuery);
 	const results = useSelector(selectResults);
 	const searchActive = useSelector(selectSearchActive);
 	const dispatch = useDispatch();
 
-	const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
 	const inputElement = useRef<HTMLInputElement | null>(null);
 	useDebounce(
 		async () => {
-			const res = await fetchAllThroughSearchQuery(query);
-			if (typeof res !== 'string') dispatch(updateSearchResults(res));
-			else dispatch(setError(`No Result found for '${query}'`));
+			// Each search costs YouTube quota, so skip very short queries.
+			if (query.trim().length < 2) {
+				dispatch(nullifyError());
+				return;
+			}
+			try {
+				dispatch(updateSearchResults(await searchTracks(query.trim())));
+			} catch (error) {
+				dispatch(
+					setError(
+						'Search is not available right now. Try again soon.',
+					),
+				);
+			}
 		},
 		1000,
 		[query],
@@ -89,7 +96,9 @@ const PanelSearch: FC<{
 								onClick={closeSearchHandler}
 								className='mr-2 inline-flex justify-center items-center rounded-full border border-transparent bg-black/40 py-1 px-4 text-sm font-medium text-white hover:text-black hover:border-black shadow-lg hover:bg-white border-solid focus:outline-none cursor-pointer transition duration-150'>
 								<XMarkIcon className='w-4 h-4 cursor-pointer' />
-								<p className='ml-1 text-inherit cursor-pointer'>Cancel</p>
+								<p className='ml-1 text-inherit cursor-pointer'>
+									Cancel
+								</p>
 							</span>
 						</>
 					) : (
@@ -108,7 +117,7 @@ const PanelSearch: FC<{
 			</header>
 			{!!query.length ? (
 				<div className='px-5'>
-					<PanelSearched audioElement={audioElement} />
+					<PanelSearched />
 				</div>
 			) : (
 				<div className='flex-1 min-w-full inline-flex justify-center items-center overflow-y-auto'>

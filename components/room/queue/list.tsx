@@ -1,52 +1,31 @@
-import {
-	DragDropContext,
-	Droppable,
-} from '@hello-pangea/dnd';
-import Songs from 'songs.json';
-import React, { FC, MutableRefObject, useState } from 'react';
+import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
+import React, { FC } from 'react';
 import DraggableListItem from './item';
 import EmptyQueue from './empty';
-import { useSelector } from 'react-redux';
-import {
-	onReaarrangeSongQueue,
-	selectSongsQueue,
-} from 'redux/slice/playerSlice';
-import { useDispatch } from 'react-redux';
-import { TrackQueueProps } from 'types/queue';
-import { selectRoomInfo } from 'redux/slice/roomSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { onReorderQueue, selectSongsQueue } from 'redux/slice/playerSlice';
 import { useSocket } from 'hooks/useSocket';
-import { selectUserInfo } from 'redux/slice/userSlice';
+import { QueueTrack } from 'types';
 
-const DraggableList: FC<TrackQueueProps> = ({ audioElement, fromPanel }) => {
+const DraggableList: FC<{ fromPanel?: boolean }> = ({ fromPanel }) => {
 	const songsQueue = useSelector(selectSongsQueue);
-	const room = useSelector(selectRoomInfo);
-	const user = useSelector(selectUserInfo);
 	const socket = useSocket();
-
 	const dispatch = useDispatch();
 
-	const onDragEnd = (result: any): void => {
-		if (!result.destination) {
-			return;
-		}
-		const indexes = {
-			indexReplacedFrom: result.source.index,
-			indexReplacedTo: result.destination.index,
-		};
-
-		dispatch(onReaarrangeSongQueue(indexes));
-		socket.emit('on-replace-song-in-queue', {
-			user,
-			replace_from: indexes.indexReplacedFrom,
-			to_replace: indexes.indexReplacedTo,
-			room_id: room.room_slug,
-		});
+	const onDragEnd = (result: DropResult): void => {
+		if (!result.destination) return;
+		const from = result.source.index;
+		const to = result.destination.index;
+		const track = songsQueue[from];
+		if (!track || from === to) return;
+		dispatch(onReorderQueue({ from, to }));
+		socket.emit('move-track', { trackId: track.id, toIndex: to });
 	};
 
 	return (
 		<DragDropContext onDragEnd={onDragEnd}>
 			<Droppable droppableId='droppable'>
-				{(provided, snapshot) => (
+				{(provided) => (
 					<ul
 						{...provided.droppableProps}
 						ref={provided.innerRef}
@@ -55,18 +34,17 @@ const DraggableList: FC<TrackQueueProps> = ({ audioElement, fromPanel }) => {
 							key='1'
 							className='mt-16'></li>
 						{songsQueue.length === 0 ? (
-							<>
-								<EmptyQueue />
-							</>
+							<EmptyQueue />
 						) : (
-							!!songsQueue &&
-							songsQueue?.map(
-								(song: any, index: number): JSX.Element => (
+							songsQueue.map(
+								(
+									track: QueueTrack,
+									index: number,
+								): JSX.Element => (
 									<DraggableListItem
-										key={index}
-										song={song}
+										key={track.id}
+										track={track}
 										index={index}
-										audioElement={audioElement}
 										fromPanel={fromPanel}
 									/>
 								),

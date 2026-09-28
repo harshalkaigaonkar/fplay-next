@@ -1,168 +1,211 @@
-import React, {
-	FC,
-	SyntheticEvent,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from 'react';
-import { HomeProps } from 'types/home';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import AudioPlayer from './player';
-import { secToMin } from 'helpers';
-import { useSelector } from 'react-redux';
-import {
-	onChangeNextSongFromQueue,
-	onSetPause,
-	onSetPlay,
-	onUpdateTime,
-	selectCurrentSongId,
-	selectPaused,
-	selectSongsQueue,
-	selectTime,
-} from 'redux/slice/playerSlice';
-import { useDispatch } from 'react-redux';
-import { SaavnSongObjectTypes } from 'types';
-import { selectRoomInfo } from 'redux/slice/roomSlice';
+import { positionAt } from 'helpers/playback';
+import { serverNow } from 'helpers/roomClock';
+import { loadYouTubeIframeApi } from 'helpers/youtube/iframeApi';
 import { useSocket } from 'hooks/useSocket';
-import { debounce } from 'lodash';
+import {
+	onUpdateTime,
+	selectCurrentTrack,
+	selectPlayback,
+} from 'redux/slice/playerSlice';
 
-const AudioProvider: FC<HomeProps> = ({ audioElement, user }) => {
-	const songsQueue = useSelector(selectSongsQueue);
-	const currentSongId = useSelector(selectCurrentSongId);
-	const paused = useSelector(selectPaused);
-	const room = useSelector(selectRoomInfo);
-	const time = useSelector(selectTime);
+// A listener further than this from the room clock jumps back into place.
+const MAX_DRIFT_SECONDS = 0.75;
+const SYNC_INTERVAL_MS = 1000;
+// Avoid seeking again while the last seek is still buffering.
+const SEEK_COOLDOWN_MS = 2000;
+// After this many failed play() attempts the browser is blocking autoplay.
+const AUTOPLAY_BLOCKED_TICKS = 3;
+
+const PLAYING = 1;
+const BUFFERING = 3;
+const ENDED = 0;
+
+const RoomPlayer: FC = () => {
+	const playback = useSelector(selectPlayback);
+	const track = useSelector(selectCurrentTrack);
 	const socket = useSocket();
-
 	const dispatch = useDispatch();
 
-	const [currentTrack, setCurrentTrack] = useState<SaavnSongObjectTypes | null>(
-		null,
-	);
-	const isSeeking = useRef<boolean>(false);
+	const holderRef = useRef<HTMLDivElement | null>(null);
+	const playerRef = useRef<YT.Player | null>(null);
+	const playbackRef = useRef(playback);
+	const trackRef = useRef(track);
+	const loadedVideoId = useRef<string | null>(null);
+	const endedReportedFor = useRef<string | null>(null);
+	const lastSeekAt = useRef(0);
+	const failedPlayTicks = useRef(0);
+
+	const [ready, setReady] = useState(false);
+	const [needsTap, setNeedsTap] = useState(false);
+	const [muted, setMuted] = useState(false);
+
+	playbackRef.current = playback;
+	trackRef.current = track;
+
+	const targetPosition = useCallback(() => {
+		const position = positionAt(playbackRef.current, serverNow());
+		const duration = trackRef.current?.duration ?? position;
+		return Math.max(0, Math.min(position, duration));
+	}, []);
+
+	const reportEnded = useCallback(() => {
+		const id = loadedVideoId.current;
+		if (!id || endedReportedFor.current === id) return;
+		endedReportedFor.current = id;
+		socket.emit('track-ended', { trackId: id });
+	}, [socket]);
 
 	useEffect(() => {
-		if (audioElement.current && !paused) {
-			audioElement.current.play();
-		}
-		if (currentSongId !== '')
-			setCurrentTrack(
-				songsQueue.find(
-					(item: SaavnSongObjectTypes) => item.id === currentSongId,
-				),
-			);
-
-		return () => {
-			if (audioElement.current)
-				// eslint-disable-next-line react-hooks/exhaustive-deps
-				audioElement.current.load();
-		};
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [audioElement, currentTrack, currentSongId]);
-
-	const loadedMetaDataHandler = (element: any) => {
-		// const audio : HTMLMediaElement | HTMLElement | any = document.getElementById('audio');
-		dispatch(onUpdateTime(element.target.currentTime));
-		element.target.currentTime = time;
-		console.log('loggedd here too', time);
-	};
-
-	const endedHandler = () => {
-		dispatch(onChangeNextSongFromQueue());
-		socket.emit('on-current-song-change-next', {
-			room_id: room.room_slug,
+		let cancelled = false;
+		loadYouTubeIframeApi().then((YTApi) => {
+			if (cancelled || !holderRef.current) return;
+			// The API replaces its target element with an iframe, so give it one React doesn't own.
+			const target = document.createElement('div');
+			holderRef.current.appendChild(target);
+			playerRef.current = new YTApi.Player(target, {
+				width: '100%',
+				height: '100%',
+				playerVars: {
+					controls: 0,
+					disablekb: 1,
+					playsinline: 1,
+					rel: 0,
+					fs: 0,
+					iv_load_policy: 3,
+				},
+				events: {
+					onReady: () => setReady(true),
+					onStateChange: (event) => {
+						if (event.data === ENDED) reportEnded();
+					},
+					// Unplayable video (removed, region-locked, embedding off): move the room on.
+					onError: () => reportEnded(),
+				},
+			});
 		});
-	};
+		return () => {
+			cancelled = true;
+			playerRef.current?.destroy();
+			playerRef.current = null;
+		};
+	}, [reportEnded]);
 
-	const timeUpdateHandler = (element: any) => {
-		// shows realtime currentTime for the Audio used for redis, will not broadcast every change
-		dispatch(onUpdateTime(Math.floor(element.target.currentTime)));
-		debounceUpdateTime(element.target.currentTime, isSeeking.current);
-	};
-	const setDebounceSeekingFalse = useCallback(
-		debounce(() => {
-			isSeeking.current = false;
-		}, 300),
-		[],
-	);
-	const seekedHandler = () => {
-		isSeeking.current = true;
-		setDebounceSeekingFalse();
-	};
+	useEffect(() => {
+		const player = playerRef.current;
+		if (!ready || !player) return;
+		const id = playback.currentSongId;
+		if (!id) {
+			player.stopVideo();
+			loadedVideoId.current = null;
+			return;
+		}
+		if (loadedVideoId.current === id) return;
+		loadedVideoId.current = id;
+		endedReportedFor.current = null;
+		const startSeconds = targetPosition();
+		if (playbackRef.current.paused)
+			player.cueVideoById({ videoId: id, startSeconds });
+		else player.loadVideoById({ videoId: id, startSeconds });
+		lastSeekAt.current = Date.now();
+	}, [ready, playback.currentSongId, targetPosition]);
 
-	const debounceUpdateTime = useCallback(
-		debounce((time, broadcast = false) => {
-			socket.emit('on-seek-current-song', {
-				room_id: room.room_slug,
-				time,
-				user_id: user?._id ?? '',
-				broadcast,
-			});
-		}, 200),
-		[],
-	);
+	useEffect(() => {
+		if (!ready) return;
+		const tick = () => {
+			const player = playerRef.current;
+			const current = playbackRef.current;
+			if (!player || !current.currentSongId) return;
+			if (loadedVideoId.current !== current.currentSongId) return;
 
-	const playingHandler = useCallback(
-		debounce(() => {
-			socket.emit('on-play-current-song', {
-				room_id: room.room_slug,
-				user_id: user?._id ?? '',
-			});
-			dispatch(onSetPlay());
-		}, 300),
-		[],
-	);
+			const target = targetPosition();
+			const state = player.getPlayerState();
+			const position = player.getCurrentTime() || 0;
+			const canSeek = Date.now() - lastSeekAt.current > SEEK_COOLDOWN_MS;
+			const seek = () => {
+				player.seekTo(target, true);
+				lastSeekAt.current = Date.now();
+			};
 
-	const pauseHandler = useCallback(
-		debounce((element: any) => {
-			if (element.target.currentTime !== element.target.duration) {
-				dispatch(onSetPause());
-				socket.emit('on-pause-current-song', {
-					room_id: room.room_slug,
-					user_id: user?._id ?? '',
-				});
+			dispatch(onUpdateTime(current.paused ? target : position));
+
+			if (current.paused) {
+				failedPlayTicks.current = 0;
+				setNeedsTap(false);
+				if (state === PLAYING || state === BUFFERING)
+					player.pauseVideo();
+				if (Math.abs(position - target) > 1 && canSeek) seek();
+				return;
 			}
-		}, 300),
-		[],
-	);
+
+			if (state === ENDED) return;
+
+			if (state !== PLAYING && state !== BUFFERING) {
+				player.playVideo();
+				failedPlayTicks.current += 1;
+				if (failedPlayTicks.current >= AUTOPLAY_BLOCKED_TICKS)
+					setNeedsTap(true);
+				return;
+			}
+
+			failedPlayTicks.current = 0;
+			setNeedsTap(false);
+			if (
+				state === PLAYING &&
+				Math.abs(position - target) > MAX_DRIFT_SECONDS &&
+				canSeek
+			)
+				seek();
+		};
+		tick();
+		const interval = setInterval(tick, SYNC_INTERVAL_MS);
+		return () => clearInterval(interval);
+	}, [ready, dispatch, targetPosition]);
+
+	const onStartListening = () => {
+		const player = playerRef.current;
+		if (!player) return;
+		player.seekTo(targetPosition(), true);
+		player.playVideo();
+		failedPlayTicks.current = 0;
+		setNeedsTap(false);
+	};
+
+	const onToggleMute = () => {
+		const player = playerRef.current;
+		if (!player) return;
+		if (muted) player.unMute();
+		else player.mute();
+		setMuted(!muted);
+	};
 
 	return (
 		<div className='w-full h-full'>
-			{currentTrack ? (
-				<>
-					<AudioPlayer
-						currentTrack={currentTrack}
-						audioElement={audioElement}
-					/>
-					<audio
-						id='audio'
-						className='invisible'
-						controls
-						autoPlay={!paused}
-						onLoadedMetadata={loadedMetaDataHandler}
-						onSeeked={seekedHandler}
-						onPlaying={playingHandler}
-						onPause={pauseHandler}
-						onEnded={endedHandler}
-						onTimeUpdate={timeUpdateHandler}
-						ref={audioElement}>
-						<source
-							src={currentTrack.downloadUrl[3].link}
-							type='audio/mp4'
+			<AudioPlayer
+				currentTrack={track}
+				muted={muted}
+				onToggleMute={onToggleMute}
+				videoSlot={
+					<div className='relative w-full aspect-video max-w-[28rem] rounded-2xl overflow-hidden bg-black'>
+						<div
+							ref={holderRef}
+							className='absolute inset-0'
 						/>
-						{/* {songsQueue.map((song: SaavnSongObjectTypes) => (
-                <>
-                  <source src={song.downloadUrl[3].link} type="audio/mp4" />
-                </>
-              ))} */}
-					</audio>
-				</>
-			) : (
-				<AudioPlayer />
-			)}
+						{needsTap && (
+							<button
+								type='button'
+								onClick={onStartListening}
+								className='absolute inset-0 z-10 flex items-center justify-center bg-black/70 text-white text-lg font-bold border-none cursor-pointer'>
+								Tap to start listening
+							</button>
+						)}
+					</div>
+				}
+			/>
 		</div>
 	);
 };
 
-export default AudioProvider;
+export default RoomPlayer;

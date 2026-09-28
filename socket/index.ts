@@ -1,4 +1,4 @@
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { getToken } from 'next-auth/jwt';
 import { parse as parseCookieHeader } from 'cookie';
 import {
@@ -6,20 +6,58 @@ import {
 	ServerToClientEvents,
 	InterServerEvents,
 	SocketData,
+	RoomState,
+	PlaybackState,
+	ConnectedUser,
 } from 'types';
-import redisManager, { client } from 'cache';
+import { client } from 'cache';
 import { createAdapter } from '@socket.io/redis-adapter';
 import 'utils/connect-db';
 import User from 'models/User';
 import Room from 'models/Room';
+import { freshPlayback, positionAt } from 'helpers/playback';
+import { YOUTUBE_VIDEO_ID, fetchYouTubeTrack } from 'helpers/server/youtube';
+import { updateRoomState } from './roomStore';
 
-type ConnectedUser = {
-	user_id: string;
-	socket_id: string;
-	name: string;
-	email: string;
-	username: string;
-	profile_pic: string;
+type RoomSocket = Socket<
+	ClientToServerEvents,
+	ServerToClientEvents,
+	InterServerEvents,
+	SocketData
+>;
+
+// Pressing "previous" this far into a song restarts it instead.
+const RESTART_THRESHOLD_SECONDS = 5;
+
+const socketChannel = (slug: string) => `room:${slug}`;
+
+const isAdmin = (state: RoomState, socket: RoomSocket) =>
+	state.room.owned_by === socket.data.user_id;
+
+const moveTo = (
+	state: RoomState,
+	changes: Partial<PlaybackState>,
+): RoomState => {
+	const now = Date.now();
+	return {
+		...state,
+		playback: {
+			...state.playback,
+			position: positionAt(state.playback, now),
+			updatedAt: now,
+			...changes,
+		},
+	};
+};
+
+const neighbourTrackId = (state: RoomState, step: 1 | -1) => {
+	const { songsQueue, playback } = state;
+	const index = songsQueue.findIndex(
+		(track) => track.id === playback.currentSongId,
+	);
+	if (index === -1 || songsQueue.length === 0) return null;
+	return songsQueue[(index + step + songsQueue.length) % songsQueue.length]
+		.id;
 };
 
 const socketManager = async (_res: any) => {
@@ -31,11 +69,14 @@ const socketManager = async (_res: any) => {
 	const publisherClient = client;
 	const subscriberClient = client.duplicate();
 
-	await subscriberClient.connect().then(() => {
-		console.log("Subscriber Connected")
-	}).catch((reason: string) => {
-		console.log("Subscriber shows connection error due to ", reason)
-	})
+	await subscriberClient
+		.connect()
+		.then(() => {
+			console.log('Subscriber Connected');
+		})
+		.catch((reason: string) => {
+			console.log('Subscriber shows connection error due to ', reason);
+		});
 
 	const _io = new Server<
 		ClientToServerEvents,
@@ -49,17 +90,29 @@ const socketManager = async (_res: any) => {
 					? process.env.NEXTAUTH_URL
 					: 'http://localhost:3000',
 		},
-		pingTimeout: 60000 * 720, // 0.5 day
 		adapter: createAdapter(publisherClient, subscriberClient),
 	});
 
 	_res.socket.server.io = _io;
 
+	const sendQueue = (slug: string, state: RoomState) =>
+		_io.to(socketChannel(slug)).emit('queue-updated', state.songsQueue);
+
+	const sendPlayback = (slug: string, state: RoomState) =>
+		_io.to(socketChannel(slug)).emit('playback-state', state.playback);
+
+	const sendUsers = (slug: string, state: RoomState) =>
+		_io
+			.to(socketChannel(slug))
+			.emit('sync-room-users-with-redis', state.users_connected);
+
 	_io.use(async (_socket, next) => {
 		try {
 			// getToken() reads req.cookies (a parsed map), but the raw handshake
 			// request only carries the unparsed Cookie header.
-			const cookies = parseCookieHeader(_socket.request.headers.cookie ?? '');
+			const cookies = parseCookieHeader(
+				_socket.request.headers.cookie ?? '',
+			);
 
 			const token = await getToken({
 				req: { headers: _socket.request.headers, cookies } as any,
@@ -85,245 +138,378 @@ const socketManager = async (_res: any) => {
 	});
 
 	_io.on('connection', (_socket) => {
-		console.log('new Socket Client Connected', _socket.id);
-
-		// connection and disconnnect socket event handlers
-
-		_socket.on('connect-to-join-room', async (res: any) => {
-			const { room } = res;
-
-			// re-fetch the room from the source of truth instead of trusting the
-			// client-supplied room object, so a spoofed owned_by can't grant ownership.
-			const dbRoom = await Room.findOne({ room_slug: room.room_slug });
-
-			if (!dbRoom) {
-				_socket.emit('error-joining-room', {
-					title: 'Room Not Found',
-					message: 'This room no longer exists.',
-				});
-				return;
-			}
-
-			// client joins the room.
-			_socket.join(`room:${room.room_slug}`);
-			// socketClient - roomId relation
-			await client.json.set(
-				`user:${_socket.id}`,
-				'$',
-				`room:${room.room_slug}`,
-			);
-			let roomCache = await client.json.get(`room:${room.room_slug}`);
-			let new_room_created: boolean = false;
-			if (!roomCache) {
-				// if no rrom exists, create one.
-				roomCache = await client.json.set(`room:${room.room_slug}`, '$', {
-					// active: true, - as anyone joins, room automatically gets active.
-					songsQueue: [],
-					currentSongId: null,
-					paused: true,
-					time: 0,
-					users_connected: [],
-					room: {
-						_id: dbRoom._id.toString(),
-						room_slug: dbRoom.room_slug,
-						owned_by: dbRoom.owned_by.toString(),
-					},
-				});
-				new_room_created = true;
-			}
-			const new_user_connection = {
-				socket_id: _socket.id,
-				user_id: _socket.data.user_id,
-				name: _socket.data.name,
-				email: _socket.data.email,
-				username: _socket.data.username,
-				profile_pic: _socket.data.profile_pic,
+		// Every room event acts on the room this socket joined, never on a room id sent by the client.
+		const inRoom =
+			<T>(handler: (slug: string, payload: T) => Promise<void>) =>
+			async (payload: T) => {
+				const slug = _socket.data.room_slug;
+				if (!slug) return;
+				try {
+					await handler(slug, (payload ?? {}) as T);
+				} catch (error: any) {
+					console.error(`room ${slug} event failed:`, error);
+					_socket.emit('room-error', {
+						message: error?.message ?? 'Something went wrong.',
+					});
+				}
 			};
-			// append user's connection in the room.
-			await client.json.arrAppend(
-				`room:${room.room_slug}`,
-				'.users_connected',
-				new_user_connection,
-			);
-			// getting updated room cache.
-			roomCache = await client.json.get(`room:${room.room_slug}`);
-			const { songsQueue, currentSongId, paused, time, users_connected } =
-				roomCache as any;
 
-			// response emits to client
-			console.log(
-				`socket id: ${_socket.id} connected to room id: ${room.room_slug}`,
-			);
-			_socket.emit('sync-player-with-redis', {
-				songsQueue,
-				currentSongId,
-				paused,
-				time,
-			});
-			_io
-				.to(`room:${room.room_slug}`)
-				.emit('sync-room-users-with-redis', users_connected);
+		_socket.on('time-sync', (ack: (serverNow: number) => void) => {
+			if (typeof ack === 'function') ack(Date.now());
 		});
 
-		_socket.on('disconnect', async (reason) => {
-			const room: string | null | any = await client.json.get(
-				`user:${_socket.id}`,
-			);
-			let left_user: string | ConnectedUser | any = _socket.id;
-			if (room) {
-				const { users_connected }: any = await client.json.get(room);
-				left_user = await client.json.arrPop(
-					room,
-					'.users_connected',
-					users_connected.findIndex(
-						(item: ConnectedUser) => item.socket_id === _socket.id,
-					),
+		_socket.on(
+			'connect-to-join-room',
+			async (payload: { room_slug: string }) => {
+				const room_slug = payload?.room_slug;
+				if (typeof room_slug !== 'string' || _socket.data.room_slug)
+					return;
+
+				try {
+					const dbRoom = await Room.findOne({ room_slug });
+
+					if (!dbRoom) {
+						_socket.emit('error-joining-room', {
+							title: 'Room Not Found',
+							message: 'This room no longer exists.',
+						});
+						return;
+					}
+
+					_socket.data.room_slug = room_slug;
+					_socket.join(socketChannel(room_slug));
+
+					const me: ConnectedUser = {
+						socket_id: _socket.id,
+						user_id: _socket.data.user_id,
+						name: _socket.data.name,
+						username: _socket.data.username,
+						profile_pic: _socket.data.profile_pic,
+					};
+
+					const { state } = await updateRoomState(
+						room_slug,
+						(current) => {
+							const base: RoomState = current ?? {
+								room: {
+									_id: dbRoom._id.toString(),
+									room_slug: dbRoom.room_slug,
+									owned_by: dbRoom.owned_by.toString(),
+								},
+								songsQueue: [],
+								playback: freshPlayback(Date.now()),
+								users_connected: [],
+							};
+							return {
+								...base,
+								users_connected: [
+									...base.users_connected.filter(
+										(user) => user.socket_id !== _socket.id,
+									),
+									me,
+								],
+							};
+						},
+					);
+
+					if (!state) return;
+					_socket.emit('sync-player-with-redis', {
+						songsQueue: state.songsQueue,
+						playback: state.playback,
+					});
+					sendUsers(room_slug, state);
+				} catch (error) {
+					console.error('join failed:', error);
+					_socket.emit('error-joining-room', {
+						title: 'Could Not Join',
+						message:
+							'Something went wrong while joining. Please reload.',
+					});
+				}
+			},
+		);
+
+		_socket.on('disconnect', async () => {
+			const slug = _socket.data.room_slug;
+			if (!slug) return;
+			try {
+				const { state } = await updateRoomState(slug, (current) => {
+					if (!current) return undefined;
+					const users_connected = current.users_connected.filter(
+						(user) => user.socket_id !== _socket.id,
+					);
+					const updated = { ...current, users_connected };
+					// Nobody left listening: freeze the song where it is so the room resumes there.
+					return users_connected.length === 0
+						? moveTo(updated, { paused: true })
+						: updated;
+				});
+				if (state) sendUsers(slug, state);
+			} catch (error) {
+				console.error('leave failed:', error);
+			}
+		});
+
+		_socket.on(
+			'add-track',
+			inRoom<{ videoId: string; playNow?: boolean }>(
+				async (slug, { videoId, playNow }) => {
+					if (
+						typeof videoId !== 'string' ||
+						!YOUTUBE_VIDEO_ID.test(videoId)
+					)
+						return;
+
+					const track = await fetchYouTubeTrack(videoId);
+					if (!track) {
+						_socket.emit('room-error', {
+							message: 'This video can’t be played inside fplay.',
+						});
+						return;
+					}
+
+					const { state } = await updateRoomState(slug, (current) => {
+						if (!current) return undefined;
+						const inQueue = current.songsQueue.some(
+							(item) => item.id === track.id,
+						);
+						let next: RoomState = inQueue
+							? current
+							: {
+									...current,
+									songsQueue: [
+										...current.songsQueue,
+										{
+											...track,
+											addedBy: _socket.data.name,
+										},
+									],
+								};
+						if (playNow || !current.playback.currentSongId)
+							next = moveTo(next, {
+								currentSongId: track.id,
+								position: 0,
+							});
+						return next;
+					});
+
+					if (!state) return;
+					sendQueue(slug, state);
+					sendPlayback(slug, state);
+				},
+			),
+		);
+
+		_socket.on(
+			'remove-track',
+			inRoom<{ trackId: string }>(async (slug, { trackId }) => {
+				const { state, changed } = await updateRoomState(
+					slug,
+					(current) => {
+						if (
+							!current ||
+							current.playback.currentSongId === trackId
+						)
+							return undefined;
+						const songsQueue = current.songsQueue.filter(
+							(track) => track.id !== trackId,
+						);
+						if (songsQueue.length === current.songsQueue.length)
+							return undefined;
+						return { ...current, songsQueue };
+					},
 				);
-				if (users_connected.length === 1)
-					await Promise.all([
-						/**
-						 * persist data in the room even if all users leave room.
-						 * */
-						// client.json.set(room, ".songsQueue", []),
-						// client.json.set(room, ".currentSongId", null),
-						client.json.set(room, '.paused', true),
-						client.json.set(room, '.time', 0),
-					]);
-				await client.json.del(`user:${_socket.id}`);
-			}
-			console.log(
-				`user ${left_user.user_id} left from room id: ${room}`,
-				left_user,
-				`due to this reason : ${reason}`,
-			);
-			_io.to(room).emit('leaves-room', left_user);
-		});
+				if (state && changed) sendQueue(slug, state);
+				else if (state) _socket.emit('queue-updated', state.songsQueue);
+			}),
+		);
 
-		// queue socket events
+		_socket.on(
+			'move-track',
+			inRoom<{ trackId: string; toIndex: number }>(
+				async (slug, { trackId, toIndex }) => {
+					const { state, changed } = await updateRoomState(
+						slug,
+						(current) => {
+							if (!current || !Number.isInteger(toIndex))
+								return undefined;
+							const from = current.songsQueue.findIndex(
+								(track) => track.id === trackId,
+							);
+							if (from === -1) return undefined;
+							const songsQueue = [...current.songsQueue];
+							const [moved] = songsQueue.splice(from, 1);
+							songsQueue.splice(
+								Math.max(
+									0,
+									Math.min(toIndex, songsQueue.length),
+								),
+								0,
+								moved,
+							);
+							return { ...current, songsQueue };
+						},
+					);
+					if (state && changed) sendQueue(slug, state);
+					else if (state)
+						_socket.emit('queue-updated', state.songsQueue);
+				},
+			),
+		);
 
-		_socket.on('on-add-song-in-queue', async (res: any) => {
-			const { songObj: song, room_id } = res;
-			let room: any = await client.json.get(`room:${room_id}`);
-			if (room?.songsQueue.length === 0)
-				await client.json.set(`room:${room_id}`, '.currentSongId', song.id);
-			await client.json.arrAppend(`room:${room_id}`, '.songsQueue', song);
-			_socket.broadcast.to(`room:${room_id}`).emit('add-song-in-queue', song);
-		});
+		_socket.on(
+			'select-track',
+			inRoom<{ trackId: string }>(async (slug, { trackId }) => {
+				const { state, changed } = await updateRoomState(
+					slug,
+					(current) => {
+						if (
+							!current ||
+							current.playback.currentSongId === trackId ||
+							!current.songsQueue.some(
+								(track) => track.id === trackId,
+							)
+						)
+							return undefined;
+						return moveTo(current, {
+							currentSongId: trackId,
+							position: 0,
+						});
+					},
+				);
+				if (state && changed) sendPlayback(slug, state);
+			}),
+		);
 
-		_socket.on('on-remove-song-from-queue', async (res: any) => {
-			const { song_id, room_id } = res;
-			const { songsQueue }: any = await client.json.get(`room:${room_id}`);
-			await client.json.arrPop(
-				`room:${room_id}`,
-				'.songsQueue',
-				songsQueue.findIndex((item: any) => item.id === song_id),
-			);
-			_socket.broadcast
-				.to(`room:${room_id}`)
-				.emit('remove-song-from-queue', song_id);
-		});
+		// "skip" and "track-ended" name the song they refer to, so a repeated or late
+		// message is ignored instead of skipping again (every listener reports the end).
+		_socket.on(
+			'skip',
+			inRoom<{ direction: 'next' | 'prev'; fromTrackId: string }>(
+				async (slug, { direction, fromTrackId }) => {
+					const { state, changed } = await updateRoomState(
+						slug,
+						(current) => {
+							if (
+								!current ||
+								current.playback.currentSongId !== fromTrackId
+							)
+								return undefined;
+							if (
+								direction === 'prev' &&
+								positionAt(current.playback, Date.now()) >
+									RESTART_THRESHOLD_SECONDS
+							)
+								return moveTo(current, { position: 0 });
+							const target = neighbourTrackId(
+								current,
+								direction === 'prev' ? -1 : 1,
+							);
+							return target
+								? moveTo(current, {
+										currentSongId: target,
+										position: 0,
+									})
+								: undefined;
+						},
+					);
+					if (state && changed) sendPlayback(slug, state);
+				},
+			),
+		);
 
-		_socket.on('on-replace-song-in-queue', async (res: any) => {
-			const { replace_from, to_replace, room_id } = res;
-			let replacePart: any = await client.json.arrPop(
-				`room:${room_id}`,
-				'.songsQueue',
-				replace_from,
-			);
-			console.log('res', replacePart.id);
-			await client.json.arrInsert(
-				`room:${room_id}`,
-				'.songsQueue',
-				to_replace,
-				replacePart,
-			);
-			_socket.broadcast.to(`room:${room_id}`).emit('replace-song-in-queue', {
-				replace_from,
-				to_replace,
-			});
-		});
+		_socket.on(
+			'track-ended',
+			inRoom<{ trackId: string }>(async (slug, { trackId }) => {
+				const { state, changed } = await updateRoomState(
+					slug,
+					(current) => {
+						if (
+							!current ||
+							current.playback.currentSongId !== trackId
+						)
+							return undefined;
+						const target = neighbourTrackId(current, 1);
+						return target
+							? moveTo(current, {
+									currentSongId: target,
+									position: 0,
+								})
+							: undefined;
+					},
+				);
+				if (state && changed) sendPlayback(slug, state);
+			}),
+		);
 
-		_socket.on('on-current-song-id-change', async (res: any) => {
-			const { song_id, room_id } = res;
-			await client.json.set(`room:${room_id}`, '.currentSongId', song_id);
-			_socket.broadcast
-				.to(`room:${room_id}`)
-				.emit('current-song-id-change', song_id);
-		});
+		_socket.on(
+			'play',
+			inRoom<void>(async (slug) => {
+				const { state, changed } = await updateRoomState(
+					slug,
+					(current) => {
+						if (
+							!current ||
+							!isAdmin(current, _socket) ||
+							!current.playback.paused ||
+							!current.playback.currentSongId
+						)
+							return undefined;
+						return moveTo(current, { paused: false });
+					},
+				);
+				if (state && changed) sendPlayback(slug, state);
+			}),
+		);
 
-		_socket.on('on-current-song-change-next', async (res: any) => {
-			const { room_id } = res;
-			const { currentSongId, songsQueue }: any = await client.json.get(
-				`room:${room_id}`,
-			);
-			let index = await songsQueue.findIndex(
-				(song: any) => song.id === currentSongId,
-			);
-			let nextSongId;
-			if (index + 1 < songsQueue.length) {
-				nextSongId = songsQueue[index + 1].id;
-			} else {
-				nextSongId = songsQueue[0].id;
-			}
-			await client.json.set(`room:${room_id}`, '.currentSongId', nextSongId);
-			_socket.broadcast
-				.to(`room:${room_id}`)
-				.emit('current-song-change-next', nextSongId);
-		});
+		_socket.on(
+			'pause',
+			inRoom<void>(async (slug) => {
+				const { state, changed } = await updateRoomState(
+					slug,
+					(current) => {
+						if (
+							!current ||
+							!isAdmin(current, _socket) ||
+							current.playback.paused
+						)
+							return undefined;
+						return moveTo(current, { paused: true });
+					},
+				);
+				if (state && changed) sendPlayback(slug, state);
+			}),
+		);
 
-		_socket.on('on-current-song-change-prev', async (res: any) => {
-			const { room_id } = res;
-			const { currentSongId, songsQueue }: any = await client.json.get(
-				`room:${room_id}`,
-			);
-			let index = await songsQueue.findIndex(
-				(song: any) => song.id === currentSongId,
-			);
-			let prevSongId;
-			if (index - 1 >= 0) {
-				prevSongId = songsQueue[index - 1].id;
-			} else {
-				prevSongId = songsQueue[songsQueue.length - 1].id;
-			}
-			await client.json.set(`room:${room_id}`, '.currentSongId', prevSongId);
-			_socket.broadcast
-				.to(`room:${room_id}`)
-				.emit('current-song-change-prev', prevSongId);
-		});
-
-		_socket.on('on-play-current-song', async (res: any) => {
-			const { room_id } = res;
-			const { room }: any = await client.json.get(`room:${room_id}`);
-			const { owned_by } = room ?? {};
-			if (owned_by === _socket.data.user_id) {
-				await client.json.set(`room:${room_id}`, '.paused', false);
-				_socket.broadcast.to(`room:${room_id}`).emit('play-current-song');
-			}
-		});
-
-		_socket.on('on-pause-current-song', async (res: any) => {
-			const { room_id } = res;
-			const { room }: any = await client.json.get(`room:${room_id}`);
-			const { owned_by } = room ?? {};
-			if (owned_by === _socket.data.user_id) {
-				await client.json.set(`room:${room_id}`, '.paused', true);
-				_socket.broadcast.to(`room:${room_id}`).emit('pause-current-song');
-			}
-		});
-
-		_socket.on('on-seek-current-song', async (res: any) => {
-			const { room_id, time, broadcast } = res;
-			const { room }: any = await client.json.get(`room:${room_id}`);
-			const { owned_by } = room ?? {};
-			if (owned_by === _socket.data.user_id) {
-				await client.json.set(`room:${room_id}`, '.time', time);
-
-				if (!!broadcast)
-					_socket.broadcast
-						.to(`room:${room_id}`)
-						.emit('seek-current-song', time);
-			}
-		});
+		_socket.on(
+			'seek',
+			inRoom<{ position: number }>(async (slug, { position }) => {
+				const { state, changed } = await updateRoomState(
+					slug,
+					(current) => {
+						if (
+							!current ||
+							!isAdmin(current, _socket) ||
+							typeof position !== 'number' ||
+							!Number.isFinite(position)
+						)
+							return undefined;
+						const track = current.songsQueue.find(
+							(item) =>
+								item.id === current.playback.currentSongId,
+						);
+						if (!track) return undefined;
+						return moveTo(current, {
+							position: Math.max(
+								0,
+								Math.min(position, track.duration),
+							),
+						});
+					},
+				);
+				if (state && changed) sendPlayback(slug, state);
+			}),
+		);
 	});
 };
 

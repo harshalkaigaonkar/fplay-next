@@ -1,3 +1,4 @@
+import { Socket } from 'socket.io-client';
 import mongoose, {
 	Date,
 	DateExpression,
@@ -40,38 +41,34 @@ export type SocketClientType = Socket<
 >;
 // Socket Types
 export interface ServerToClientEvents {
-	'sync-player-with-redis': (res: any) => void;
-	'sync-room-users-with-redis': (res: any) => void;
-	'disconnect-user': (res: any) => void;
-	'leaves-room': (res: any) => void;
-	'add-song-in-queue': (res: any) => void;
-	'remove-song-from-queue': (res: any) => void;
-	'replace-song-in-queue': (res: any) => void;
-	'current-song-id-change': (res: any) => void;
-	'current-song-change-next': (res: any) => void;
-	'current-song-change-prev': (res: any) => void;
-	'play-current-song': () => void;
-	'pause-current-song': () => void;
-	'seek-current-song': (res: number) => void;
-	'error-joining-room': (res: any) => void;
+	'sync-player-with-redis': (res: {
+		songsQueue: QueueTrack[];
+		playback: PlaybackState;
+	}) => void;
+	'sync-room-users-with-redis': (res: ConnectedUser[]) => void;
+	'queue-updated': (res: QueueTrack[]) => void;
+	'playback-state': (res: PlaybackState) => void;
+	'error-joining-room': (res: { title: string; message: string }) => void;
+	'room-error': (res: { message: string }) => void;
 }
 export type ClientToServerEvents = {
-	'connect-to-join-room': (res: any) => void;
-	'on-add-song-in-queue': (res: any) => void;
-	'on-remove-song-from-queue': (res: any) => void;
-	'on-replace-song-in-queue': (res: any) => void;
-	'on-current-song-id-change': (res: any) => void;
-	'on-current-song-change-next': (res: any) => void;
-	'on-current-song-change-prev': (res: any) => void;
-	'on-play-current-song': (res: any) => void;
-	'on-pause-current-song': (res: any) => void;
-	'on-seek-current-song': (res: any) => void;
-	disconnect: () => void;
+	'time-sync': (ack: (serverNow: number) => void) => void;
+	'connect-to-join-room': (res: { room_slug: string }) => void;
+	'add-track': (res: { videoId: string; playNow?: boolean }) => void;
+	'remove-track': (res: { trackId: string }) => void;
+	'move-track': (res: { trackId: string; toIndex: number }) => void;
+	'select-track': (res: { trackId: string }) => void;
+	skip: (res: { direction: 'next' | 'prev'; fromTrackId: string }) => void;
+	'track-ended': (res: { trackId: string }) => void;
+	play: () => void;
+	pause: () => void;
+	seek: (res: { position: number }) => void;
 };
 export interface InterServerEvents {
 	ping: () => void;
 }
 export interface SocketData {
+	room_slug?: string;
 	user_id: string;
 	name: string;
 	email: string;
@@ -267,4 +264,40 @@ interface UseSession {
 	user?: any;
 	data?: Session | null;
 	status: string;
+}
+
+/**
+ * ROOM PLAYBACK TYPES
+ */
+
+interface QueueTrack {
+	id: string; // YouTube video id
+	title: string;
+	channel: string;
+	thumbnail: string;
+	duration: number; // seconds
+	addedBy?: string;
+}
+
+// The server is the clock: position was `position` seconds at server time `updatedAt` (ms).
+interface PlaybackState {
+	currentSongId: string | null;
+	paused: boolean;
+	position: number;
+	updatedAt: number;
+}
+
+interface ConnectedUser {
+	socket_id: string;
+	user_id: string;
+	name: string;
+	username: string;
+	profile_pic: string;
+}
+
+interface RoomState {
+	room: { _id: string; room_slug: string; owned_by: string };
+	songsQueue: QueueTrack[];
+	playback: PlaybackState;
+	users_connected: ConnectedUser[];
 }
