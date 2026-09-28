@@ -29,8 +29,7 @@ import {
 	selectRoomInfo,
 } from 'redux/slice/roomSlice';
 import { selectPlayer, selectSongsQueue } from 'redux/slice/playerSlice';
-import fetchUser from 'helpers/user/fetchUser';
-import fetchRoom from 'helpers/room/fetchRoom';
+import { getRoomBySlug, getUserByEmail } from 'helpers/server/db';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
@@ -118,8 +117,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { room_id } = context.query;
 
 	if (session && session.user) {
-		const data = await fetchUser(session.user.email as string);
-		if (!data || data.type !== 'Success') {
+		const user = await getUserByEmail(session.user.email as string);
+		if (!user) {
 			return {
 				redirect: {
 					permanent: false,
@@ -127,22 +126,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 				},
 			};
 		} else {
-			const roomData = await fetchRoom(room_id as string);
-			if (!roomData || roomData.type !== 'Success')
+			const room = await getRoomBySlug(room_id as string);
+			if (!room)
 				return {
 					redirect: {
 						permanent: false,
 						destination: `/?redirect=not_available&room_id=${room_id}`,
 					},
 				};
-			else if (roomData.data && !roomData.data.is_private) {
-				await axios.get(`${process.env.NEXTAUTH_URL ?? ''}/api/socket`);
+			else if (!room.is_private) {
+				// Started here instead of via GET /api/socket: a server-side call
+				// has no session cookie, so the auth middleware would block it.
+				const [{ default: socketManager }, { default: redisManager }] =
+					await Promise.all([import('socket'), import('cache')]);
+				await Promise.all([redisManager(), socketManager(context.res)]);
 				return {
 					props: {
 						session,
 						room_id,
-						room: roomData.data,
-						user: data.data,
+						room,
+						user,
 					},
 				};
 			}

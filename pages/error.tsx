@@ -1,15 +1,15 @@
 import type { NextPage } from 'next';
 import { OAuthProviderType } from 'next-auth/providers';
 import Head from 'next/head';
-import { useMemo } from 'react';
+import { useRouter } from 'next/router';
 
 export type ErrorProps = {
 	provider?: OAuthProviderType;
 };
 
 const Error: NextPage<any> = ({ provider }) => {
-	const searchParams = new URLSearchParams();
-	const error = useMemo(() => searchParams.get('error'), [searchParams]);
+	const { query } = useRouter();
+	const error = typeof query.error === 'string' ? query.error : null;
 	return (
 		<div>
 			<Head>

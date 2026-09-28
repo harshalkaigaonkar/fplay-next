@@ -1,6 +1,6 @@
-import axios from 'axios';
 import NextAuth, { NextAuthOptions, Profile } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
+import { findOrCreateUser } from 'helpers/server/db';
 
 export const authOptions: NextAuthOptions = {
 	providers: [
@@ -23,18 +23,9 @@ export const authOptions: NextAuthOptions = {
 	callbacks: {
 		async signIn({ profile }: { profile?: Profile }) {
 			try {
-				const { data } = await axios.post(
-					`${
-						process.env.NODE_ENV === 'production'
-							? process.env.NEXTAUTH_URL
-							: 'http://localhost:3000'
-					}/api/user`,
-					{
-						profile,
-					},
-				);
-				if (data.data) return true;
-				return false;
+				if (!profile) return false;
+				const user = await findOrCreateUser(profile);
+				return !!user;
 			} catch (error) {
 				console.error(`Error: some issue with adding user | ${error}`);
 				return false;

@@ -16,9 +16,7 @@ import { getSession, signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
 import Layout from 'components/layout';
 import Hero from 'components/hero';
-import fetchUser from 'helpers/user/fetchUser';
-import fetchRoom from 'helpers/room/fetchRoom';
-import Room_id from './api/room/get_room/[room_id]';
+import { getUserByEmail } from 'helpers/server/db';
 import { useState } from 'react';
 import { NextRouter, useRouter } from 'next/router';
 
@@ -81,9 +79,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	const session: Session | null = await getSession(context);
 
 	if (session && session.user) {
-		const data = await fetchUser(session.user.email as string);
+		const user = await getUserByEmail(session.user.email as string);
 
-		if (!data || data.type !== 'Success') {
+		if (!user) {
 			return {
 				redirect: {
 					permanent: false,
@@ -94,7 +92,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		return {
 			props: {
 				session,
-				user: data.data,
+				user,
 			},
 		};
 	}
